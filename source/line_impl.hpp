@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef LINE_IMPLEMENTATION_HEADER
@@ -13,74 +13,95 @@ BEGIN_TEMPLATE
         
 BEGIN_WS_NAMESPACE
         
-template <typename T_VECTOR>
-Line<T_VECTOR>::Line(const T_VECTOR& VEC_A, const T_VECTOR& VEC_B):Capacity(2)
-{
-    Array[0]=VEC_A;
-    Array[1]=VEC_B;
+template <typename T>
+Line<T>::Line(const typename Line<T>::TYPE& VEC_A, const typename Line<T>::TYPE& VEC_B) : capacity(2) {
+    array[0] = VEC_A;
+    array[1] = VEC_B;
 }
 
-template <typename T_VECTOR>
-Line<T_VECTOR>::Line(const Line<T_VECTOR>& REF):Capacity(2)
+template <typename T>
+Line<T>::Line(const Line<T>& REF) : capacity(2)
 {
-    Array[0]=REF.Array[0];
-    Array[1]=REF.Array[1];
+    array[0] = REF.array[0];
+    array[1] = REF.array[1];
 }
 
-template <typename T_VECTOR>
-Line<T_VECTOR>::~Line(){}
+template <typename T>
+Line<T>::~Line(){}
 
-template <typename T_VECTOR>
-T_VECTOR& Line<T_VECTOR>::A(){return Array[0];}
+template <typename T>
+typename Line<T>::TYPE& Line<T>::a() {
+	return array[0];
+}
 
-template <typename T_VECTOR>
-T_VECTOR& Line<T_VECTOR>::B(){return Array[1];}
+template <typename T>
+typename Line<T>::TYPE& Line<T>::b() {
+	return array[1];
+}
 
-template <typename T_VECTOR>
-const T_VECTOR& Line<T_VECTOR>::A() const{return Array[0];}
+template <typename T>
+const typename Line<T>::TYPE& Line<T>::a() const {
+	return array[0];
+}
 
-template <typename T_VECTOR>
-const T_VECTOR& Line<T_VECTOR>::B() const{return Array[1];}
+template <typename T>
+const typename Line<T>::TYPE& Line<T>::b() const {
+	return array[1];
+}
 
-template <typename T_VECTOR>
-Line<T_VECTOR>& Line<T_VECTOR>::Set(const T_VECTOR& VEC_A, const T_VECTOR& VEC_B)
-{
-    A()=VEC_A;
-    B()=VEC_B;
+template <typename T>
+Line<T>& Line<T>::set(const typename Line<T>::TYPE& VEC_A, const typename Line<T>::TYPE& VEC_B) {
+    a() = VEC_A;
+    b() = VEC_B;
     return *this;
 }
 
-template <typename T_VECTOR>
-T_VECTOR& Line<T_VECTOR>::operator [](size IDX){return Array[IDX];}
+template <typename T>
+typename Line<T>::TYPE& Line<T>::operator [](SIZE IDX) {
+	return array[IDX];
+}
 
-template <typename T_VECTOR>
-const T_VECTOR& Line<T_VECTOR>::operator [](size IDX) const{return Array[IDX];}
+template <typename T>
+const typename Line<T>::TYPE& Line<T>::operator [](SIZE IDX) const {
+	return array[IDX];
+}
 
-template <typename T_VECTOR>
-Line<T_VECTOR>& Line<T_VECTOR>::operator =(const Line<T_VECTOR>& REF)
-{
-    A()=REF.A();
-    B()=REF.B();
+template <typename T>
+Line<T>& Line<T>::operator =(const Line<T>& REF) {
+    a() = REF.a();
+    b() = REF.b();
     return *this;
 }
 
-template <typename T_VECTOR>
-boolean Line<T_VECTOR>::operator ==(const Line<T_VECTOR>& REF) const{return A()==REF.A() && B()==REF.B();}
+template <typename T>
+BOOLEAN Line<T>::operator ==(const Line<T>& REF) const {
+	return a() == REF.a() && b() == REF.b();
+}
 
-template <typename T_VECTOR>
-boolean Line<T_VECTOR>::operator !=(const Line<T_VECTOR>& REF) const{return A()!=REF.A() || B()!=REF.B();}
+template <typename T>
+BOOLEAN Line<T>::operator !=(const Line<T>& REF) const {
+	return a() != REF.a() || b() != REF.b();
+}
 
-template <typename T_VECTOR>
-boolean Line<T_VECTOR>::operator >(const Line<T_VECTOR>& REF) const{return A()>REF.A() && B()>REF.B();}
+template <typename T>
+BOOLEAN Line<T>::operator >(const Line<T>& REF) const {
+	return a() > REF.a() && b() > REF.b();
+}
 
-template <typename T_VECTOR>
-boolean Line<T_VECTOR>::operator <(const Line<T_VECTOR>& REF) const{return A()<REF.A() && B()<REF.B();}
+template <typename T>
+BOOLEAN Line<T>::operator <(const Line<T>& REF) const {
+	return a() < REF.a() && b() < REF.b();
+}
 
-template <typename T_VECTOR>
-boolean Line<T_VECTOR>::operator >=(const Line<T_VECTOR>& REF) const{return A()>=REF.A() && B()>=REF.B();}
+template <typename T>
+BOOLEAN Line<T>::operator >=(const Line<T>& REF) const {
+	return a() >= REF.a() && b() >= REF.b();
+}
 
-template <typename T_VECTOR>
-boolean Line<T_VECTOR>::operator <=(const Line<T_VECTOR>& REF) const{return A()<=REF.A() && B()<=REF.B();}
+template <typename T>
+BOOLEAN Line<T>::operator <=(const Line<T>& REF) const {
+	return a() <= REF.a() && b() <= REF.b();
+}
 
 END_WS_NAMESPACE
         

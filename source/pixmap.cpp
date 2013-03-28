@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #include <pixmap.hpp>
@@ -9,128 +9,128 @@ BEGIN_HEADER
         
 BEGIN_WS_NAMESPACE
 
-Pixmap::PixmapImplementation::PixmapImplementation():Buf(0), Width(0), Height(0), Capacity(0){}
+Pixmap::PixmapImplementation::PixmapImplementation():buffer(0), width(0), height(0), capacity(0){}
 
 Pixmap::PixmapImplementation::~PixmapImplementation(){}
 
-void Pixmap::PixmapImplementation::Initial(size W, size H)
+void Pixmap::PixmapImplementation::initialize(SIZE W, SIZE H)
 {
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-    Width=W;
-    Height=H;
-    Capacity=W*H;
-    Buf=Allocate(Capacity);
-    for(size ITER=0;ITER<Capacity;++ITER)
-        Construct((Buf+ITER), 0);
+    width=W;
+    height=H;
+    capacity=W*H;
+    buffer=allocate(capacity);
+    for(SIZE ITER=0;ITER<capacity;++ITER)
+        construct((buffer+ITER), 0);
 }
 
-void Pixmap::PixmapImplementation::Cleanup()
+void Pixmap::PixmapImplementation::destroy()
 {
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-    for(size ITER=0;ITER<Capacity;++ITER)
-        Destruct((Buf+ITER));
-    Width=Height=Capacity=0;
+    for(SIZE ITER=0;ITER<capacity;++ITER)
+        destruct((buffer+ITER));
+    width=height=capacity=0;
 }
         
-Pixmap::Pixmap(uinteger W, uinteger H):Implementation(0)
+Pixmap::Pixmap(UINTEGER W, UINTEGER H) : implementation(0)
 {
     if(W && H)
     {
-        Implementation=new PixmapImplementation;
-        if(Implementation)
+        implementation=new PixmapImplementation;
+        if(implementation)
         {
-            ++(Implementation->Ref);
-            Implementation->Initial(W, H);
+            ++(implementation->reference);
+            implementation->initialize(W, H);
         }
     }
 }
 
-Pixmap::Pixmap(const Pixmap& REF):Implementation(REF.Implementation)
+Pixmap::Pixmap(const Pixmap& REF) : implementation(REF.implementation)
 {
-    if(Implementation)
-        ++(Implementation->Ref);
+    if(implementation)
+        ++(implementation->reference);
 }
 
 Pixmap::~Pixmap()
 {
-    if(Implementation)
-        if(--(Implementation->Ref)==0)
-            delete Implementation;
+    if(implementation)
+        if(--(implementation->reference)==0)
+            delete implementation;
 }
 
-boolean Pixmap::Empty() const
+BOOLEAN Pixmap::empty() const
 {
-    if(Implementation)
-        return !(Implementation->Buf);
+    if(implementation)
+        return !(implementation->buffer);
     return true;
 }
 
-size Pixmap::Width() const
+SIZE Pixmap::width() const
 {
-    if(Implementation)
-        return Implementation->Width;
+    if(implementation)
+        return implementation->width;
     return 0;
 }
 
-size Pixmap::Height() const
+SIZE Pixmap::height() const
 {
-    if(Implementation)
-        return Implementation->Height;
+    if(implementation)
+        return implementation->height;
     return 0;
 }
 
-size Pixmap::Capacity() const
+SIZE Pixmap::capacity() const
 {
-    if(Implementation)
-        return Implementation->Capacity;
+    if(implementation)
+        return implementation->capacity;
     return 0;
 }
 
-Pixmap::VALUE& Pixmap::Seek(size IDX)
+Pixmap::TYPE& Pixmap::seek(SIZE IDX)
 {
-    if(Implementation)
-        return *(Implementation->Buf+IDX);
+    if(implementation)
+        return *(implementation->buffer+IDX);
 }
 
-Pixmap::VALUE& Pixmap::Seek(size IDX_W, size IDX_H)
+Pixmap::TYPE& Pixmap::seek(SIZE IDX_W, SIZE IDX_H)
 {
-    if(Implementation)
-        return *(Implementation->Buf+IDX_W*IDX_H);
+    if(implementation)
+        return *(implementation->buffer+IDX_W*IDX_H);
 }
 
-const Pixmap::VALUE& Pixmap::Seek(size IDX) const
+const Pixmap::TYPE& Pixmap::seek(SIZE IDX) const
 {
-    if(Implementation)
-        return *(Implementation->Buf+IDX);
+    if(implementation)
+        return *(implementation->buffer+IDX);
 }
 
-const Pixmap::VALUE& Pixmap::Seek(size IDX_W, size IDX_H) const
+const Pixmap::TYPE& Pixmap::seek(SIZE IDX_W, SIZE IDX_H) const
 {
-    if(Implementation)
-        return *(Implementation->Buf+IDX_W*IDX_H);
+    if(implementation)
+        return *(implementation->buffer+IDX_W*IDX_H);
 }
 
 const Pixmap& Pixmap::operator =(const Pixmap& REF)
 {
-    if(Implementation)
-        ++(Implementation->Ref);
+    if(implementation)
+        ++(implementation->reference);
     return *this;
 }
 
-boolean Pixmap::operator ==(const Pixmap& REF) const
+BOOLEAN Pixmap::operator ==(const Pixmap& REF) const
 {
-    if(REF.Implementation==Implementation)
+    if(REF.implementation==implementation)
         return true;
     return false;
 }
 
-boolean Pixmap::operator !=(const Pixmap& REF) const
+BOOLEAN Pixmap::operator !=(const Pixmap& REF) const
 {
-    if(REF.Implementation!=Implementation)
+    if(REF.implementation!=implementation)
         return false;
     return true;
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio GUI Library
+ * Way Studios GUI Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef KEYEVENT_HEADER
@@ -13,14 +13,14 @@ BEGIN_WS_NAMESPACE
 
 struct EXPORT KeyEvent:public InputEvent
 {
-	explicit KeyEvent(InputKey, boolean);
+	explicit KeyEvent(InputKey, BOOLEAN);
 	~KeyEvent();
 
-	boolean IsPressed() const;
-	boolean IsReleased() const;
+	BOOLEAN isPressed() const;
+	BOOLEAN isReleased() const;
 
-	const InputKey Key;
-	const boolean Status;
+	const InputKey key;
+	const BOOLEAN status;
 
 	UNCOPYABLE(KeyEvent)
 };

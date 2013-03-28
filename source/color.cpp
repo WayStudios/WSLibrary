@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #include <color.hpp>
@@ -8,68 +8,68 @@ BEGIN_SOURCECODE
         
 USING_WS_NAMESPACE
         
-Color::Color(ubyte R, ubyte G, ubyte B, ubyte A):Capacity(4)
+Color::Color(UBYTE R, UBYTE G, UBYTE B, UBYTE A):capacity(4)
 {
-    Array[0]=A;
-    Array[1]=R;
-    Array[2]=G;
-    Array[3]=B;
+    array[0]=A;
+    array[1]=R;
+    array[2]=G;
+    array[3]=B;
 }
 
-Color::Color(const Color& REF):Capacity(4)
+Color::Color(const Color& REF):capacity(4)
 {
-    Array[0]=REF.Array[0];
-    Array[1]=REF.Array[1];
-    Array[2]=REF.Array[2];
-    Array[3]=REF.Array[3];
+    array[0]=REF.array[0];
+    array[1]=REF.array[1];
+    array[2]=REF.array[2];
+    array[3]=REF.array[3];
 }
 
 Color::~Color(){}
 
-Color::VALUE& Color::Alpha(){return Array[0];}
+Color::TYPE& Color::alpha(){return array[0];}
 
-Color::VALUE& Color::Red(){return Array[1];}
+Color::TYPE& Color::red(){return array[1];}
 
-Color::VALUE& Color::Green(){return Array[2];}
+Color::TYPE& Color::green(){return array[2];}
 
-Color::VALUE& Color::Blue(){return Array[3];}
+Color::TYPE& Color::blue(){return array[3];}
 
-const Color::VALUE& Color::Alpha() const{return Array[0];}
+const Color::TYPE& Color::alpha() const{return array[0];}
 
-const Color::VALUE& Color::Red() const{return Array[1];}
+const Color::TYPE& Color::red() const{return array[1];}
 
-const Color::VALUE& Color::Green() const{return Array[2];}
+const Color::TYPE& Color::green() const{return array[2];}
 
-const Color::VALUE& Color::Blue() const{return Array[3];}
+const Color::TYPE& Color::blue() const{return array[3];}
 
-Color& Color::Set(ubyte R, ubyte G, ubyte B)
+Color& Color::set(UBYTE R, UBYTE G, UBYTE B)
 {
-    Red()=R;
-    Green()=G;
-    Blue()=B;
+    red()=R;
+    green()=G;
+    blue()=B;
     return *this;
 }
 
-Color& Color::Set(ubyte A, ubyte R, ubyte G, ubyte B)
+Color& Color::set(UBYTE A, UBYTE R, UBYTE G, UBYTE B)
 {
-    Alpha()=A;
-    Red()=R;
-    Green()=G;
-    Blue()=B;
+    alpha()=A;
+    red()=R;
+    green()=G;
+    blue()=B;
     return *this;
 }
 
 Color& Color::operator =(const Color& REF)
 {
-    Alpha()=REF.Alpha();
-    Red()=REF.Red();
-    Green()=REF.Green();
-    Blue()=REF.Blue();
+    alpha()=REF.alpha();
+    red()=REF.red();
+    green()=REF.green();
+    blue()=REF.blue();
     return *this;
 }
 
-boolean Color::operator ==(const Color& REF) const{return Alpha()==REF.Alpha() && Red()==REF.Red() && Green()==REF.Green() && Blue()==REF.Blue();}
+BOOLEAN Color::operator ==(const Color& REF) const{return alpha()==REF.alpha() && red()==REF.red() && green()==REF.green() && blue()==REF.blue();}
 
-boolean Color::operator !=(const Color& REF) const{return Alpha()!=REF.Alpha() || Red()!=REF.Red() || Green()!=REF.Green() || Blue()!=REF.Blue();}
+BOOLEAN Color::operator !=(const Color& REF) const{return alpha()!=REF.alpha() || red()!=REF.red() || green()!=REF.green() || blue()!=REF.blue();}
 
 END_SOURCECODE

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef RECTANGLE_HEADER
@@ -15,35 +15,37 @@ BEGIN_WS_NAMESPACE
 
 struct EXPORT Rectangle
 {
-    typedef variable VALUE;
+    typedef VARIABLE VALUE;
     typedef Vector2 VECTOR;
 //    typedef Matrix<Vector2<T_VALUE>, 2, 2> MATRIX;
     
     explicit Rectangle(const VECTOR& VEC_A=VECTOR(), const VECTOR& VEC_B=VECTOR());
-    explicit Rectangle(VALUE V_W, VALUE V_H, const VECTOR& VEC=VECTOR());
+    explicit Rectangle(const VECTOR&, VALUE, VALUE);
+	explicit Rectangle(VALUE, VALUE);
     Rectangle(const Rectangle&);
     ~Rectangle();
 
-    VECTOR& Begin();
-    VECTOR& End();
+	BOOLEAN Contain(VALUE, VALUE) const;
+	BOOLEAN Contain(const VECTOR&) const;
 
-    const VECTOR& Begin() const;
-    const VECTOR& End() const;
+    VECTOR Begin() const;
+    VECTOR End() const;
         
     VALUE Width() const;
     VALUE Height() const;
-    
-    Rectangle& Resize(VALUE, VALUE);
 
     Rectangle& Set(const VECTOR&, const VECTOR&);
-    Rectangle& Set(VALUE, VALUE, const VECTOR& VEC=VECTOR());
+    Rectangle& Set(const VECTOR&, VALUE, VALUE);
+	Rectangle& Set(VALUE, VALUE);
 
     Rectangle& operator=(const Rectangle&);
-    
-    boolean operator==(const Rectangle&) const;
-    boolean operator!=(const Rectangle&) const;
 
-    const size Capacity;
+	/*    
+    BOOLEAN operator==(const Rectangle&) const;
+    BOOLEAN operator!=(const Rectangle&) const;
+	*/
+
+    const SIZE Capacity;
     Vector2 Array[2];
 };
         

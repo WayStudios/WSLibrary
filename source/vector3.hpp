@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef VECTOR3_HEADER
@@ -13,39 +13,39 @@ BEGIN_WS_NAMESPACE
         
 struct EXPORT Vector3
 {
-    typedef variable VALUE;
+    typedef VARIABLE TYPE;
 
-    explicit Vector3(VALUE V_X=0, VALUE V_Y=0, VALUE V_Z=0);
+    explicit Vector3(TYPE V_X = 0, TYPE V_Y = 0, TYPE V_Z = 0);
     Vector3(const Vector3&);
     ~Vector3();
     
-    VALUE& X();
-    VALUE& Y();
-    VALUE& Z();
+    TYPE& x();
+    TYPE& y();
+    TYPE& z();
 
-    const VALUE& X() const;
-    const VALUE& Y() const;
-    const VALUE& Z() const;
+    const TYPE& x() const;
+    const TYPE& y() const;
+    const TYPE& z() const;
     
-    Vector3& Set(VALUE, VALUE, VALUE);
+    Vector3& set(TYPE, TYPE, TYPE);
     
-    VALUE& operator[](size);
+    TYPE& operator [](SIZE);
     
-    const VALUE& operator[](size) const;
+    const TYPE& operator [](SIZE) const;
     
-    Vector3& operator=(const Vector3&);
+    Vector3& operator =(const Vector3&);
     
-    boolean operator==(const Vector3&) const;
-    boolean operator!=(const Vector3&) const;
+    BOOLEAN operator ==(const Vector3&) const;
+    BOOLEAN operator !=(const Vector3&) const;
     
-    boolean operator>(const Vector3&) const;
-    boolean operator<(const Vector3&) const;
+    BOOLEAN operator >(const Vector3&) const;
+    BOOLEAN operator <(const Vector3&) const;
         
-    boolean operator>=(const Vector3&) const;
-    boolean operator<=(const Vector3&) const;
+    BOOLEAN operator >=(const Vector3&) const;
+    BOOLEAN operator <=(const Vector3&) const;
 
-    const size Capacity;
-    VALUE Array[3];
+    const SIZE capacity;
+    TYPE array[3];
 };
 
 typedef Vector3 vec3;

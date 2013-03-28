@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio GUI Library
+ * Way Studios GUI Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef INPUTEVENT_HEADER
@@ -23,7 +23,7 @@ struct EXPORT InputEvent:public GUIEvent
 	InputEvent(InputDevice T=InputEvent::Unknow);
 	virtual ~InputEvent();
 
-	const InputDevice Device;
+	const InputDevice device;
 
 	UNCOPYABLE(InputEvent)
 };

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef QUADRILATERAL_HEADER
@@ -13,40 +13,40 @@ BEGIN_TEMPLATE
         
 BEGIN_WS_NAMESPACE
         
-template <typename T_VECTOR>
+template <typename T>
 struct EXPORT Quadrilateral
 {
-    typedef T_VECTOR VALUE;
+    typedef T TYPE;
 
-    explicit Quadrilateral(const T_VECTOR& VEC_A=T_VECTOR(), const T_VECTOR& VEC_B=T_VECTOR(), const T_VECTOR& VEC_C=T_VECTOR(), const T_VECTOR& VEC_D=T_VECTOR());
-    Quadrilateral(const Quadrilateral<T_VECTOR>&);
+    explicit Quadrilateral(const TYPE& VEC_A = TYPE(), const TYPE& VEC_B = TYPE(), const TYPE& VEC_C = TYPE(), const TYPE& VEC_D = TYPE());
+    Quadrilateral(const Quadrilateral<T>&);
     ~Quadrilateral();
     
-    T_VECTOR& A();
-    T_VECTOR& B();
-    T_VECTOR& C();
-    T_VECTOR& D();
+    TYPE& a();
+    TYPE& b();
+    TYPE& c();
+    TYPE& d();
 
-    const T_VECTOR& A() const;
-    const T_VECTOR& B() const;
-    const T_VECTOR& C() const;
-    const T_VECTOR& D() const;
+    const TYPE& a() const;
+    const TYPE& b() const;
+    const TYPE& c() const;
+    const TYPE& d() const;
 
-    Quadrilateral<T_VECTOR>& Set(const T_VECTOR&, const T_VECTOR&, const T_VECTOR&, const T_VECTOR&);
+    Quadrilateral<T>& set(const TYPE&, const TYPE&, const TYPE&, const TYPE&);
     
-    Quadrilateral<T_VECTOR>& operator=(const Quadrilateral<T_VECTOR>&);
+    Quadrilateral<T>& operator =(const Quadrilateral<T>&);
     
-    boolean operator==(const Quadrilateral<T_VECTOR>&) const;
-    boolean operator!=(const Quadrilateral<T_VECTOR>&) const;
+//    BOOLEAN operator ==(const Quadrilateral<T>&) const;
+//    BOOLEAN operator !=(const Quadrilateral<T>&) const;
     
-    boolean operator>(const Quadrilateral<T_VECTOR>&) const;
-    boolean operator<(const Quadrilateral<T_VECTOR>&) const;
+//    boolean operator>(const Quadrilateral<T_VECTOR>&) const;
+//    boolean operator<(const Quadrilateral<T_VECTOR>&) const;
 
-    boolean operator>=(const Quadrilateral<T_VECTOR>&) const;
-    boolean operator<=(const Quadrilateral<T_VECTOR>&) const;
+//    boolean operator>=(const Quadrilateral<T_VECTOR>&) const;
+//    boolean operator<=(const Quadrilateral<T_VECTOR>&) const;
 
-    const size Capacity;
-    T_VECTOR Array[4];
+    const SIZE capacity;
+    TYPE array[4];
 };
 
 #include <vector2.hpp>

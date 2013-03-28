@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef COLOR_HEADER
@@ -11,34 +11,33 @@ BEGIN_HEADER
         
 BEGIN_WS_NAMESPACE
         
-struct EXPORT Color
-{
-    typedef ubyte VALUE;
+struct EXPORT Color {
+    typedef UBYTE TYPE;
     
-    Color(ubyte R=0, ubyte G=0, ubyte B=0, ubyte A=0);
+    Color(UBYTE R=0, UBYTE G=0, UBYTE B=0, UBYTE A=0);
     Color(const Color&);
     ~Color();
     
-    VALUE& Alpha();
-    VALUE& Red();
-    VALUE& Blue();
-    VALUE& Green();
+    TYPE& alpha();
+    TYPE& red();
+    TYPE& blue();
+    TYPE& green();
 
-    const VALUE& Alpha() const;
-    const VALUE& Red() const;
-    const VALUE& Blue() const;
-    const VALUE& Green() const;
+    const TYPE& alpha() const;
+    const TYPE& red() const;
+    const TYPE& blue() const;
+    const TYPE& green() const;
         
-    Color& Set(ubyte, ubyte, ubyte);
-    Color& Set(ubyte, ubyte, ubyte, ubyte);
+    Color& set(UBYTE, UBYTE, UBYTE);
+    Color& set(UBYTE, UBYTE, UBYTE, UBYTE);
     
-    Color& operator=(const Color&);
+    Color& operator =(const Color&);
     
-    boolean operator==(const Color&) const;
-    boolean operator!=(const Color&) const;
+    BOOLEAN operator==(const Color&) const;
+    BOOLEAN operator!=(const Color&) const;
     
-    const size Capacity;
-    VALUE Array[4];
+    const SIZE capacity;
+    TYPE array[4];
 };
         
 END_WS_NAMESPACE

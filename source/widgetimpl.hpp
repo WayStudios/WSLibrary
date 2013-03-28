@@ -1,72 +1,95 @@
 /*******************************************************************************
- * WayStudio GUI Library
+ * Way Studios GUI Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef WIDGETIMPLEMENTATION_HEADER
-#define	WIDGETIMPLEMENTATION_HEADER
+#define WIDGETIMPLEMENTATION_HEADER
+
 #include <widget.hpp>
+#include <graphicsdeviceimpl.hpp>
 #include <map.hpp>
-#include <rectangle.hpp>
-#include <pixmap.hpp>
 #if defined(WS_X11)
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#elif defined(API_MSWINDOWS) && defined(WS_MSWINDOWS)
-#include <windows.h>
+#elif defined(WS_MSWINDOWS)
+#include <Windows.h>
+#include <CommCtrl.h>
 #endif
 
 BEGIN_HEADER
-        
-BEGIN_WS_NAMESPACE
-        
-struct LOCAL WidgetSpecific
-{
-    explicit WidgetSpecific(Widget*);
-    ~WidgetSpecific();
 
-	static Map<Widget*, WidgetSpecific*> SpecificMap;
-    
-    Widget* H_Widget;
-    Pixmap* H_Pixmap;
-    String STR_Title;
-    boolean B_Window;
-    boolean B_Visible;
-    Rectangle W_Rect;
-    WidgetSpecific* H_Root;
-    WidgetSpecific* H_Child;
-	//List<WidgetSpecific*> LST_Children;
+BEGIN_WS_NAMESPACE
+
+struct EXTERN WidgetSpecific
+{
+	explicit WidgetSpecific(Widget*);
+	~WidgetSpecific();
+
+	static Map<Widget*, WidgetSpecific*> specificMap;
+	static WidgetSpecific* fetch(Widget*);
+
+	Widget* widget;
+//	Widget* H_Parent;
+	Layout* layout;
+	GraphicsDeviceSpecific* graphicsDeviceSpecific;
+	BOOLEAN visiable;
+	BOOLEAN window;
+	INTEGER x;
+	INTEGER y;
+	UINTEGER height;
+	UINTEGER width;
+	UINTEGER maximumHeight;
+	UINTEGER maximumWidth;
+	UINTEGER minimumHeight;
+	UINTEGER minimumWidth;
+	String title;
 #if defined(WS_X11)
-	Window H_Window;
-	integer H_Screen;
+	Window xwindow;
 #elif defined(WS_MSWINDOWS)
-	HWND H_Window;
-	static Map<HWND, WidgetSpecific*> WindowMap;
+	static BOOLEAN registered;
+	HWND hWnd;
+	HWND hCtrl;
+	static Map<HWND, WidgetSpecific*> handleMap;
 #endif
 };
 
 class LOCAL Widget::WidgetImplementation
 {
-    UNCOPYABLE(WidgetImplementation)
 public:
-    WidgetImplementation();
-    ~WidgetImplementation();
+	WidgetImplementation();
+	~WidgetImplementation();
 
-	void Show();
-	void Hide();
-	void Close();
+	void initialize(Widget*);
+	void destroy();
 
-	void Resize(integer, integer);
+	void show();
+	void show(INTEGER X, INTEGER Y, UINTEGER W, UINTEGER H);
+	void hide();
 
-#if defined(WS_X11)
-#elif defined(WS_MSWINDOWS)
-	static LRESULT CALLBACK ProcessWindowEvent(HWND, UINT, WPARAM, LPARAM);
+	Layout* getLayout() const;
+	void setLayout(Layout*);
+
+	INTEGER x() const;
+	INTEGER y() const;
+
+	UINTEGER width() const;
+	UINTEGER height() const;
+
+	void move(INTEGER, INTEGER);
+	void resize(UINTEGER, UINTEGER);
+
+	String getTitle() const;
+	void setTitle(const String&);
+
+#if defined(WS_MSWINDOWS)
+	static LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
+	void renderControl();
 #endif
-    
-    WidgetSpecific* Specific;
+
+	WidgetSpecific* widgetSpecific;
+	GraphicsContext* graphicsContext;
 };
-        
+
 END_WS_NAMESPACE
-        
+
 END_HEADER
 
 #endif

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef PIXMAPIMPLEMENTATION_HEADER
@@ -15,23 +15,22 @@ BEGIN_HEADER
         
 BEGIN_WS_NAMESPACE
         
-class LOCAL Pixmap::PixmapImplementation:public Allocator<uinteger>
-{
+class LOCAL Pixmap::PixmapImplementation:public Allocator<UINTEGER> {
 public:
     PixmapImplementation();
     ~PixmapImplementation();
     
-    void Initial(size, size);
-    void Cleanup();
+    void initialize(SIZE, SIZE);
+    void destroy();
     
 #if !defined(WITHOUT_THREAD)
-    AtomicInteger Ref;
-    Mutex MLock;
+    AtomicInteger reference;
+    Mutex mutex;
 #endif
-    uinteger* Buf;
-    size Width;
-    size Height;
-    size Capacity;
+    UINTEGER* buffer;
+    SIZE width;
+    SIZE height;
+    SIZE capacity;
 };
         
 END_WS_NAMESPACE

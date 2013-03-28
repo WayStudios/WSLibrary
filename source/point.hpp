@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef POINT_HEADER
@@ -14,48 +14,48 @@ BEGIN_TEMPLATE
         
 BEGIN_WS_NAMESPACE
 
-template <typename T_VECTOR>
+template <typename T>
 struct EXPORT Point
 {
-    typedef T_VECTOR VALUE;
+    typedef T TYPE;
     
-    explicit Point(const T_VECTOR& V_VEC=T_VECTOR());
-    Point(const Point<T_VECTOR>&);
+    explicit Point(const TYPE& V_VEC = TYPE());
+    Point(const Point<TYPE>&);
     ~Point();
     
-    T_VECTOR& Vector();
+    TYPE& vector();
     
-    const T_VECTOR& Vector() const;
+    const TYPE& vector() const;
     
-    Point<T_VECTOR>& Set(const T_VECTOR&);
+    Point<TYPE>& set(const TYPE&);
     
-    T_VECTOR& operator[](size);
+    TYPE& operator [](SIZE);
     
-    const T_VECTOR& operator[](size) const;
+    const TYPE& operator [](SIZE) const;
 
-    Point<T_VECTOR>& operator=(const Point<T_VECTOR>&);
+    Point<TYPE>& operator =(const Point<TYPE>&);
 
-    boolean operator==(const Point<T_VECTOR>&) const;
-    boolean operator!=(const Point<T_VECTOR>&) const;
+    BOOLEAN operator ==(const Point<TYPE>&) const;
+    BOOLEAN operator !=(const Point<TYPE>&) const;
 
-    boolean operator>(const Point<T_VECTOR>&) const;
-    boolean operator<(const Point<T_VECTOR>&) const;
+    BOOLEAN operator >(const Point<TYPE>&) const;
+    BOOLEAN operator <(const Point<TYPE>&) const;
 
-    boolean operator>=(const Point<T_VECTOR>&) const;
-    boolean operator<=(const Point<T_VECTOR>&) const;
+    BOOLEAN operator >=(const Point<TYPE>&) const;
+    BOOLEAN operator <=(const Point<TYPE>&) const;
 
-    const size Capacity;
-    T_VECTOR Array[1];
+    const SIZE capacity;
+    TYPE array[1];
 };
 
 //typedef Point<Vector2> Point2;
 
 END_WS_NAMESPACE
-        
+
 END_TEMPLATE
-        
+
 END_HEADER
 
 #include <point_impl.hpp>
-        
+
 #endif

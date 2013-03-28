@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio GUI Library
+ * Way Studios GUI Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef DEFINE_WINDOWSYSTEM_HEADER

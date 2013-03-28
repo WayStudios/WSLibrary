@@ -1,27 +1,34 @@
 /*******************************************************************************
- * WayStudio GUI Library
+ * Way Studios GUI Library
  * Developer:Xu Waycell
 *******************************************************************************/
-#ifndef GUILAYOUT_HEADER
-#define	GUILAYOUT_HEADER
+#ifndef LAYOUT_HEADER
+#define LAYOUT_HEADER
 
-#include <guiwidget.hpp>
+#include <object.hpp>
 
 BEGIN_HEADER
-        
+
 BEGIN_WS_NAMESPACE
-        
-class EXPORT GUILayout:public GUIWidget
-{
-    UNCOPYABLE(GUILayout)
-    DECLARE_IMPLEMENTATION(GUILayout)
+
+class Widget;
+
+class EXPORT Layout:public Object {
+	UNCOPYABLE(Layout)
+	DECLARE_IMPLEMENTATION(Layout)
 public:
-    GUILayout(GUIWidget* PARENT=0);
-    virtual ~GUILayout();
+	explicit Layout(Widget* PARENT=0);
+	virtual ~Layout() =0;
+
+	virtual void adjust() =0;
+
+//	virtual void Clear();
+//	virtual void Append(Widget*) =0;
+//	virtual void Remove(Widget*) =0;
 };
-        
+
 END_WS_NAMESPACE
-        
+
 END_HEADER
 
 #endif

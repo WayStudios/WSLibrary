@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef PIXELBUFFER_HEADER
@@ -18,12 +18,12 @@ class EXPORT PixelBuffer:public StreamBuffer
 public:
     virtual ~PixelBuffer() =0;
         
-    virtual boolean Empty() const =0;
+    virtual BOOLEAN empty() const =0;
 
-    virtual size Width() const =0;
-    virtual size Height() const =0;
+    virtual SIZE width() const =0;
+    virtual SIZE height() const =0;
     
-    virtual size Capacity() const=0;
+    virtual SIZE capacity() const=0;
 protected:
     PixelBuffer();
 };

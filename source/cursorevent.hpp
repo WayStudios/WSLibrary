@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio GUI Library
+ * Way Studios GUI Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef CURSOREVENT_HEADER
@@ -14,11 +14,11 @@ BEGIN_WS_NAMESPACE
 
 struct EXPORT CursorEvent:public InputEvent
 {
-	CursorEvent(integer, integer);
-	CursorEvent(const Vector2&);
+	CursorEvent(INTEGER, INTEGER);
 	~CursorEvent();
 
-	Vector2 Coordinate;
+	const INTEGER x;
+	const INTEGER y;
 
 	UNCOPYABLE(CursorEvent)
 };

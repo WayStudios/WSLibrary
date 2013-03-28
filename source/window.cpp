@@ -3,33 +3,46 @@
  * Developer:Xu Waycell
 *******************************************************************************/
 #include <window.hpp>
+#include <widgetimpl.hpp>
 #include <windowimpl.hpp>
 
 BEGIN_SOURCECODE
-        
-USING_WS_NAMESPACE
-        
-Window::Window(Object* OBJ):Widget(OBJ)
+
+BEGIN_WS_NAMESPACE
+
+Window::WindowImplementation::WindowImplementation():H_Specific(0){}
+
+Window::WindowImplementation::~WindowImplementation(){}
+
+void Window::WindowImplementation::Initial(Widget* P_WIDGET)
 {
-	Map<Widget*, WidgetSpecific*>::Iterator ITER=WidgetSpecific::SpecificMap.Find(static_cast<Widget*>(this));
-	if(ITER!=WidgetSpecific::SpecificMap.End())
-		((*ITER).Second)->B_Window=true;
+	widgetSpecific=WidgetSpecific::Fetch(P_WIDGET);
+	if(!H_Specific)
+		H_Specific=new WidgetSpecific(P_WIDGET);
+	if(H_Specific)
+	{
+#if defined(WS_X11)
+#elif defined(WS_MSWINDOWS)
+		WNDCLASS CLASS_WINDOW;
+		CLASS_WINDOW.lpszClassName = "WS_WINDOW";
+		RegisterClass(&CLASS_WINDOW);
+		widgetSpecific->H_Handle=CreateWindow("WS_WINDOW", NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL);
+#endif
+	}
 }
 
-Window::Window(Widget* PARENT):Widget(PARENT)
+Window::Window(Widget* P_PARENT):Widget(P_PARENT), Implementation(0)
 {
-	Map<Widget*, WidgetSpecific*>::Iterator ITER=WidgetSpecific::SpecificMap.Find(static_cast<Widget*>(this));
-	if(ITER!=WidgetSpecific::SpecificMap.End())
-		((*ITER).Second)->B_Window=true;
+	Implementation = new WindowImplementation;
+	if(Implementation)
+		Implementation->Initial(this);
 }
 
-Window::Window(const String& STR, Widget* PARENT):Widget(STR, PARENT)
-{
-	Map<Widget*, WidgetSpecific*>::Iterator ITER=WidgetSpecific::SpecificMap.Find(static_cast<Widget*>(this));
-	if(ITER!=WidgetSpecific::SpecificMap.End())
-		((*ITER).Second)->B_Window=true;
+Window::~Window() {
+	if(Implementation)
+		delete Implementation;
 }
 
-Window::~Window(){}
-        
+END_WS_NAMESPACE
+
 END_SOURCECODE

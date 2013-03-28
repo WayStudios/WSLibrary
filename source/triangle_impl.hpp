@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef TRIANGLE_IMPLEMENTATION_HEADER
@@ -13,78 +13,90 @@ BEGIN_TEMPLATE
         
 BEGIN_WS_NAMESPACE
         
-template <typename T_VECTOR>
-Triangle<T_VECTOR>::Triangle(const T_VECTOR& VEC_A, const T_VECTOR& VEC_B, const T_VECTOR& VEC_C):Capacity(3)
-{
-    Array[0]=VEC_A;
-    Array[1]=VEC_B;    
-    Array[2]=VEC_C;    
+template <typename T>
+Triangle<T>::Triangle(const typename Triangle<T>::TYPE& VEC_A, const typename Triangle<T>::TYPE& VEC_B, const typename Triangle<T>::TYPE& VEC_C) : capacity(3) {
+    array[0] = VEC_A;
+    array[1] = VEC_B;    
+    array[2] = VEC_C;    
 }
 
-template <typename T_VECTOR>
-Triangle<T_VECTOR>::Triangle(const Triangle<T_VECTOR>& REF):Capacity(3)
-{
-    Array[0]=REF.Array[0];
-    Array[1]=REF.Array[1];    
-    Array[2]=REF.Array[2];    
+template <typename T>
+Triangle<T>::Triangle(const Triangle<T>& REF) : capacity(3) {
+    array[0] = REF.array[0];
+    array[1] = REF.array[1];    
+    array[2] = REF.array[2];    
 }
 
-template <typename T_VECTOR>
-Triangle<T_VECTOR>::~Triangle(){}
+template <typename T>
+Triangle<T>::~Triangle() {}
 
-template <typename T_VECTOR>
-T_VECTOR& Triangle<T_VECTOR>::A(){return Array[0];}
+template <typename T>
+typename Triangle<T>::TYPE& Triangle<T>::a() {
+	return array[0];
+}
 
-template <typename T_VECTOR>
-T_VECTOR& Triangle<T_VECTOR>::B(){return Array[1];}
+template <typename T>
+typename Triangle<T>::TYPE& Triangle<T>::b() {
+	return array[1];
+}
 
-template <typename T_VECTOR>
-T_VECTOR& Triangle<T_VECTOR>::C(){return Array[2];}
+template <typename T>
+typename Triangle<T>::TYPE& Triangle<T>::c() {
+	return array[2];
+}
 
-template <typename T_VECTOR>
-const T_VECTOR& Triangle<T_VECTOR>::A() const{return Array[0];}
+template <typename T>
+const typename Triangle<T>::TYPE& Triangle<T>::a() const {
+	return array[0];
+}
 
-template <typename T_VECTOR>
-const T_VECTOR& Triangle<T_VECTOR>::B() const{return Array[1];}
+template <typename T>
+const typename Triangle<T>::TYPE& Triangle<T>::b() const {
+	return array[1];
+}
 
-template <typename T_VECTOR>
-const T_VECTOR& Triangle<T_VECTOR>::C() const{return Array[2];}
+template <typename T>
+const typename Triangle<T>::TYPE& Triangle<T>::c() const {
+	return array[2];
+}
 
-template <typename T_VECTOR>
-Triangle<T_VECTOR>& Triangle<T_VECTOR>::Set(const T_VECTOR& VEC_A, const T_VECTOR& VEC_B, const T_VECTOR& VEC_C)
-{    
-    A()=VEC_A;
-    B()=VEC_B;    
-    C()=VEC_C;
+template <typename T>
+Triangle<T>& Triangle<T>::set(const typename Triangle<T>::TYPE& VEC_A, const typename Triangle<T>::TYPE& VEC_B, const typename Triangle<T>::TYPE& VEC_C) {
+    a() = VEC_A;
+    b() = VEC_B;    
+    c() = VEC_C;
     return *this;
 }
 
-template <typename T_VECTOR>
-Triangle<T_VECTOR>& Triangle<T_VECTOR>::operator =(const Triangle<T_VECTOR>& REF)
-{
-    A()=REF.A();
-    B()=REF.B();
-    C()=REF.C();
+template <typename T>
+Triangle<T>& Triangle<T>::operator =(const Triangle<T>& REF) {
+    a() = REF.a();
+    b() = REF.b();
+    c() = REF.c();
     return *this;
 }
 
-template <typename T_VECTOR>
-boolean Triangle<T_VECTOR>::operator ==(const Triangle<T_VECTOR>& REF) const{return A()==REF.A() && B()==REF.B() && C()==REF.C();}
+template <typename T>
+BOOLEAN Triangle<T>::operator ==(const Triangle<T>& REF) const{return a()==REF.a() && b()==REF.b() && c()==REF.c();}
 
-template <typename T_VECTOR>
-boolean Triangle<T_VECTOR>::operator !=(const Triangle<T_VECTOR>& REF) const{return A()!=REF.A() || B()!=REF.B() || C()!=REF.C();}
+template <typename T>
+BOOLEAN Triangle<T>::operator !=(const Triangle<T>& REF) const{return a()!=REF.a() || b()!=REF.b() || c()!=REF.c();}
 
-template <typename T_VECTOR>
-boolean Triangle<T_VECTOR>::operator >(const Triangle<T_VECTOR>& REF) const{return A()>REF.A() && B()>REF.B() && C()>REF.C();}
+template <typename T>
+BOOLEAN Triangle<T>::operator >(const Triangle<T>& REF) const{return a()>REF.a() && b()>REF.b() && c()>REF.c();}
 
-template <typename T_VECTOR>
-boolean Triangle<T_VECTOR>::operator <(const Triangle<T_VECTOR>& REF) const{return A()<REF.A() && B()<REF.B() && C()<REF.C();}
+template <typename T>
+BOOLEAN Triangle<T>::operator <(const Triangle<T>& REF) const{return a()<REF.a() && b()<REF.b() && c()<REF.c();}
 
-template <typename T_VECTOR>
-boolean Triangle<T_VECTOR>::operator >=(const Triangle<T_VECTOR>& REF) const{return A()>=REF.A() && B()>=REF.B() && C()>=REF.C();}
+template <typename T>
+BOOLEAN Triangle<T>::operator >=(const Triangle<T>& REF) const {
+	return a() >= REF.a() && b() >= REF.b() && c() >= REF.c();
+}
 
-template <typename T_VECTOR>
-boolean Triangle<T_VECTOR>::operator <=(const Triangle<T_VECTOR>& REF) const{return A()<=REF.A() && B()<=REF.B() && C()<=REF.C();}
+template <typename T>
+BOOLEAN Triangle<T>::operator <=(const Triangle<T>& REF) const {
+	return a() <= REF.a() && b() <= REF.b() && c() <= REF.c();
+}
 
 END_WS_NAMESPACE
         

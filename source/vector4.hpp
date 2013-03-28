@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef VECTOR4_HEADER
@@ -13,41 +13,41 @@ BEGIN_WS_NAMESPACE
         
 struct EXPORT Vector4
 {
-    typedef variable VALUE;
+    typedef VARIABLE TYPE;
 
-    explicit Vector4(variable V_X=0, variable V_Y=0, variable V_Z=0, variable V_W=0);
+    explicit Vector4(TYPE V_X = 0, TYPE V_Y = 0, TYPE V_Z = 0, TYPE V_W = 0);
     Vector4(const Vector4&);
     ~Vector4();
 
-    VALUE& X();
-    VALUE& Y();
-    VALUE& Z();
-    VALUE& W();
+    TYPE& x();
+    TYPE& y();
+    TYPE& z();
+    TYPE& w();
 
-    const VALUE& X() const;
-    const VALUE& Y() const;
-    const VALUE& Z() const;
-    const VALUE& W() const;
+    const TYPE& x() const;
+    const TYPE& y() const;
+    const TYPE& z() const;
+    const TYPE& w() const;
     
-    Vector4& Set(VALUE, VALUE, VALUE, VALUE);
+    Vector4& set(TYPE, TYPE, TYPE, TYPE);
     
-    VALUE& operator[](size);
+    TYPE& operator [](SIZE);
     
-    const VALUE& operator[](size) const;
+    const TYPE& operator [](SIZE) const;
 
-    Vector4& operator=(const Vector4&);
+    Vector4& operator =(const Vector4&);
     
-    boolean operator==(const Vector4&) const;
-    boolean operator!=(const Vector4&) const;
+    BOOLEAN operator ==(const Vector4&) const;
+    BOOLEAN operator !=(const Vector4&) const;
     
-    boolean operator>(const Vector4&) const;
-    boolean operator<(const Vector4&) const;
+    BOOLEAN operator >(const Vector4&) const;
+    BOOLEAN operator <(const Vector4&) const;
         
-    boolean operator>=(const Vector4&) const;
-    boolean operator<=(const Vector4&) const;
+    BOOLEAN operator >=(const Vector4&) const;
+    BOOLEAN operator <=(const Vector4&) const;
     
-    const size Capacity;
-    VALUE Array[4];
+    const SIZE capacity;
+    TYPE array[4];
 };
 
 typedef Vector4 vec4;

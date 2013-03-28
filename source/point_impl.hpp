@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef POINT_IMPLEMENTATION_HEADER
@@ -13,64 +13,80 @@ BEGIN_TEMPLATE
         
 BEGIN_WS_NAMESPACE
         
-template <typename T_VECTOR>
-Point<T_VECTOR>::Point(const T_VECTOR& V_VEC):Capacity(1)
-{
-    Array[0]=V_VEC;
+template <typename T>
+Point<T>::Point(const typename Point<T>::TYPE& V_VEC) : capacity(1) {
+    array[0] = V_VEC;
 }
 
-template <typename T_VECTOR>
-Point<T_VECTOR>::Point(const Point<T_VECTOR>& REF):Capacity(1)
-{
-    Array[0]=REF.Array[0];
+template <typename T>
+Point<T>::Point(const Point<T>& REF) : capacity(1) {
+    array[0] = REF.array[0];
 }
 
-template <typename T_VECTOR>
-Point<T_VECTOR>::~Point(){}
+template <typename T>
+Point<T>::~Point() {}
 
-template <typename T_VECTOR>
-T_VECTOR& Point<T_VECTOR>::Vector(){return Array[0];}
+template <typename T>
+typename Point<T>::TYPE& Point<T>::vector() {
+	return array[0];
+}
 
-template <typename T_VECTOR>
-const T_VECTOR& Point<T_VECTOR>::Vector() const{return Array[0];}
+template <typename T>
+const typename Point<T>::TYPE& Point<T>::vector() const {
+	return array[0];
+}
 
-template <typename T_VECTOR>
-Point<T_VECTOR>& Point<T_VECTOR>::Set(const T_VECTOR& V_VEC)
-{
-    Vector=V_VEC;
+template <typename T>
+Point<T>& Point<T>::set(const typename Point<T>::TYPE& V_VEC) {
+    vector() = V_VEC;
     return *this;
 }
 
-template <typename T_VECTOR>
-T_VECTOR& Point<T_VECTOR>::operator [](size IDX){return Array[IDX];}
+template <typename T>
+typename Point<T>::TYPE& Point<T>::operator [](SIZE IDX) {
+	return array[IDX];
+}
 
-template <typename T_VECTOR>
-const T_VECTOR& Point<T_VECTOR>::operator [](size IDX) const{return Array[IDX];}
+template <typename T>
+const typename Point<T>::TYPE& Point<T>::operator [](SIZE IDX) const {
+	return array[IDX];
+}
 
-template <typename T_VECTOR>
-Point<T_VECTOR>& Point<T_VECTOR>::operator=(const Point<T_VECTOR>& REF)
-{
-    Vector()=REF.Vector();
+template <typename T>
+Point<T>& Point<T>::operator =(const Point<T>& REF) {
+    vector() = REF.vector();
     return *this;
 }
 
-template <typename T_VECTOR>
-boolean Point<T_VECTOR>::operator ==(const Point<T_VECTOR>& REF) const{return Vector()==REF.Vector();}
+template <typename T>
+BOOLEAN Point<T>::operator ==(const Point<T>& REF) const {
+	return vector() == REF.vector();
+}
 
-template <typename T_VECTOR>
-boolean Point<T_VECTOR>::operator !=(const Point<T_VECTOR>& REF) const{return Vector()!=REF.Vector();}
+template <typename T>
+BOOLEAN Point<T>::operator !=(const Point<T>& REF) const {
+	return vector() != REF.vector();
+}
 
-template <typename T_VECTOR>
-boolean Point<T_VECTOR>::operator >(const Point<T_VECTOR>& REF) const{return Vector()>REF.Vector();}
+template <typename T>
+BOOLEAN Point<T>::operator >(const Point<T>& REF) const {
+	return vector() > REF.vector();
+}
 
-template <typename T_VECTOR>
-boolean Point<T_VECTOR>::operator <(const Point<T_VECTOR>& REF) const{return Vector()<REF.Vector();}
+template <typename T>
+BOOLEAN Point<T>::operator <(const Point<T>& REF) const {
+	return vector() < REF.vector();
+}
 
-template <typename T_VECTOR>
-boolean Point<T_VECTOR>::operator >=(const Point<T_VECTOR>& REF) const{return Vector()>=REF.Vector();}
+template <typename T>
+BOOLEAN Point<T>::operator >=(const Point<T>& REF) const {
+	return vector() >= REF.vector();
+}
 
-template <typename T_VECTOR>
-boolean Point<T_VECTOR>::operator <=(const Point<T_VECTOR>& REF) const{return Vector()<=REF.Vector();}
+template <typename T>
+BOOLEAN Point<T>::operator <=(const Point<T>& REF) const {
+	return vector()<=REF.vector();
+}
 
 END_WS_NAMESPACE
         

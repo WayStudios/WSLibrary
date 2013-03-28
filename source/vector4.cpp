@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #include <vector4.hpp>
@@ -8,72 +8,72 @@ BEGIN_SOURCECODE
         
 USING_WS_NAMESPACE
         
-Vector4::Vector4(VALUE V_X, VALUE V_Y, VALUE V_Z, VALUE V_W):Capacity(4)
+Vector4::Vector4(Vector4::TYPE V_X, Vector4::TYPE V_Y, Vector4::TYPE V_Z, Vector4::TYPE V_W):capacity(4)
 {
-    Array[0]=V_X;
-    Array[1]=V_Y;
-    Array[2]=V_Z;
-    Array[3]=V_W;
+    array[0]=V_X;
+    array[1]=V_Y;
+    array[2]=V_Z;
+    array[3]=V_W;
 }
 
-Vector4::Vector4(const Vector4& REF):Capacity(4)
+Vector4::Vector4(const Vector4& REF):capacity(4)
 {
-    Array[0]=REF.Array[0];
-    Array[1]=REF.Array[1];
-    Array[2]=REF.Array[2];
-    Array[3]=REF.Array[3];
+    array[0]=REF.array[0];
+    array[1]=REF.array[1];
+    array[2]=REF.array[2];
+    array[3]=REF.array[3];
 }
 
 Vector4::~Vector4(){}
 
-Vector4::VALUE& Vector4::X(){return Array[0];}
+Vector4::TYPE& Vector4::x(){return array[0];}
 
-Vector4::VALUE& Vector4::Y(){return Array[1];}
+Vector4::TYPE& Vector4::y(){return array[1];}
 
-Vector4::VALUE& Vector4::Z(){return Array[2];}
+Vector4::TYPE& Vector4::z(){return array[2];}
 
-Vector4::VALUE& Vector4::W(){return Array[3];}
+Vector4::TYPE& Vector4::w(){return array[3];}
 
-const Vector4::VALUE& Vector4::X() const{return Array[0];}
+const Vector4::TYPE& Vector4::x() const{return array[0];}
 
-const Vector4::VALUE& Vector4::Y() const{return Array[1];}
+const Vector4::TYPE& Vector4::y() const{return array[1];}
 
-const Vector4::VALUE& Vector4::Z() const{return Array[2];}
+const Vector4::TYPE& Vector4::z() const{return array[2];}
 
-const Vector4::VALUE& Vector4::W() const{return Array[3];}
+const Vector4::TYPE& Vector4::w() const{return array[3];}
 
-Vector4& Vector4::Set(VALUE V_X, VALUE V_Y, VALUE V_Z, VALUE V_W)
+Vector4& Vector4::set(Vector4::TYPE V_X, Vector4::TYPE V_Y, Vector4::TYPE V_Z, Vector4::TYPE V_W)
 {
-    X()=V_X;
-    Y()=V_Y;
-    Z()=V_Z;
-    W()=V_W;
+    x() = V_X;
+    y() = V_Y;
+    z() = V_Z;
+    w() = V_W;
     return *this;
 }
 
-Vector4::VALUE& Vector4::operator [](size IDX){return Array[IDX];}
+Vector4::TYPE& Vector4::operator [](SIZE IDX){return array[IDX];}
 
-const Vector4::VALUE& Vector4::operator [](size IDX) const{return Array[IDX];}
+const Vector4::TYPE& Vector4::operator [](SIZE IDX) const{return array[IDX];}
 
 Vector4& Vector4::operator =(const Vector4& REF)
 {
-    X()=REF.X();
-    Y()=REF.Y();
-    Z()=REF.Z();
-    W()=REF.W();
+    x() = REF.x();
+    y() = REF.y();
+    z() = REF.z();
+    w() = REF.w();
     return *this;
 }
 
-boolean Vector4::operator ==(const Vector4& REF) const{return X()==REF.X() && Y()==REF.Y() && Z()==REF.Z() && W()==REF.W();}
+BOOLEAN Vector4::operator ==(const Vector4& REF) const{return x() == REF.x() && y() == REF.y() && z() == REF.z() && w() == REF.w();}
 
-boolean Vector4::operator !=(const Vector4& REF) const{return X()!=REF.X() || Y()!=REF.Y() || Z()!=REF.Z() || W()!=REF.W();}
+BOOLEAN Vector4::operator !=(const Vector4& REF) const{return x() != REF.x() || y() != REF.y() || z() != REF.z() || w() != REF.w();}
 
-boolean Vector4::operator >(const Vector4& REF) const{return X()>REF.X() && Y()>REF.Y() && Z()>REF.Z() && W()>REF.W();}
+BOOLEAN Vector4::operator >(const Vector4& REF) const{return x() > REF.x() && y() > REF.y() && z() > REF.z() && w() > REF.w();}
 
-boolean Vector4::operator <(const Vector4& REF) const{return X()<REF.X() && Y()<REF.Y() && Z()<REF.Z() && W()<REF.W();}
+BOOLEAN Vector4::operator <(const Vector4& REF) const{return x() < REF.x() && y() < REF.y() && z() < REF.z() && w() < REF.w();}
 
-boolean Vector4::operator >=(const Vector4& REF) const{return X()>=REF.X() && Y()>=REF.Y() && Z()>=REF.Z() && W()>=REF.W();}
+BOOLEAN Vector4::operator >=(const Vector4& REF) const{return x() >= REF.x() && y() >= REF.y() && z() >= REF.z() && w() >= REF.w();}
 
-boolean Vector4::operator <=(const Vector4& REF) const{return X()<=REF.X() && Y()<=REF.Y() && Z()<=REF.Z() && W()<=REF.W();}
+BOOLEAN Vector4::operator <=(const Vector4& REF) const{return x() <= REF.x() && y() <= REF.y() && z() <= REF.z() && w() <= REF.w();}
 
 END_SOURCECODE

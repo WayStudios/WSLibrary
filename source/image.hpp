@@ -1,11 +1,11 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef IMAGE_HEADER
 #define	IMAGE_HEADER
 
-#include <global.hpp>
+#include <graphicsdevice.hpp>
 
 BEGIN_HEADER
         
@@ -14,7 +14,7 @@ BEGIN_WS_NAMESPACE
 //Image class is a set of multi image layers
 //Image may contain ImageLayer class
         
-class EXPORT Image
+class EXPORT Image : public GraphicsDevice
 {
 public:
     class Layer;
@@ -22,11 +22,11 @@ public:
     Image();
     ~Image();
     
-    Layer* Create();
-    Image& Remove(Layer*);
-    Image& Remove(size);
+    Layer* create();
+    Image& remove(Layer*);
+    Image& remove(SIZE);
     
-    Pixmap Pixmap() const;
+    Pixmap pixmap() const;
     
     //ImageLayer* TopLayer();
     //ImageLayer* BottomLayer();

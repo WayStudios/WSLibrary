@@ -1,11 +1,12 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef RENDERER_HEADER
 #define	RENDERER_HEADER
 
-#include <global.hpp>
+#include <object.hpp>
+#include <graphicsdevice.hpp>
 #include <point.hpp>
 #include <line.hpp>
 #include <triangle.hpp>
@@ -15,18 +16,29 @@ BEGIN_HEADER
         
 BEGIN_WS_NAMESPACE
         
-class PixelBuffer;
 class Pixmap;
 
-class EXPORT Renderer
+class EXPORT Renderer:public Object
 {    
     UNCOPYABLE(Renderer)
     DECLARE_IMPLEMENTATION(Renderer)
 public:
-    Renderer(PixelBuffer*);
+    explicit Renderer(GraphicsDevice*, Object* OBJ = 0);
     ~Renderer();
 
+	GraphicsDevice* GetGraphicsDevice() const;
+	void SetGraphicsDevice(GraphicsDevice*);
+
 /*
+	boolean Begin();
+	boolean End();
+
+	void Point();
+	void Line();
+	void Triangle();
+	void Quadrilateral();
+	void Pixmap();
+
     void RenderPoint(const Point2V&);
     void RenderLine(const Line2V&);
     void RenderTriangle(const Triangle2V&);

@@ -2,25 +2,26 @@
  * WayStudio GUI Library
  * Developer:Xu Waycell
 *******************************************************************************/
-#ifndef GUIPUSHBUTTON_HEADER
-#define	GUIPUSHBUTTON_HEADER
+#ifndef PUSHBUTTON_HEADER
+#define PUSHBUTTON_HEADER
 
-#include <guiwidget.hpp>
+#include <widget.hpp>
 
 BEGIN_HEADER
-        
+
 BEGIN_WS_NAMESPACE
-        
-class EXPORT GUIPushButton:public GUIWidget
+
+class EXPORT PushButton:public Widget
 {
-    UNCOPYABLE(GUIPushButton)
+	UNCOPYABLE(PushButton)
+	DECLARE_IMPLEMENTATION(PushButton)
 public:
-    explicit GUIPushButton(GUIWidget* PARENT=0);
-    virtual ~GUIPushButton();
+	explicit PushButton(Widget* PARENT=0);
+	virtual ~PushButton();
 };
-        
+
 END_WS_NAMESPACE
-        
+
 END_HEADER
 
 #endif

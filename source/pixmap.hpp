@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef PIXMAP_HEADER
@@ -15,29 +15,29 @@ class EXPORT Pixmap:public PixelBuffer
 {
     DECLARE_IMPLEMENTATION(Pixmap)
 public:
-    typedef uinteger VALUE;
+    typedef UINTEGER TYPE;
     
-    explicit Pixmap(uinteger W=0, uinteger H=0);
+    explicit Pixmap(UINTEGER W = 0, UINTEGER H = 0);
     Pixmap(const Pixmap&);
     ~Pixmap();
     
-    boolean Empty() const;
+    BOOLEAN empty() const;
     
-    size Width() const;
-    size Height() const;
+    SIZE width() const;
+    SIZE height() const;
     
-    size Capacity() const;
+    SIZE capacity() const;
     
-    VALUE& Seek(size);
-    VALUE& Seek(size, size);
+    TYPE& seek(SIZE);
+    TYPE& seek(SIZE, SIZE);
     
-    const VALUE& Seek(size) const;
-    const VALUE& Seek(size, size) const;
+    const TYPE& seek(SIZE) const;
+    const TYPE& seek(SIZE, SIZE) const;
     
-    const Pixmap& operator=(const Pixmap&);
+    const Pixmap& operator =(const Pixmap&);
     
-    boolean operator==(const Pixmap&) const;
-    boolean operator!=(const Pixmap&) const;
+    BOOLEAN operator ==(const Pixmap&) const;
+    BOOLEAN operator !=(const Pixmap&) const;
 };
         
 END_WS_NAMESPACE

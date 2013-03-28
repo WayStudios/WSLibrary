@@ -6,6 +6,7 @@
 #define	RENDERERIMPLEMENTATION_HEADER
 
 #include <renderer.hpp>
+#include <graphicsdeviceimpl.hpp>
 
 BEGIN_HEADER
         
@@ -16,6 +17,7 @@ struct LOCAL RendererSpecific
     RendererSpecific(Renderer*);
     
     Renderer* H_Renderer;
+	GraphicsDeviceSpecific* SPEC_GraphicsDeviceSpecific;
 };
         
 class LOCAL Renderer::RendererImplementation

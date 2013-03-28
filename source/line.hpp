@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef LINE_HEADER
@@ -13,40 +13,40 @@ BEGIN_TEMPLATE
         
 BEGIN_WS_NAMESPACE
         
-template <typename T_VECTOR>
+template <typename T>
 struct EXPORT Line
 {
-    typedef T_VECTOR VALUE;
+    typedef T TYPE;
     
-    explicit Line(const T_VECTOR& VEC_A=T_VECTOR(), const T_VECTOR& VEC_B=T_VECTOR());
-    Line(const Line<T_VECTOR>&);
+    explicit Line(const TYPE& VEC_A = TYPE(), const TYPE& VEC_B = TYPE());
+    Line(const Line<T>&);
     ~Line();
     
-    T_VECTOR& A();
-    T_VECTOR& B();
+    TYPE& a();
+    TYPE& b();
 
-    const T_VECTOR& A() const;
-    const T_VECTOR& B() const;
+    const TYPE& a() const;
+    const TYPE& b() const;
     
-    Line<T_VECTOR>& Set(const T_VECTOR&, const T_VECTOR&);
+    Line<TYPE>& set(const TYPE&, const TYPE&);
     
-    T_VECTOR& operator[](size);
+    TYPE& operator [](SIZE);
     
-    const T_VECTOR& operator[](size) const;
+    const TYPE& operator [](SIZE) const;
     
-    Line<T_VECTOR>& operator=(const Line<T_VECTOR>&);
+    Line<T>& operator =(const Line<T>&);
     
-    boolean operator==(const Line<T_VECTOR>&) const;
-    boolean operator!=(const Line<T_VECTOR>&) const;
+    BOOLEAN operator ==(const Line<T>&) const;
+    BOOLEAN operator !=(const Line<T>&) const;
 
-    boolean operator>(const Line<T_VECTOR>&) const;
-    boolean operator<(const Line<T_VECTOR>&) const;
+    BOOLEAN operator >(const Line<T>&) const;
+    BOOLEAN operator <(const Line<T>&) const;
 
-    boolean operator>=(const Line<T_VECTOR>&) const;
-    boolean operator<=(const Line<T_VECTOR>&) const;
+    BOOLEAN operator >=(const Line<T>&) const;
+    BOOLEAN operator <=(const Line<T>&) const;
 
-    const size Capacity;
-    T_VECTOR Array[2];
+    const SIZE capacity;
+    TYPE array[2];
 };
 
 END_WS_NAMESPACE

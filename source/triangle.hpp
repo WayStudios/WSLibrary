@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Graphics Library
+ * Way Studios Graphics Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef TRIANGLE_HEADER
@@ -13,38 +13,38 @@ BEGIN_TEMPLATE
         
 BEGIN_WS_NAMESPACE
         
-template <typename T_VECTOR>
+template <typename T>
 struct EXPORT Triangle
 {
-    typedef T_VECTOR VALUE;
+    typedef T TYPE;
 
-    explicit Triangle(const T_VECTOR& VEC_A=T_VECTOR(), const T_VECTOR& VEC_B=T_VECTOR(), const T_VECTOR& VEC_C=T_VECTOR());
-    Triangle(const Triangle<T_VECTOR>&);
+    explicit Triangle(const TYPE& VEC_A = TYPE(), const TYPE& VEC_B = TYPE(), const TYPE& VEC_C = TYPE());
+    Triangle(const Triangle<T>&);
     ~Triangle();
     
-    T_VECTOR& A();
-    T_VECTOR& B();
-    T_VECTOR& C();
+    TYPE& a();
+    TYPE& b();
+    TYPE& c();
 
-    const T_VECTOR& A() const;
-    const T_VECTOR& B() const;
-    const T_VECTOR& C() const;
+    const TYPE& a() const;
+    const TYPE& b() const;
+    const TYPE& c() const;
 
-    Triangle<T_VECTOR>& Set(const T_VECTOR&, const T_VECTOR&, const T_VECTOR&);
+    Triangle<T>& set(const TYPE&, const TYPE&, const TYPE&);
     
-    Triangle<T_VECTOR>& operator=(const Triangle<T_VECTOR>&);
+    Triangle<T>& operator =(const Triangle<T>&);
     
-    boolean operator==(const Triangle<T_VECTOR>&) const;
-    boolean operator!=(const Triangle<T_VECTOR>&) const;
+    BOOLEAN operator ==(const Triangle<T>&) const;
+    BOOLEAN operator !=(const Triangle<T>&) const;
     
-    boolean operator>(const Triangle<T_VECTOR>&) const;
-    boolean operator<(const Triangle<T_VECTOR>&) const;
+    BOOLEAN operator >(const Triangle<T>&) const;
+    BOOLEAN operator <(const Triangle<T>&) const;
 
-    boolean operator>=(const Triangle<T_VECTOR>&) const;
-    boolean operator<=(const Triangle<T_VECTOR>&) const;
+    BOOLEAN operator >=(const Triangle<T>&) const;
+    BOOLEAN operator <=(const Triangle<T>&) const;
 
-    const size Capacity;
-    T_VECTOR Array[3];
+    const SIZE capacity;
+    TYPE array[3];
 };
 
 #include <vector2.hpp>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio GUI Library
+ * Way Studios GUI Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef MOVEEVENT_HEADER
@@ -14,11 +14,11 @@ BEGIN_WS_NAMESPACE
 
 struct EXPORT MoveEvent:public GUIEvent
 {
-	MoveEvent(integer, integer);
+	MoveEvent(INTEGER, INTEGER);
 	MoveEvent(const Vector2&);
 	~MoveEvent();
 
-	const Vector2 Coordinate;
+	const Vector2 coordinate;
 
 	UNCOPYABLE(MoveEvent)
 };

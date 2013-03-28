@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <string.hpp>
@@ -10,177 +10,177 @@ BEGIN_SOURCECODE
 
 USING_WS_NAMESPACE
 
-String::StringImplementation::StringImplementation() : StringB(0), CStringB(0), Length(0) {
+String::StringImplementation::StringImplementation() : string(0), cstring(0), length(0) {
 }
 
 String::StringImplementation::~StringImplementation() {
 }
 
-void String::StringImplementation::ConstructString(const byte* CSTR) {
+void String::StringImplementation::constructString(const BYTE* CSTR) {
     if (CSTR) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        size L_CSTR = 0;
+        SIZE L_CSTR = 0;
         while (CSTR[L_CSTR] != '\0')
             ++L_CSTR;
         if (L_CSTR != 0) {
-            ws_char* N_STR = Allocate(L_CSTR);
-            for (size i = 0; i < L_CSTR; ++i)
-                Construct(N_STR + i, static_cast<ws_char> (CSTR[i]));
-            StringB = N_STR;
-            Length = L_CSTR;
+            String::TYPE* N_STR = allocate(L_CSTR);
+            for (SIZE i = 0; i < L_CSTR; ++i)
+				construct(N_STR + i, static_cast<String::TYPE> (CSTR[i]));
+            string = N_STR;
+            length = L_CSTR;
         }
     }
 }
 
-void String::StringImplementation::ConstructString(const ws_char* P_STR, size L_STR) {
+void String::StringImplementation::constructString(const String::TYPE* P_STR, SIZE L_STR) {
     if (P_STR && L_STR != 0) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        ws_char* N_STR = Allocate(L_STR);
-        for (size i = 0; i < L_STR; ++i)
-            Construct(N_STR + i, *(P_STR + i));
-        StringB = N_STR;
-        Length = L_STR;
+		String::TYPE* N_STR = allocate(L_STR);
+        for (SIZE i = 0; i < L_STR; ++i)
+            construct(N_STR + i, *(P_STR + i));
+        string = N_STR;
+        length = L_STR;
     }
 }
 
-void String::StringImplementation::ConstructCString(const ws_char* P_STR, size L_STR) {
+void String::StringImplementation::constructCString(const String::TYPE* P_STR, SIZE L_STR) {
     if (P_STR && L_STR != 0) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        byte* N_CSTR = reinterpret_cast<byte*> (::operator new(L_STR + 1));
-        for (size i = 0; i < L_STR; ++i)
-            N_CSTR[i] = static_cast<byte> (*(P_STR + i));
+        BYTE* N_CSTR = reinterpret_cast<BYTE*> (::operator new(L_STR + 1));
+        for (SIZE i = 0; i < L_STR; ++i)
+            N_CSTR[i] = static_cast<BYTE> (*(P_STR + i));
         N_CSTR[L_STR] = '\0';
-        CStringB = N_CSTR;
+        cstring = N_CSTR;
     }
 }
 
-String::StringImplementation* String::StringImplementation::Duplicate() {
+String::StringImplementation* String::StringImplementation::duplicate() {
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
     StringImplementation* N_IMPL = new StringImplementation;
     if (N_IMPL) {
-        if (StringB && Length != 0) {
-            N_IMPL->StringB = Allocate(Length);
-            N_IMPL->Length = Length;
-            for (size i = 0; i < Length; ++i)
-                Construct(N_IMPL->StringB + i, *(StringB + i));
+        if (string && length != 0) {
+            N_IMPL->string = allocate(length);
+            N_IMPL->length = length;
+            for (SIZE i = 0; i < length; ++i)
+                construct(N_IMPL->string + i, *(string + i));
         }
     }
     return N_IMPL;
 }
 
-void String::StringImplementation::DestructString() {
-    if (StringB) {
+void String::StringImplementation::destructString() {
+    if (string) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        for (size i = 0; i < Length; ++i)
-            Destruct(StringB + i);
-        Deallocate(StringB);
-        ::operator delete(CStringB);
-        StringB = 0;
-        CStringB = 0;
-        Length = 0;
+        for (SIZE i = 0; i < length; ++i)
+            destruct(string + i);
+        deallocate(string);
+        ::operator delete(cstring);
+        string = 0;
+        cstring = 0;
+        length = 0;
     }
 }
 
-String::String(const byte* CSTR) : Implementation(0) {
-    Implementation = new StringImplementation;
-    if (Implementation) {
-        ++(Implementation->Ref);
-        Implementation->ConstructString(CSTR);
+String::String(const BYTE* CSTR) : implementation(0) {
+    implementation = new StringImplementation;
+    if (implementation) {
+        ++(implementation->ref);
+        implementation->constructString(CSTR);
     }
 }
 
-String::String(const String& REF) : Implementation(REF.Implementation) {
-    if (Implementation)
-        ++(Implementation->Ref);
+String::String(const String& REF) : implementation(REF.implementation) {
+    if (implementation)
+        ++(implementation->ref);
 }
 
 String::~String() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->DestructString();
-            delete Implementation;
+    if (implementation)
+        if (--(implementation->ref) == 0) {
+            implementation->destructString();
+            delete implementation;
         }
 }
 
-size String::Length() const {
-    if (Implementation)
-        return Implementation->Length;
+SIZE String::length() const {
+    if (implementation)
+        return implementation->length;
     return 0;
 }
 
-boolean String::Empty() const {
-    if (Implementation)
-        return !(Implementation->StringB);
+BOOLEAN String::empty() const {
+    if (implementation)
+        return !(implementation->string);
     return true;
 }
 
-void String::Clear() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->DestructString();
-            delete Implementation;
+void String::clear() {
+    if (implementation)
+        if (--(implementation->ref) == 0) {
+            implementation->destructString();
+            delete implementation;
         }
-    Implementation = new StringImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+    implementation = new StringImplementation;
+    if (implementation)
+        ++(implementation->ref);
 }
 
-const byte* String::CString() {
-    if (Implementation) {
-        if (!Empty() && !(Implementation->CStringB))
-            Implementation->ConstructCString(Implementation->StringB, Implementation->Length);
-        return Implementation->CStringB;
+const BYTE* String::cstring() {
+    if (implementation) {
+        if (!empty() && !(implementation->cstring))
+            implementation->constructCString(implementation->string, implementation->length);
+        return implementation->cstring;
     }
     return 0;
 }
 
-String& String::operator =(const byte* CSTR) {
-    Clear();
-    if (Implementation && CSTR)
-        Implementation->ConstructString(CSTR);
+String& String::operator =(const BYTE* CSTR) {
+    clear();
+    if (implementation && CSTR)
+        implementation->constructString(CSTR);
     return *this;
 }
 
-boolean String::operator ==(const byte* CSTR) const {
-    if (Implementation && CSTR) {
+BOOLEAN String::operator ==(const BYTE* CSTR) const {
+    if (implementation && CSTR) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&(Implementation->MLock));
+        ScopedLock<Mutex> SL_MUTEX(&(implementation->mutex));
 #endif
-        size L_CSTR = 0;
+        SIZE L_CSTR = 0;
         while (CSTR[L_CSTR] != '\0')
             ++L_CSTR;
-        if (Implementation->Length != L_CSTR)
+        if (implementation->length != L_CSTR)
             return false;
-        for (size i = 0; i < L_CSTR; ++i)
-            if (*(Implementation->StringB + i) != CSTR[i])
+        for (SIZE i = 0; i < L_CSTR; ++i)
+            if (*(implementation->string + i) != CSTR[i])
                 return false;
         return true;
     }
     return false;
 }
 
-boolean String::operator !=(const byte* CSTR) const {
-    if (Implementation && CSTR) {
+BOOLEAN String::operator !=(const BYTE* CSTR) const {
+    if (implementation && CSTR) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&(Implementation->MLock));
+        ScopedLock<Mutex> SL_MUTEX(&(implementation->mutex));
 #endif
-        size L_CSTR = 0;
+        SIZE L_CSTR = 0;
         while (CSTR[L_CSTR] != '\0')
             ++L_CSTR;
-        if (Implementation->Length != L_CSTR)
+        if (implementation->length != L_CSTR)
             return true;
-        for (size i = 0; i < L_CSTR; ++i)
-            if (*(Implementation->StringB + i) != CSTR[i])
+        for (SIZE i = 0; i < L_CSTR; ++i)
+            if (*(implementation->string + i) != CSTR[i])
                 return true;
         return false;
     }
@@ -188,30 +188,30 @@ boolean String::operator !=(const byte* CSTR) const {
 }
 
 String& String::operator =(const String& REF) {
-    if (Implementation && REF.Implementation) {
-        ++(REF.Implementation->Ref);
-        if (--(Implementation->Ref) == 0) {
-            StringImplementation* OLD = Implementation;
-            Implementation = REF.Implementation;
-            OLD->DestructString();
+    if (implementation && REF.implementation) {
+        ++(REF.implementation->ref);
+        if (--(implementation->ref) == 0) {
+            StringImplementation* OLD = implementation;
+            implementation = REF.implementation;
+            OLD->destructString();
             delete OLD;
         } else
-            Implementation = REF.Implementation;
+            implementation = REF.implementation;
     }
     return *this;
 }
 
-boolean String::operator ==(const String& REF) const {
-    if (Implementation && REF.Implementation) {
-        if (Implementation != REF.Implementation) {
+BOOLEAN String::operator ==(const String& REF) const {
+    if (implementation && REF.implementation) {
+        if (implementation != REF.implementation) {
 #if !defined(WITHOUT_THREAD)
-            ScopedLock<Mutex> SL_Mutex_F(&(REF.Implementation->MLock));
-            ScopedLock<Mutex> SL_Mutex_S(&(Implementation->MLock));
+            ScopedLock<Mutex> SL_MUTEX_F(&(REF.implementation->mutex));
+            ScopedLock<Mutex> SL_MUTEX_S(&(implementation->mutex));
 #endif
-            if (Implementation->Length != REF.Implementation->Length)
+            if (implementation->length != REF.implementation->length)
                 return false;
-            for (size i = 0; i < Implementation->Length; ++i)
-                if (*(Implementation->StringB + i) != *(REF.Implementation->StringB + i))
+            for (SIZE i = 0; i < implementation->length; ++i)
+                if (*(implementation->string + i) != *(REF.implementation->string + i))
                     return false;
         }
         return true;
@@ -219,17 +219,17 @@ boolean String::operator ==(const String& REF) const {
     return false;
 }
 
-boolean String::operator !=(const String& REF) const {
-    if (Implementation && REF.Implementation) {
-        if (Implementation != REF.Implementation) {
+BOOLEAN String::operator !=(const String& REF) const {
+    if (implementation && REF.implementation) {
+        if (implementation != REF.implementation) {
 #if !defined(WITHOUT_THREAD)
-            ScopedLock<Mutex> SL_Mutex_F(&(REF.Implementation->MLock));
-            ScopedLock<Mutex> SL_Mutex_S(&(Implementation->MLock));
+            ScopedLock<Mutex> SL_MUTEX_F(&(REF.implementation->mutex));
+            ScopedLock<Mutex> SL_MUTEX_S(&(implementation->mutex));
 #endif
-            if (Implementation->Length != REF.Implementation->Length)
+            if (implementation->length != REF.implementation->length)
                 return true;
-            for (size i = 0; i < Implementation->Length; ++i)
-                if (*(Implementation->StringB + i) != *(REF.Implementation->StringB + i))
+            for (SIZE i = 0; i < implementation->length; ++i)
+                if (*(implementation->string + i) != *(REF.implementation->string + i))
                     return true;
         }
         return false;

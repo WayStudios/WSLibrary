@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef STREAMIMPLEMENTATION_HEADER
@@ -18,7 +18,7 @@ public:
     explicit StreamImplementation(StreamBuffer*);
     ~StreamImplementation();
 
-    StreamBuffer* Buf;
+    StreamBuffer* buffer;
 };
         
 END_WS_NAMESPACE

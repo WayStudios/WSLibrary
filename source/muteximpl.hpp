@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef MUTEXIMPLEMENTATION_HEADER
@@ -22,21 +22,21 @@ public:
     explicit MutexImplementation(Mutex*);
     ~MutexImplementation();
 
-    void Initial();
-    void Cleanup();
+    void initialize();
+    void destroy();
 
-    boolean Lock();
-    boolean Unlock();
+    BOOLEAN lock();
+    BOOLEAN unlock();
 
-    boolean TryLock();
+    BOOLEAN tryLock();
 
-    Mutex* Handle;
-    boolean Locked;
-    Thread* Owner;
+    Mutex* handle;
+    BOOLEAN locked;
+    Thread* owner;
 #if defined(API_POSIX)
     pthread_mutex_t pthread_mutex;
 #elif defined(API_MSWINDOWS)
-    HANDLE H_MSMutex;
+    HANDLE h_mutex;
 #endif
 };
 

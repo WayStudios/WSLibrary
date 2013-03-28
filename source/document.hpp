@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef DOCUMENT_HEADER
@@ -20,14 +20,14 @@ public:
     Document(const Document&);
     virtual ~Document();
 
-    String Data() const;
+    String data() const;
 
-    String GetLineAt(size) const;
+    String getLineAt(SIZE) const;
 
-    Document& operator=(const Document&);
+    Document& operator =(const Document&);
 
-    boolean operator==(const Document&) const;
-    boolean operator!=(const Document&) const;
+    BOOLEAN operator ==(const Document&) const;
+    BOOLEAN operator !=(const Document&) const;
 };
 
 END_WS_NAMESPACE

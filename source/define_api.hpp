@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef DEFINE_API_HEADER
@@ -14,7 +14,7 @@
 #define API_MACH
 #endif
 #if defined(__APPLE__)
-#define API_MACOSX
+#define API_APPLEMACOSX
 #endif
 #elif defined(_WIN32) || defined(_WIN64) || defined(USING_API_WINDOWS)
 #define API_MSWINDOWS

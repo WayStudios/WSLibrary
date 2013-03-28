@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef SCOPEDLOCK_HEADER
@@ -13,17 +13,19 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename T_LOCK>
+template <typename T>
 class EXPORT ScopedLock {
-    UNCOPYABLE(ScopedLock<T_LOCK>)
-
-    T_LOCK* Lock;
+    UNCOPYABLE(ScopedLock)
 public:
-    explicit ScopedLock(T_LOCK*);
+	typedef T TYPE;
+
+    explicit ScopedLock(TYPE*);
     ~ScopedLock();
 
-    boolean operator==(T_LOCK*) const;
-    boolean operator!=(T_LOCK*) const;
+    BOOLEAN operator ==(TYPE*) const;
+    BOOLEAN operator !=(TYPE*) const;
+private:
+	mutable TYPE* lock;
 };
 
 END_WS_NAMESPACE

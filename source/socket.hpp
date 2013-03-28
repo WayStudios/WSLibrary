@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef SOCKET_HEADER
@@ -18,17 +18,15 @@ BEGIN_WS_NAMESPACE
 class EXPORT Socket : public Object {
     UNCOPYABLE(Socket)
 public:
-    explicit Socket(ws_typeid, Object* OBJ = 0);
+    explicit Socket(TYPEID, Object* OBJ = 0);
     virtual ~Socket() = 0;
 
-    virtual boolean IsConnected() const = 0;
-    virtual boolean IsListening() const = 0;
+    virtual BOOLEAN isConnected() const = 0;
+    virtual BOOLEAN isListening() const = 0;
 
-    virtual void Shutdown() = 0;
+    virtual void shutdown() = 0;
 
-    const ws_typeid Family;
-protected:
-    virtual void ProcessEvent(Event*);
+    const TYPEID family;
 };
 
 END_WS_NAMESPACE

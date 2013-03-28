@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef TIMEEVENT_HEADER
@@ -16,13 +16,13 @@ BEGIN_HEADER
 BEGIN_WS_NAMESPACE
 
 struct EXPORT TimeEvent : public Event {
-    explicit TimeEvent(ws_timeval);
+    explicit TimeEvent(TIMEVAL);
     ~TimeEvent();
 
-    boolean operator==(const TimeEvent&) const;
-    boolean operator!=(const TimeEvent&) const;
+    BOOLEAN operator ==(const TimeEvent&) const;
+    BOOLEAN operator !=(const TimeEvent&) const;
 
-    ws_timeval Interval;
+    TIMEVAL interval;
 
     UNCOPYABLE(TimeEvent)
 };

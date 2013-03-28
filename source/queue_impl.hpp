@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef QUEUE_IMPLEMENTATION_HEADER
@@ -18,84 +18,84 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
-class LOCAL Queue<TYPE>::QueueImplementation : public Allocator< QueueNode<TYPE> > {
+template <typename T>
+class LOCAL Queue<T>::QueueImplementation : public Allocator< QueueNode<Queue<T>::TYPE> > {
     UNCOPYABLE(QueueImplementation)
 public:
     QueueImplementation();
     ~QueueImplementation();
 
-    size Total() const;
-    boolean Empty() const;
-    QueueImplementation* Duplicate();
-    void Clear();
+    SIZE total() const;
+    BOOLEAN empty() const;
+    QueueImplementation* duplicate();
+    void clear();
 
-    void Push(const TYPE&);
-    void Pop();
+    void push(const TYPE&);
+    void pop();
 
-    AtomicInteger Ref;
-    Mutex MLock;
-    QueueNode<TYPE>* QueB;
-    QueueNode<TYPE>* QueE;
+    AtomicInteger reference;
+    Mutex mutex;
+    QueueNode<TYPE>* head;
+    QueueNode<TYPE>* tail;
 };
 
-template <typename TYPE>
-class EXPORT Queue<TYPE>::Iterator {
-    QueueNode<TYPE>* Current;
+template <typename T>
+class EXPORT Queue<T>::Iterator {
+    QueueNode<Queue<T>::TYPE>* current;
 public:
-    explicit Iterator(QueueNode<TYPE>*);
+    explicit Iterator(QueueNode<Queue<T>::TYPE>*);
     Iterator(const Iterator&);
     ~Iterator();
 
-    Iterator& operator=(const Iterator&);
-    Iterator& operator++();
+    Iterator& operator =(const Iterator&);
+    Iterator& operator ++();
 
-    TYPE& operator*();
+    Queue<T>::TYPE& operator *();
 
-    const TYPE& operator*() const;
+    const Queue<T>::TYPE& operator *() const;
 
-    boolean operator==(const Iterator&) const;
-    boolean operator!=(const Iterator&) const;
+    BOOLEAN operator==(const Queue<T>::Iterator&) const;
+    BOOLEAN operator!=(const Queue<T>::Iterator&) const;
 };
 
-template <typename TYPE>
-Queue<TYPE>::QueueImplementation::QueueImplementation() : QueB(0), QueE(0) {
+template <typename T>
+Queue<T>::QueueImplementation::QueueImplementation() : head(0), tail(0) {
 }
 
-template <typename TYPE>
-Queue<TYPE>::QueueImplementation::~QueueImplementation() {
+template <typename T>
+Queue<T>::QueueImplementation::~QueueImplementation() {
 }
 
-template <typename TYPE>
-size Queue<TYPE>::QueueImplementation::Total() const {
-    size RET = 0;
-    if (!Empty()) {
-        ScopedLock<Mutex> SL_Mutex(&MLock);
-        for (QueueNode<TYPE>* P_ITER = QueB; P_ITER != 0; P_ITER = P_ITER->Next)
+template <typename T>
+SIZE Queue<T>::QueueImplementation::total() const {
+    SIZE RET = 0;
+    if (!empty()) {
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
+        for (QueueNode<Queue<T>::TYPE>* P_ITER = head; P_ITER != 0; P_ITER = P_ITER->next)
             ++RET;
     }
     return 0;
 }
 
-template <typename TYPE>
-boolean Queue<TYPE>::QueueImplementation::Empty() const {
-    return !QueB;
+template <typename T>
+BOOLEAN Queue<T>::QueueImplementation::empty() const {
+    return !head;
 }
 
-template <typename TYPE>
-class Queue<TYPE>::QueueImplementation* Queue<TYPE>::QueueImplementation::Duplicate() {
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+template <typename T>
+class Queue<T>::QueueImplementation* Queue<T>::QueueImplementation::duplicate() {
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
     QueueImplementation* N_IMPL = new QueueImplementation;
     if (N_IMPL) {
-        if (!Empty()) {
-            for (QueueNode<TYPE>* P_ITER = QueB; P_ITER != 0; P_ITER = P_ITER->Next) {
-                QueueNode<TYPE>* P_N = Allocate(1);
-                new(P_N) QueueNode<TYPE > (P_ITER->Object, 0);
-                if (N_IMPL->Empty())
-                    N_IMPL->QueE = N_IMPL->QueB = P_N;
+        if (!empty()) {
+            for (QueueNode<Queue<T>::TYPE>* P_ITER = head; P_ITER != 0; P_ITER = P_ITER->next) {
+                QueueNode<Queue<T>::TYPE>* P_N = allocate(1);
+                new(P_N) QueueNode<Queue<T>::TYPE> (P_ITER->object, 0);
+                if (N_IMPL->empty())
+                    N_IMPL->tail = N_IMPL->head = P_N;
                 else {
-                    N_IMPL->QueE->Next = P_N;
-                    N_IMPL->QueE = P_N;
+                    N_IMPL->tail->next = P_N;
+                    N_IMPL->tail = P_N;
                 }
             }
         }
@@ -104,249 +104,249 @@ class Queue<TYPE>::QueueImplementation* Queue<TYPE>::QueueImplementation::Duplic
     return 0;
 }
 
-template <typename TYPE>
-void Queue<TYPE>::QueueImplementation::Clear() {
-    if (!Empty()) {
-        ScopedLock<Mutex> SL_Mutex(&MLock);
-        while (!Empty()) {
-            QueueNode<TYPE>* P_N = QueB->Next;
-            Destruct(QueB);
-            Deallocate(QueB);
-            QueB = P_N;
-            if (Empty())
-                QueE = QueB = 0;
+template <typename T>
+void Queue<T>::QueueImplementation::clear() {
+    if (!empty()) {
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
+        while (!empty()) {
+            QueueNode<Queue<T>::TYPE>* P_N = head->next;
+            destruct(head);
+            deallocate(head);
+            head = P_N;
+            if (empty())
+                tail = head = 0;
         }
     }
 }
 
-template <typename TYPE>
-void Queue<TYPE>::QueueImplementation::Push(const TYPE& REF) {
-    ScopedLock<Mutex> SL_Mutex(&MLock);
-    QueueNode<TYPE>* P_N = Allocator<TYPE>::Allocate(1);
-    new(P_N) QueueNode<TYPE > (REF, 0);
-    if (Empty())
-        QueE = QueB = P_N;
+template <typename T>
+void Queue<T>::QueueImplementation::push(const Queue<T>::TYPE& REF) {
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
+    QueueNode<Queue<T>::TYPE>* P_N = allocate(1);
+    new(P_N) QueueNode<Queue<T>::TYPE>(REF, 0);
+    if (empty())
+        tail = head = P_N;
     else {
-        QueE->Next = P_N;
-        QueE = P_N;
+        tail->next = P_N;
+        tail = P_N;
     }
 }
 
-template <typename TYPE>
-void Queue<TYPE>::QueueImplementation::Pop() {
-    if (!Empty()) {
-        ScopedLock<Mutex> SL_Mutex(&MLock);
-        QueueNode<TYPE>* P_N = QueB->Next;
-        Destruct(QueB);
-        Deallocate(QueB);
-        QueB = P_N;
-        if (Empty())
-            QueE = QueB = 0;
+template <typename T>
+void Queue<T>::QueueImplementation::pop() {
+    if (!empty()) {
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
+        QueueNode<Queue<T>::TYPE>* P_N = head->next;
+        destruct(head);
+        deallocate(head);
+        head = P_N;
+        if (empty())
+            tail = head = 0;
     }
 }
 
-template <typename TYPE>
-Queue<TYPE>::Iterator::Iterator(QueueNode<TYPE>* P_ITER) : Current(P_ITER) {
+template <typename T>
+Queue<T>::Iterator::Iterator(QueueNode<Queue<T>::TYPE>* P_ITER) : current(P_ITER) {
 }
 
-template <typename TYPE>
-Queue<TYPE>::Iterator::Iterator(const Iterator& REF) : Current(REF.Current) {
+template <typename T>
+Queue<T>::Iterator::Iterator(const Queue<T>::Iterator& REF) : current(REF.current) {
 }
 
-template <typename TYPE>
-Queue<TYPE>::Iterator::~Iterator() {
+template <typename T>
+Queue<T>::Iterator::~Iterator() {
 }
 
-template <typename TYPE>
-class Queue<TYPE>::Iterator& Queue<TYPE>::Iterator::operator =(const Iterator& REF) {
-    Current = REF.Current;
+template <typename T>
+class Queue<T>::Iterator& Queue<T>::Iterator::operator =(const Queue<T>::Iterator& REF) {
+    current = REF.current;
     return *this;
 }
 
-template <typename TYPE>
-class Queue<TYPE>::Iterator& Queue<TYPE>::Iterator::operator ++() {
-    Current = Current->Next;
+template <typename T>
+class Queue<T>::Iterator& Queue<T>::Iterator::operator ++() {
+    current = current->next;
     return *this;
 }
 
-template <typename TYPE>
-TYPE& Queue<TYPE>::Iterator::operator *() {
-    return Current->Object;
+template <typename T>
+Queue<T>::TYPE& Queue<TYPE>::Iterator::operator *() {
+    return current->object;
 }
 
-template <typename TYPE>
-const TYPE& Queue<TYPE>::Iterator::operator *() const {
-    return Current->Object;
+template <typename T>
+const Queue<T>::TYPE& Queue<T>::Iterator::operator *() const {
+    return current->object;
 }
 
-template <typename TYPE>
-boolean Queue<TYPE>::Iterator::operator ==(const Iterator& REF) const {
-    return Current == REF.Current;
+template <typename T>
+BOOLEAN Queue<T>::Iterator::operator ==(const Iterator& REF) const {
+    return current == REF.current;
 }
 
-template <typename TYPE>
-boolean Queue<TYPE>::Iterator::operator !=(const Iterator& REF) const {
-    return Current != REF.Current;
+template <typename T>
+BOOLEAN Queue<T>::Iterator::operator !=(const Iterator& REF) const {
+    return current != REF.current;
 }
 
-template <typename TYPE>
-Queue<TYPE>::Queue() : Implementation(0) {
-    Implementation = new QueueImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+template <typename T>
+Queue<T>::Queue() : implementation(0) {
+    implementation = new QueueImplementation;
+    if (implementation)
+        ++(implementation->reference);
 }
 
-template <typename TYPE>
-Queue<TYPE>::Queue(const Queue<TYPE>& REF) : Implementation(REF.Implementation) {
-    if (Implementation)
-        ++(Implementation->Ref);
+template <typename T>
+Queue<T>::Queue(const Queue<T>& REF) : implementation(REF.implementation) {
+    if (implementation)
+        ++(implementation->reference);
 }
 
-template <typename TYPE>
-Queue<TYPE>::~Queue() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Clear();
-            delete Implementation;
+template <typename T>
+Queue<T>::~Queue() {
+    if (implementation)
+        if (--(implementation->reference) == 0) {
+            implementation->clear();
+            delete implementation;
         }
 }
 
-template <typename TYPE>
-size Queue<TYPE>::Total() const {
-    if (Implementation)
-        return Implementation->Total();
+template <typename T>
+SIZE Queue<T>::total() const {
+    if (implementation)
+        return implementation->total();
     return 0;
 }
 
-template <typename TYPE>
-boolean Queue<TYPE>::Empty() const {
-    if (Implementation)
-        return Implementation->Empty();
+template <typename T>
+BOOLEAN Queue<T>::empty() const {
+    if (implementation)
+        return implementation->empty();
     return true;
 }
 
-template <typename TYPE>
-void Queue<TYPE>::Clear() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Clear();
-            delete Implementation;
+template <typename T>
+void Queue<T>::clear() {
+    if (implementation)
+        if (--(implementation->reference) == 0) {
+            implementation->clear();
+            delete implementation;
         }
-    Implementation = new QueueImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+    implementation = new QueueImplementation;
+    if (implementation)
+        ++(implementation->reference);
 }
 
-template <typename TYPE>
-boolean Queue<TYPE>::Exist(const TYPE& REF) const {
-    if (Implementation) {
-        ScopedLock<Mutex> SL_Mutex(&(Implementation->MLock));
-        for (Iterator iter = Begin(); iter != End(); ++iter)
+template <typename T>
+BOOLEAN Queue<T>::exist(const Queue<T>::TYPE& REF) const {
+    if (implementation) {
+        ScopedLock<Mutex> SL_MUTEX(&(implementation->mutex));
+        for (Iterator iter = begin(); iter != end(); ++iter)
             if (*iter == REF)
                 return true;
     }
     return false;
 }
 
-template <typename TYPE>
-TYPE& Queue<TYPE>::Top() {
-    if (Implementation->Ref != 1) {
-        QueueImplementation* N_IMPL = Implementation->Duplicate();
-        --(Implementation->Ref);
-        Implementation = N_IMPL;
-        ++(Implementation->Ref);
+template <typename T>
+Queue<T>::TYPE& Queue<T>::top() {
+    if (implementation->reference != 1) {
+        QueueImplementation* N_IMPL = implementation->duplicate();
+        --(implementation->reference);
+        implementation = N_IMPL;
+        ++(implementation->reference);
     }
-    return Implementation->QueB->Object;
+    return implementation->head->object;
 }
 
-template <typename TYPE>
-const TYPE& Queue<TYPE>::Top() const {
-    return Implementation->QueB->Object;
+template <typename T>
+const Queue<T>::TYPE& Queue<T>::top() const {
+    return implementation->head->object;
 }
 
-template <typename TYPE>
-void Queue<TYPE>::Push(const TYPE& REF) {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            QueueImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void Queue<T>::push(const Queue<T>::TYPE& REF) {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            QueueImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->Push(REF);
+        implementation->push(REF);
     }
 }
 
-template <typename TYPE>
-void Queue<TYPE>::Pop() {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            QueueImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void Queue<T>::pop() {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            QueueImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->Pop();
+        implementation->pop();
     }
 }
 
-template <typename TYPE>
-void Queue<TYPE>::Append(const TYPE& REF) {
-    Push(REF);
+template <typename T>
+void Queue<T>::append(const Queue<T>::TYPE& REF) {
+    push(REF);
 }
 
-template <typename TYPE>
-class Queue<TYPE>::Iterator Queue<TYPE>::Begin() {
-    if (Implementation)
-        return Iterator(Implementation->QueB);
+template <typename T>
+class Queue<T>::Iterator Queue<T>::begin() {
+    if (implementation)
+        return Iterator(implementation->head);
     return Iterator(0);
 }
 
-template <typename TYPE>
-class Queue<TYPE>::Iterator Queue<TYPE>::End() {
+template <typename T>
+class Queue<T>::Iterator Queue<T>::end() {
     return Iterator(0);
 }
 
-template <typename TYPE>
-const class Queue<TYPE>::Iterator Queue<TYPE>::Begin() const {
-    if (Implementation)
-        return Iterator(Implementation->QueB);
+template <typename T>
+const class Queue<T>::Iterator Queue<T>::begin() const {
+    if (implementation)
+        return Iterator(implementation->head);
     return Iterator(0);
 }
 
-template <typename TYPE>
-const class Queue<TYPE>::Iterator Queue<TYPE>::End() const {
+template <typename T>
+const class Queue<T>::Iterator Queue<T>::end() const {
     return Iterator(0);
 }
 
-template <typename TYPE>
-        Queue<TYPE>& Queue<TYPE>::operator =(const Queue<TYPE>& REF) {
-    if (Implementation && REF.Implementation) {
-        ++(REF.Implementation->Ref);
-        if (--(Implementation->Ref) == 0) {
-            QueueImplementation* OLD = Implementation;
-            Implementation = REF.Implementation;
-            OLD->Clear();
+template <typename T>
+Queue<T>& Queue<T>::operator =(const Queue<T>& REF) {
+    if (implementation && REF.implementation) {
+        ++(REF.implementation->reference);
+        if (--(implementation->reference) == 0) {
+            QueueImplementation* OLD = implementation;
+            implementation = REF.implementation;
+            OLD->clear();
             delete OLD;
         } else
-            Implementation = REF.Implementation;
+            implementation = REF.implementation;
     }
     return *this;
 }
 
-template <typename TYPE>
-boolean Queue<TYPE>::operator ==(const Queue<TYPE>& REF) const {
-    if (Implementation && REF.Implementation) {
-        if (Implementation != REF.Implementation) {
-            ScopedLock<Mutex> SL_Mutex_F(&(REF.Implementation->MLock));
-            ScopedLock<Mutex> SL_Mutex_S(&(Implementation->MLock));
-            QueueNode<TYPE>* P_ITER_F = REF.Implementation->QueB;
-            QueueNode<TYPE>* P_ITER_S = Implementation->QueB;
+template <typename T>
+BOOLEAN Queue<T>::operator ==(const Queue<T>& REF) const {
+    if (implementation && REF.implementation) {
+        if (implementation != REF.implementation) {
+            ScopedLock<Mutex> SL_MUTEX_F(&(REF.implementation->mutex));
+            ScopedLock<Mutex> SL_MUTEX_S(&(implementation->mutex));
+            QueueNode<Queue<T>::TYPE>* P_ITER_F = REF.implementation->head;
+            QueueNode<Queue<T>::TYPE>* P_ITER_S = implementation->head;
             while (P_ITER_F && P_ITER_S) {
-                if (P_ITER_F->Object != P_ITER_S->Object)
+                if (P_ITER_F->object != P_ITER_S->object)
                     return false;
-                P_ITER_F = P_ITER_F->Next;
-                P_ITER_S = P_ITER_S->Next;
+                P_ITER_F = P_ITER_F->next;
+                P_ITER_S = P_ITER_S->next;
             }
         }
         return true;
@@ -354,19 +354,19 @@ boolean Queue<TYPE>::operator ==(const Queue<TYPE>& REF) const {
     return false;
 }
 
-template <typename TYPE>
-boolean Queue<TYPE>::operator !=(const Queue<TYPE>& REF) const {
-    if (Implementation && REF.Implementation) {
-        if (Implementation != REF.Implementation) {
-            ScopedLock<Mutex> SL_Mutex_F(&(REF.Implementation->MLock));
-            ScopedLock<Mutex> SL_Mutex_S(&(Implementation->MLock));
-            QueueNode<TYPE>* P_ITER_F = REF.Implementation->QueB;
-            QueueNode<TYPE>* P_ITER_S = Implementation->QueB;
+template <typename T>
+BOOLEAN Queue<T>::operator !=(const Queue<T>& REF) const {
+    if (implementation && REF.implementation) {
+        if (implementation != REF.implementation) {
+            ScopedLock<Mutex> SL_MUTEX_F(&(REF.implementation->mutex));
+            ScopedLock<Mutex> SL_MUTEX_S(&(implementation->mutex));
+            QueueNode<Queue<T>::TYPE>* P_ITER_F = REF.implementation->head;
+            QueueNode<Queue<T>::TYPE>* P_ITER_S = implementation->head;
             while (P_ITER_F && P_ITER_S) {
-                if (P_ITER_F->Object != P_ITER_S->Object)
+                if (P_ITER_F->object != P_ITER_S->object)
                     return true;
-                P_ITER_F = P_ITER_F->Next;
-                P_ITER_S = P_ITER_S->Next;
+                P_ITER_F = P_ITER_F->next;
+                P_ITER_S = P_ITER_S->next;
             }
         }
         return false;

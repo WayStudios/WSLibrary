@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <fiber.hpp>
@@ -13,73 +13,75 @@
 
 BEGIN_SOURCECODE
 
-USING_WS_NAMESPACE
+BEGIN_WS_NAMESPACE
 
-FiberSpecific::FiberSpecific(Fiber* P_F) : H_Fiber(P_F), H_Thread(0) {
+FiberSpecific::FiberSpecific(Fiber* P_F) : fiber(P_F), thread(0) {
 }
 
 FiberSpecific::~FiberSpecific() {
 }
 
-Fiber::FiberImplementation::FiberImplementation(Fiber* P_F) : H_Fiber(P_F), H_Specific(0) {
+Fiber::FiberImplementation::FiberImplementation(Fiber* P_F) : fiber(P_F), fiberSpecific(0) {
 }
 
 Fiber::FiberImplementation::~FiberImplementation() {
 }
 
-void Fiber::FiberImplementation::Execute() {
+void Fiber::FiberImplementation::execute() {
 }
 
-void Fiber::FiberImplementation::Terminate() {
+void Fiber::FiberImplementation::terminate() {
 }
 
-void Fiber::FiberImplementation::Finish() {
+void Fiber::FiberImplementation::finish() {
 }
 
-boolean Fiber::FiberImplementation::Swap(Fiber*) {
+BOOLEAN Fiber::FiberImplementation::swap(Fiber*) {
     return false;
 }
 
-Fiber* Fiber::Current() {
+Fiber* Fiber::current() {
     return 0;
 }
 
-boolean Fiber::Swap(Fiber*, Fiber*) {
+BOOLEAN Fiber::swap(Fiber*, Fiber*) {
     return false;
 }
 
-Fiber::Fiber(Object* OBJ) : Object(OBJ), Implementation(0) {
-    Implementation = new FiberImplementation(this);
-    if (Implementation) {
-        Implementation->H_Specific = new FiberSpecific(this);
-        if (Implementation->H_Specific)
-            Implementation->H_Specific->H_Thread = Thread::Current();
+Fiber::Fiber(Object* OBJ) : Object(OBJ), implementation(0) {
+    implementation = new FiberImplementation(this);
+    if (implementation) {
+        implementation->fiberSpecific = new FiberSpecific(this);
+        if (implementation->fiberSpecific)
+            implementation->fiberSpecific->thread = Thread::current();
     }
 }
 
 Fiber::~Fiber() {
-    if (Implementation)
-        delete Implementation;
+    if (implementation)
+        delete implementation;
 }
 
-Thread* Fiber::Owner() const {
+Thread* Fiber::owner() const {
     return 0;
 }
 
-void Fiber::Execute() {
+void Fiber::execute() {
 }
 
-void Fiber::Terminate() {
+void Fiber::terminate() {
 }
 
-void Fiber::Finish() {
+void Fiber::finish() {
 }
 
-boolean Fiber::Swap(Fiber*) {
+BOOLEAN Fiber::swap(Fiber*) {
     return false;
 }
 
-void Fiber::Routine() {
+void Fiber::routine() {
 }
+
+END_WS_NAMESPACE
 
 END_SOURCECODE

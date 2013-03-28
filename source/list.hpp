@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef LIST_HEADER
@@ -13,55 +13,55 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
+template <typename T>
 class EXPORT List {
     DECLARE_IMPLEMENTATION(List)
 public:
-    typedef TYPE VALUE;
+    typedef T TYPE;
 
     class Iterator;
 
     List();
-    List(const List<TYPE>&);
+    List(const List<T>&);
     ~List();
 
-    size Total() const;
-    boolean Empty() const;
-    void Clear();
+    SIZE total() const;
+    BOOLEAN empty() const;
+    void clear();
 
-    boolean Exist(const TYPE&) const;
+    BOOLEAN exist(const TYPE&) const;
 
-    TYPE& First();
-    TYPE& Last();
-    TYPE& At(size);
+    TYPE& first();
+    TYPE& last();
+    TYPE& at(SIZE);
 
-    const TYPE& First() const;
-    const TYPE& Last() const;
-    const TYPE& At(size) const;
+    const TYPE& first() const;
+    const TYPE& last() const;
+    const TYPE& at(SIZE) const;
 
-    void PushFront(const TYPE&);
-    void PopFront();
+    void pushFront(const TYPE&);
+    void popFront();
 
-    void PushBack(const TYPE&);
-    void PopBack();
+    void pushBack(const TYPE&);
+    void popBack();
 
-    void Append(const TYPE&);
-    void Remove(const TYPE&);
+    void append(const TYPE&);
+    void remove(const TYPE&);
 
-    Iterator Begin();
-    Iterator End();
+    Iterator begin();
+    Iterator end();
 
-    const Iterator Begin() const;
-    const Iterator End() const;
+    const Iterator begin() const;
+    const Iterator end() const;
 
-    List<TYPE>& operator=(const List<TYPE>&);
+    List<T>& operator =(const List<T>&);
 
-    boolean operator==(const List<TYPE>&) const;
-    boolean operator!=(const List<TYPE>&) const;
+    BOOLEAN operator ==(const List<T>&) const;
+    BOOLEAN operator !=(const List<T>&) const;
 
-    TYPE& operator[](size);
+    TYPE& operator[](SIZE);
 
-    const TYPE& operator[](size) const;
+    const TYPE& operator[](SIZE) const;
 };
 
 END_WS_NAMESPACE

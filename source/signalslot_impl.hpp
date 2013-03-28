@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef SIGNALSLOT_IMPLEMENTATION_HEADER
@@ -15,14 +15,14 @@ BEGIN_HEADER
 BEGIN_WS_NAMESPACE
 
 template <typename T_ARG, typename T_SIGNHOST, typename T_SIGN, typename T_SLOTHOST, typename T_SLOT>
-boolean SignalSlot::Connect(T_SIGNHOST* P_SIGNHOST, const String& STR_SIGN, T_SIGN I_SIGN, T_SLOTHOST* P_SLOTHOST, const String& STR_SLOT, T_SLOT I_SLOT) {
+BOOLEAN SignalSlot::connect(T_SIGNHOST* P_SIGNHOST, const String& STR_SIGN, T_SIGN I_SIGN, T_SLOTHOST* P_SLOTHOST, const String& STR_SLOT, T_SLOT I_SLOT) {
     if (P_SIGNHOST && P_SLOTHOST)
-        return Connect(PrepareSignal<T_ARG, T_SIGNHOST, T_SIGN > (P_SIGNHOST, STR_SIGN, I_SIGN), PrepareSlot<T_ARG, T_SLOTHOST, T_SLOT > (P_SLOTHOST, STR_SLOT, I_SLOT));
+        return connect(prepareSignal<T_ARG, T_SIGNHOST, T_SIGN > (P_SIGNHOST, STR_SIGN, I_SIGN), prepareSlot<T_ARG, T_SLOTHOST, T_SLOT > (P_SLOTHOST, STR_SLOT, I_SLOT));
     return false;
 }
 
 template <typename T_ARG, typename T_SIGNHOST, typename T_SIGN>
-Signal* SignalSlot::PrepareSignal(T_SIGNHOST* P_SIGNHOST, const String& STR_SIGN, T_SIGN I_SIGN) {
+Signal* SignalSlot::prepareSignal(T_SIGNHOST* P_SIGNHOST, const String& STR_SIGN, T_SIGN I_SIGN) {
     if (P_SIGNHOST) {
         Signal* P_SIGN = FetchSignal(static_cast<Object*> (P_SIGNHOST), STR_SIGN);
         if (P_SIGN)
@@ -37,7 +37,7 @@ Signal* SignalSlot::PrepareSignal(T_SIGNHOST* P_SIGNHOST, const String& STR_SIGN
 }
 
 template <typename T_ARG, typename T_SLOTHOST, typename T_SLOT>
-Slot* SignalSlot::PrepareSlot(T_SLOTHOST* P_SLOTHOST, const String& STR_SLOT, T_SLOT I_SLOT) {
+Slot* SignalSlot::prepareSlot(T_SLOTHOST* P_SLOTHOST, const String& STR_SLOT, T_SLOT I_SLOT) {
     if (P_SLOTHOST) {
         Slot* P_SLOT = FetchSlot(static_cast<Object*> (P_SLOTHOST), STR_SLOT);
         if (P_SLOT)

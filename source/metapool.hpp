@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef METAPOOL_HEADER
@@ -18,14 +18,14 @@ class EXPORT MetaPool {
     DECLARE_IMPLEMENTATION(MetaPool)
     UNCOPYABLE(MetaPool)
 public:
-    typedef Meta* VALUE;
+    typedef Meta* TYPE;
 
     MetaPool();
     ~MetaPool();
 
-    void Append(Meta*);
-    void Remove(Meta*);
-    Meta* Find(Object*);
+    void append(Meta*);
+    void remove(Meta*);
+    Meta* find(Object*);
 };
 
 END_WS_NAMESPACE

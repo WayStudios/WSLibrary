@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef DOMAINSOCKETIMPLEMENTATION_HEADER
@@ -23,18 +23,18 @@ public:
     DomainSocketImplementation();
     ~DomainSocketImplementation();
 
-    boolean Listen(const String&);
-    boolean Connect(const String&);
-    void Shutdown();
+    BOOLEAN listenAt(const String&);
+    BOOLEAN connectTo(const String&);
+    void shutdown();
 
-    String Path;
-    boolean Connected;
-    boolean Listening;
+    String path;
+    BOOLEAN connected;
+    BOOLEAN listening;
 #if defined(API_POSIX)
     integer fd_socket;
     sockaddr_un socket_address;
 #elif defined(API_MSWINDOWS)
-    HANDLE H_Socket; //NamedPipe
+    HANDLE hSocket; //NamedPipe
 #endif
 };
 

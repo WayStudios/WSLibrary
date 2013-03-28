@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef EVENT_HEADER
@@ -16,10 +16,10 @@ BEGIN_HEADER
 BEGIN_WS_NAMESPACE
 
 struct EXPORT Event {
-    explicit Event(ws_typeid);
+    explicit Event(TYPEID);
     virtual ~Event() = 0;
 
-    const ws_typeid Type;
+    const TYPEID type;
 
     UNCOPYABLE(Event)
 };

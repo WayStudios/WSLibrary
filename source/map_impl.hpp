@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef MAP_IMPLEMENTATION_HEADER
@@ -18,39 +18,39 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename T_KEY, typename T_VALUE>
-class LOCAL Map<T_KEY, T_VALUE>::MapImplementation : public Allocator< ListNode< Pair<T_KEY, T_VALUE> > > {
+template <typename T_KEY, typename T>
+class LOCAL Map<T_KEY, T>::MapImplementation : public Allocator< ListNode<typename Map<T_KEY, T>::PAIR> > {
     UNCOPYABLE(MapImplementation)
 public:
     MapImplementation();
     ~MapImplementation();
 
-    size Total() const;
-    boolean Empty() const;
-    MapImplementation* Duplicate();
-    void Clear();
+    SIZE total() const;
+    BOOLEAN empty() const;
+    MapImplementation* duplicate();
+    void clear();
 
-    boolean Exist(const T_KEY&);
+    BOOLEAN exist(const typename Map<T_KEY, T>::KEY&);
 
-    void Append(const T_KEY&, const T_VALUE&);
+    void append(const typename Map<T_KEY, T>::KEY&, const typename Map<T_KEY, T>::TYPE&);
 
-    void Remove(ListNode< Pair<T_KEY, T_VALUE> >*);
-    void Remove(const T_KEY&);
+    void remove(ListNode<typename Map<T_KEY, T>::PAIR>*);
+    void remove(const typename Map<T_KEY, T>::KEY&);
 
 #if !defined(WITHOUT_THREAD)
-    AtomicInteger Ref;
-    Mutex MLock;
+    mutable AtomicInteger reference;
+    mutable Mutex mutex;
 #endif
-    ListNode< Pair<T_KEY, T_VALUE> >* LstB;
-    ListNode< Pair<T_KEY, T_VALUE> >* LstE;
-    ListNode< Pair<T_KEY, T_VALUE> >* CurBuf;
+    ListNode<typename Map<T_KEY, T>::PAIR>* begin;
+    ListNode<typename Map<T_KEY, T>::PAIR>* end;
+    ListNode<typename Map<T_KEY, T>::PAIR>* current;
 };
 
-template <typename T_KEY, typename T_VALUE>
-class EXPORT Map<T_KEY, T_VALUE>::Iterator {
-    ListNode< Pair<T_KEY, T_VALUE> >* Current;
+template <typename T_KEY, typename T>
+class EXPORT Map<T_KEY, T>::Iterator {
+    ListNode<typename Map<T_KEY, T>::PAIR>* current;
 public:
-    explicit Iterator(ListNode< Pair<T_KEY, T_VALUE> >*);
+    explicit Iterator(ListNode<typename Map<T_KEY, T>::PAIR>*);
     Iterator(const Iterator&);
     ~Iterator();
 
@@ -58,57 +58,57 @@ public:
     Iterator& operator++();
     Iterator& operator--();
 
-    Pair<T_KEY, T_VALUE>& operator*();
+    typename Map<T_KEY, T>::PAIR& operator*();
 
-    const Pair<T_KEY, T_VALUE>& operator*() const;
+    const typename Map<T_KEY, T>::PAIR& operator*() const;
 
-    boolean operator==(const Iterator&) const;
-    boolean operator!=(const Iterator&) const;
+    BOOLEAN operator==(const Iterator&) const;
+    BOOLEAN operator!=(const Iterator&) const;
 };
 
-template <typename T_KEY, typename T_VALUE>
-Map<T_KEY, T_VALUE>::MapImplementation::MapImplementation() : LstB(0), LstE(0), CurBuf(0) {
+template <typename T_KEY, typename T>
+Map<T_KEY, T>::MapImplementation::MapImplementation() : begin(0), end(0), current(0) {
 }
 
-template <typename T_KEY, typename T_VALUE>
-Map<T_KEY, T_VALUE>::MapImplementation::~MapImplementation() {
+template <typename T_KEY, typename T>
+Map<T_KEY, T>::MapImplementation::~MapImplementation() {
 }
 
-template <typename T_KEY, typename T_VALUE>
-size Map<T_KEY, T_VALUE>::MapImplementation::Total() const {
-    size RET = 0;
-    if (!Empty()) {
+template <typename T_KEY, typename T>
+SIZE Map<T_KEY, T>::MapImplementation::total() const {
+    SIZE RET = 0;
+    if (!empty()) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        for (ListNode< Pair<T_KEY, T_VALUE> >* P_ITER = LstB; P_ITER != 0; P_ITER = P_ITER->Next)
+        for (ListNode<Map<T_KEY, T>::PAIR>* P_ITER = begin; P_ITER != 0; P_ITER = P_ITER->next)
             ++RET;
     }
     return RET;
 }
 
-template <typename T_KEY, typename T_VALUE>
-boolean Map<T_KEY, T_VALUE>::MapImplementation::Empty() const {
-    return !LstB;
+template <typename T_KEY, typename T>
+BOOLEAN Map<T_KEY, T>::MapImplementation::empty() const {
+    return !begin;
 }
 
-template <typename T_KEY, typename T_VALUE>
-typename Map<T_KEY, T_VALUE>::MapImplementation* Map<T_KEY, T_VALUE>::MapImplementation::Duplicate() {
+template <typename T_KEY, typename T>
+typename Map<T_KEY, T>::MapImplementation* Map<T_KEY, T>::MapImplementation::duplicate() {
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
     MapImplementation* N_IMPL = new MapImplementation;
     if (N_IMPL) {
-        if (!Empty()) {
-            for (ListNode< Pair<T_KEY, T_VALUE> >* P_ITER = LstB; P_ITER != 0; P_ITER = P_ITER->Next) {
-                ListNode< Pair<T_KEY, T_VALUE> >* P_N = Allocator< ListNode< Pair<T_KEY, T_VALUE> > >::Allocate(1);
-                new(P_N) ListNode< Pair<T_KEY, T_VALUE> >(P_ITER->Object, 0, 0);
-                if (N_IMPL->Empty())
-                    N_IMPL->LstE = N_IMPL->LstB = P_N;
+        if (!empty()) {
+            for (ListNode<Map<T_KEY, T>::PAIR>* P_ITER = begin; P_ITER != 0; P_ITER = P_ITER->next) {
+                ListNode<Map<T_KEY, T>::PAIR>* P_N = allocate(1);
+                new(P_N) ListNode<Map<T_KEY, T>::PAIR>(P_ITER->object, 0, 0);
+                if (N_IMPL->empty())
+                    N_IMPL->end = N_IMPL->begin = P_N;
                 else {
-                    P_N->Prev = N_IMPL->LstE;
-                    N_IMPL->LstE->Next = P_N;
-                    N_IMPL->LstE = P_N;
+                    P_N->prev = N_IMPL->end;
+                    N_IMPL->end->next = P_N;
+                    N_IMPL->end = P_N;
                 }
             }
         }
@@ -117,338 +117,304 @@ typename Map<T_KEY, T_VALUE>::MapImplementation* Map<T_KEY, T_VALUE>::MapImpleme
     return 0;
 }
 
-template <typename T_KEY, typename T_VALUE>
-void Map<T_KEY, T_VALUE>::MapImplementation::Clear() {
-    if (!Empty()) {
+template <typename T_KEY, typename T>
+void Map<T_KEY, T>::MapImplementation::clear() {
+    if (!empty()) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        while (!Empty()) {
-            ListNode< Pair<T_KEY, T_VALUE> >* P_N = LstB->Next;
-            Destruct(LstB);
-            Deallocate(LstB);
-            LstB = P_N;
-            if (Empty())
-                CurBuf = LstE = LstB = 0;
+        while (!empty()) {
+            ListNode<Map<T_KEY, T>::PAIR>* P_N = begin->next;
+            destruct(begin);
+            deallocate(begin);
+            begin = P_N;
+            if (empty())
+                current = end = begin = 0;
         }
     }
 }
 
-template <typename T_KEY, typename T_VALUE>
-boolean Map<T_KEY, T_VALUE>::MapImplementation::Exist(const T_KEY& REF_KEY) {
+template <typename T_KEY, typename T>
+BOOLEAN Map<T_KEY, T>::MapImplementation::exist(const typename Map<T_KEY, T>::KEY& REF_KEY) {
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-    for (ListNode< Pair<T_KEY, T_VALUE> >* P_ITER = LstB; P_ITER != 0; P_ITER = P_ITER->Next)
-        if (P_ITER->Object.First == REF_KEY) {
-            CurBuf = P_ITER;
+    for (ListNode<Map<T_KEY, T>::PAIR>* P_ITER = begin; P_ITER != 0; P_ITER = P_ITER->next)
+        if (P_ITER->object.first == REF_KEY) {
+            current = P_ITER;
             return true;
         }
     return false;
 }
 
-template <typename T_KEY, typename T_VALUE>
-void Map<T_KEY, T_VALUE>::MapImplementation::Append(const T_KEY& REF_KEY, const T_VALUE& REF_VALUE) {
+template <typename T_KEY, typename T>
+void Map<T_KEY, T>::MapImplementation::append(const typename Map<T_KEY, T>::KEY& REF_KEY, const typename Map<T_KEY, T>::TYPE& REF_VALUE) {
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-    ListNode< Pair<T_KEY, T_VALUE> >* P_N = Allocator< ListNode< Pair<T_KEY, T_VALUE> > >::Allocate(1);
-    new(P_N) ListNode< Pair<T_KEY, T_VALUE> >(Pair<T_KEY, T_VALUE > (REF_KEY, REF_VALUE), 0, 0);
-    if (Empty())
-        LstE = LstB = P_N;
+    ListNode<Map<T_KEY, T>::PAIR>* P_N = allocate(1);
+    new(P_N) ListNode<Map<T_KEY, T>::PAIR>(Map<T_KEY, T>::PAIR(REF_KEY, REF_VALUE), 0, 0);
+    if (empty())
+        end = begin = P_N;
     else {
-        P_N->Prev = LstE;
-        LstE->Next = P_N;
-        LstE = P_N;
+        P_N->prev = end;
+        end->next = P_N;
+        end = P_N;
     }
 }
 
-template <typename T_KEY, typename T_VALUE>
-void Map<T_KEY, T_VALUE>::MapImplementation::Remove(ListNode< Pair<T_KEY, T_VALUE> >* P_N) {
-    if (!Empty() && P_N) {
+template <typename T_KEY, typename T>
+void Map<T_KEY, T>::MapImplementation::remove(ListNode<typename Map<T_KEY, T>::PAIR>* P_N) {
+    if (!empty() && P_N) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        if (P_N == LstB)
-            LstB = LstB->Next;
-        if (P_N == LstE)
-            LstE = LstE->Prev;
-        if (P_N->Prev)
-            P_N->Prev->Next = P_N->Next;
-        if (P_N->Next)
-            P_N->Next->Prev = P_N->Prev;
-        CurBuf = 0;
-        Destruct(P_N);
-        Deallocate(P_N);
+        if (P_N == begin)
+            begin = begin->next;
+        if (P_N == end)
+            end = end->prev;
+        if (P_N->prev)
+            P_N->prev->next = P_N->next;
+        if (P_N->next)
+            P_N->next->prev = P_N->prev;
+        current = 0;
+        destruct(P_N);
+        deallocate(P_N);
     }
 }
 
-template <typename T_KEY, typename T_VALUE>
-void Map<T_KEY, T_VALUE>::MapImplementation::Remove(const T_KEY& REF_KEY) {
-    if (!Empty()) {
+template <typename T_KEY, typename T>
+void Map<T_KEY, T>::MapImplementation::remove(const typename Map<T_KEY, T>::KEY& REF_KEY) {
+    if (!empty()) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        for (ListNode< Pair<T_KEY, T_VALUE> >* P_ITER = LstB; P_ITER != 0; P_ITER = P_ITER->Next)
-            if (P_ITER->Object.First == REF_KEY) {
-                if (P_ITER == LstB)
-                    LstB = LstB->Next;
-                if (P_ITER == LstE)
-                    LstE = LstE->Prev;
-                if (P_ITER->Prev)
-                    P_ITER->Prev->Next = P_ITER->Next;
-                if (P_ITER->Next)
-                    P_ITER->Next->Prev = P_ITER->Prev;
-                CurBuf = 0;
-                Destruct(P_ITER);
-                Deallocate(P_ITER);
+        for (ListNode<Map<T_KEY, T>::PAIR>* P_ITER = begin; P_ITER != 0; P_ITER = P_ITER->next)
+            if (P_ITER->object.first == REF_KEY) {
+                if (P_ITER == begin)
+                    begin = begin->next;
+                if (P_ITER == end)
+                    end = end->prev;
+                if (P_ITER->prev)
+                    P_ITER->prev->next = P_ITER->next;
+                if (P_ITER->next)
+                    P_ITER->next->prev = P_ITER->prev;
+                current = 0;
+                destruct(P_ITER);
+                deallocate(P_ITER);
                 return;
             }
     }
 }
 
-template <typename T_KEY, typename T_VALUE>
-Map<T_KEY, T_VALUE>::Iterator::Iterator(ListNode<Pair<T_KEY, T_VALUE> >* P_ITER) : Current(P_ITER) {
+template <typename T_KEY, typename T>
+Map<T_KEY, T>::Iterator::Iterator(ListNode<typename Map<T_KEY, T>::PAIR>* P_ITER) : current(P_ITER) {
 }
 
-template <typename T_KEY, typename T_VALUE>
-Map<T_KEY, T_VALUE>::Iterator::Iterator(const Iterator& REF) : Current(REF.Current) {
+template <typename T_KEY, typename T>
+Map<T_KEY, T>::Iterator::Iterator(const typename Map<T_KEY, T>::Iterator& REF) : current(REF.current) {
 }
 
-template <typename T_KEY, typename T_VALUE>
-Map<T_KEY, T_VALUE>::Iterator::~Iterator() {
+template <typename T_KEY, typename T>
+Map<T_KEY, T>::Iterator::~Iterator() {
 }
 
-template <typename T_KEY, typename T_VALUE>
-        typename Map<T_KEY, T_VALUE>::Iterator& Map<T_KEY, T_VALUE>::Iterator::operator =(const Iterator& REF) {
-    Current = REF.Current;
+template <typename T_KEY, typename T>
+typename Map<T_KEY, T>::Iterator& Map<T_KEY, T>::Iterator::operator =(const typename Map<T_KEY, T>::Iterator& REF) {
+    current = REF.current;
     return *this;
 }
 
-template <typename T_KEY, typename T_VALUE>
-typename Map<T_KEY, T_VALUE>::Iterator& Map<T_KEY, T_VALUE>::Iterator::operator ++() {
-    Current = Current->Next;
+template <typename T_KEY, typename T>
+typename Map<T_KEY, T>::Iterator& Map<T_KEY, T>::Iterator::operator ++() {
+    current = current->next;
     return *this;
 }
 
-template <typename T_KEY, typename T_VALUE>
-typename Map<T_KEY, T_VALUE>::Iterator& Map<T_KEY, T_VALUE>::Iterator::operator --() {
-    Current = Current->Prev;
+template <typename T_KEY, typename T>
+typename Map<T_KEY, T>::Iterator& Map<T_KEY, T>::Iterator::operator --() {
+    current = current->prev;
     return *this;
 }
 
-template <typename T_KEY, typename T_VALUE>
-Pair<T_KEY, T_VALUE>& Map<T_KEY, T_VALUE>::Iterator::operator *() {
-    return Current->Object;
+template <typename T_KEY, typename T>
+typename Map<T_KEY, T>::PAIR& Map<T_KEY, T>::Iterator::operator *() {
+    return current->object;
 }
 
-template <typename T_KEY, typename T_VALUE>
-const Pair<T_KEY, T_VALUE>& Map<T_KEY, T_VALUE>::Iterator::operator *() const {
-    return Current->Object;
+template <typename T_KEY, typename T>
+const typename Map<T_KEY, T>::PAIR& Map<T_KEY, T>::Iterator::operator *() const {
+    return current->object;
 }
 
-template <typename T_KEY, typename T_VALUE>
-boolean Map<T_KEY, T_VALUE>::Iterator::operator ==(const Iterator& REF) const {
-    return Current == REF.Current;
+template <typename T_KEY, typename T>
+BOOLEAN Map<T_KEY, T>::Iterator::operator ==(const typename Map<T_KEY, T>::Iterator& REF) const {
+    return current == REF.current;
 }
 
-template <typename T_KEY, typename T_VALUE>
-boolean Map<T_KEY, T_VALUE>::Iterator::operator !=(const Iterator& REF) const {
-    return Current != REF.Current;
+template <typename T_KEY, typename T>
+BOOLEAN Map<T_KEY, T>::Iterator::operator !=(const typename Map<T_KEY, T>::Iterator& REF) const {
+    return current != REF.current;
 }
 
-template <typename T_KEY, typename T_VALUE>
-Map<T_KEY, T_VALUE>::Map() : Implementation(0) {
-    Implementation = new MapImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+template <typename T_KEY, typename T>
+Map<T_KEY, T>::Map() : implementation(0) {
+    implementation = new MapImplementation;
+    if (implementation)
+        ++(implementation->reference);
 }
 
-template <typename T_KEY, typename T_VALUE>
-Map<T_KEY, T_VALUE>::Map(const Map<T_KEY, T_VALUE>& REF) : Implementation(REF.Implementation) {
-    if (Implementation)
-        ++(Implementation->Ref);
+template <typename T_KEY, typename T>
+Map<T_KEY, T>::Map(const Map<T_KEY, T>& REF) : implementation(REF.implementation) {
+    if (implementation)
+        ++(implementation->reference);
 }
 
-template <typename T_KEY, typename T_VALUE>
-Map<T_KEY, T_VALUE>::~Map() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Clear();
-            delete Implementation;
+template <typename T_KEY, typename T>
+Map<T_KEY, T>::~Map() {
+    if (implementation)
+        if (--(implementation->reference) == 0) {
+            implementation->clear();
+            delete implementation;
         }
 }
 
-template <typename T_KEY, typename T_VALUE>
-size Map<T_KEY, T_VALUE>::Total() const {
-    if (Implementation)
-        return Implementation->Total();
+template <typename T_KEY, typename T>
+SIZE Map<T_KEY, T>::total() const {
+    if (implementation)
+        return implementation->total();
     return 0;
 }
 
-template <typename T_KEY, typename T_VALUE>
-boolean Map<T_KEY, T_VALUE>::Empty() const {
-    if (Implementation)
-        return Implementation->Empty();
+template <typename T_KEY, typename T>
+BOOLEAN Map<T_KEY, T>::empty() const {
+    if (implementation)
+        return implementation->empty();
     return true;
 }
 
-template <typename T_KEY, typename T_VALUE>
-void Map<T_KEY, T_VALUE>::Clear() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Clear();
-            delete Implementation;
+template <typename T_KEY, typename T>
+void Map<T_KEY, T>::clear() {
+    if (implementation)
+        if (--(implementation->reference) == 0) {
+            implementation->clear();
+            delete implementation;
         }
-    Implementation = new MapImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+    implementation = new MapImplementation;
+    if (implementation)
+        ++(implementation->reference);
 }
 
-template <typename T_KEY, typename T_VALUE>
-boolean Map<T_KEY, T_VALUE>::Exist(const T_KEY& REF_KEY) {
-    if (Implementation)
-        return Implementation->Exist(REF_KEY);
+template <typename T_KEY, typename T>
+BOOLEAN Map<T_KEY, T>::exist(const typename Map<T_KEY, T>::KEY& REF_KEY) {
+    if (implementation)
+        return implementation->exist(REF_KEY);
 }
 
-/*
-template <typename T_KEY,typename T_VALUE>
-T_VALUE& Map<T_KEY,T_VALUE>::Find(const T_KEY& REF_KEY)
-{
-    if(Implementation->Ref!=1)
-    {
-        MapImplementation* N_IMPL=Implementation->Duplicate();
-        --(Implementation->Ref);
-        Implementation=N_IMPL;
-        ++(Implementation->Ref);
-    }
-#if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&(Implementation->MLock));
-#endif
-    if(Implementation->CurBuf)
-        if(Implementation->CurBuf->Object.First==REF_KEY)
-            return Implementation->CurBuf->Object.Second;
-    for(Iterator P_ITER=Begin();P_ITER!=End();++P_ITER)
-        if((*P_ITER).First==REF_KEY)
-            return (*P_ITER).Second;
-}
-
-template <typename T_KEY,typename T_VALUE>
-const T_VALUE& Map<T_KEY,T_VALUE>::Find(const T_KEY& REF_KEY) const
-{
-    if(Implementation->CurBuf)
-        if(Implementation->CurBuf->Object.First==REF_KEY)
-            return Implementation->CurBuf->Object.Second;
-    for(Iterator P_ITER=Begin();P_ITER!=End();++P_ITER)
-        if((*P_ITER).First==REF_KEY)
-            return (*P_ITER).Second;
-}
- */
-
-template <typename T_KEY, typename T_VALUE>
-void Map<T_KEY, T_VALUE>::Append(const T_KEY& REF_KEY, const T_VALUE& REF_VALUE) {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            MapImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T_KEY, typename T>
+void Map<T_KEY, T>::append(const typename Map<T_KEY, T>::KEY& REF_KEY, const typename Map<T_KEY, T>::TYPE& REF_VALUE) {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            MapImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->Append(REF_KEY, REF_VALUE);
+        implementation->append(REF_KEY, REF_VALUE);
     }
 }
 
-template <typename T_KEY, typename T_VALUE>
-void Map<T_KEY, T_VALUE>::Remove(const T_KEY& REF_KEY) {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            MapImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T_KEY, typename T>
+void Map<T_KEY, T>::remove(const typename Map<T_KEY, T>::KEY& REF_KEY) {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            MapImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->Remove(REF_KEY);
+        implementation->remove(REF_KEY);
     }
 }
 
-template <typename T_KEY, typename T_VALUE>
-typename Map<T_KEY, T_VALUE>::Iterator Map<T_KEY, T_VALUE>::Begin() {
-    if (Implementation)
-        return Iterator(Implementation->LstB);
-    return End();
+template <typename T_KEY, typename T>
+typename Map<T_KEY, T>::Iterator Map<T_KEY, T>::begin() {
+    if (implementation)
+        return Iterator(implementation->begin);
+    return end();
 }
 
-template <typename T_KEY, typename T_VALUE>
-typename Map<T_KEY, T_VALUE>::Iterator Map<T_KEY, T_VALUE>::End() {
+template <typename T_KEY, typename T>
+typename Map<T_KEY, T>::Iterator Map<T_KEY, T>::end() {
     return Iterator(0);
 }
 
-template <typename T_KEY, typename T_VALUE>
-typename Map<T_KEY, T_VALUE>::Iterator Map<T_KEY, T_VALUE>::Find(const T_KEY& REF_KEY) {
-    if (Implementation->Ref != 1) {
-        MapImplementation* N_IMPL = Implementation->Duplicate();
-        --(Implementation->Ref);
-        Implementation = N_IMPL;
-        ++(Implementation->Ref);
+template <typename T_KEY, typename T>
+typename Map<T_KEY, T>::Iterator Map<T_KEY, T>::find(const typename Map<T_KEY, T>::KEY& REF_KEY) {
+    if (implementation->reference != 1) {
+        MapImplementation* N_IMPL = implementation->duplicate();
+        --(implementation->reference);
+        implementation = N_IMPL;
+        ++(implementation->reference);
     }
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&(Implementation->MLock));
+    ScopedLock<Mutex> SL_MUTEX(&(implementation->mutex));
 #endif
-    if (Implementation->CurBuf)
-        if (Implementation->CurBuf->Object.First == REF_KEY)
-            return Iterator(Implementation->CurBuf);
-    for (Iterator P_ITER = Begin(); P_ITER != End(); ++P_ITER)
-        if ((*P_ITER).First == REF_KEY)
+    if (implementation->current)
+        if (implementation->current->object.first == REF_KEY)
+            return Iterator(implementation->current);
+    for (Iterator P_ITER = begin(); P_ITER != end(); ++P_ITER)
+        if ((*P_ITER).first == REF_KEY)
             return P_ITER;
-    return End();
+    return end();
 }
 
-template <typename T_KEY, typename T_VALUE>
-const typename Map<T_KEY, T_VALUE>::Iterator Map<T_KEY, T_VALUE>::Begin() const {
-    if (Implementation)
-        return Iterator(Implementation->LstB);
-    return End();
+template <typename T_KEY, typename T>
+const typename Map<T_KEY, T>::Iterator Map<T_KEY, T>::begin() const {
+    if (implementation)
+        return Iterator(implementation->begin);
+    return end();
 }
 
-template <typename T_KEY, typename T_VALUE>
-const typename Map<T_KEY, T_VALUE>::Iterator Map<T_KEY, T_VALUE>::End() const {
+template <typename T_KEY, typename T>
+const typename Map<T_KEY, T>::Iterator Map<T_KEY, T>::end() const {
     return Iterator(0);
 }
 
-template <typename T_KEY, typename T_VALUE>
-const typename Map<T_KEY, T_VALUE>::Iterator Map<T_KEY, T_VALUE>::Find(const T_KEY& REF_KEY) const {
-    if (Implementation->CurBuf)
-        if (Implementation->CurBuf->Object.First == REF_KEY)
-            return Iterator(Implementation->CurBuf);
-    for (Iterator P_ITER = Begin(); P_ITER != End(); ++P_ITER)
-        if ((*P_ITER).First == REF_KEY)
-            return (*P_ITER).Second;
-    return End();
+template <typename T_KEY, typename T>
+const typename Map<T_KEY, T>::Iterator Map<T_KEY, T>::find(const typename Map<T_KEY, T>::KEY& REF_KEY) const {
+    if (implementation->current)
+        if (implementation->current->object.first == REF_KEY)
+            return Iterator(implementation->current);
+    for (Iterator P_ITER = begin(); P_ITER != end(); ++P_ITER)
+        if ((*P_ITER).first == REF_KEY)
+            return (*P_ITER).second;
+    return end();
 }
 
-template <typename T_KEY, typename T_VALUE>
-        Map<T_KEY, T_VALUE>& Map<T_KEY, T_VALUE>::operator =(const Map<T_KEY, T_VALUE>& REF) {
-    if (Implementation && REF.Implementation) {
-        ++(REF.Implementation->Ref);
-        if (--(Implementation->Ref) == 0) {
-            MapImplementation* OLD = Implementation;
-            Implementation = REF.Implementation;
-            OLD->Clear();
+template <typename T_KEY, typename T>
+Map<T_KEY, T>& Map<T_KEY, T>::operator =(const Map<T_KEY, T>& REF) {
+    if (implementation && REF.implementation) {
+        ++(REF.implementation->reference);
+        if (--(implementation->reference) == 0) {
+            MapImplementation* OLD = implementation;
+            implementation = REF.implementation;
+            OLD->clear();
             delete OLD;
         } else
-            Implementation = REF.Implementation;
+            implementation = REF.implementation;
     }
     return *this;
 }
 
-template <typename T_KEY, typename T_VALUE>
-T_VALUE& Map<T_KEY, T_VALUE>::operator [](const T_KEY& REF_KEY) {
-    return Find(REF_KEY);
+template <typename T_KEY, typename T>
+typename Map<T_KEY, T>::TYPE& Map<T_KEY, T>::operator [](const typename Map<T_KEY, T>::KEY& REF_KEY) {
+    return find(REF_KEY);
 }
 
-template <typename T_KEY, typename T_VALUE>
-const T_VALUE& Map<T_KEY, T_VALUE>::operator [](const T_KEY& REF_KEY) const {
-    return Find(REF_KEY);
+template <typename T_KEY, typename T>
+const typename Map<T_KEY, T>::TYPE& Map<T_KEY, T>::operator [](const typename Map<T_KEY, T>::KEY& REF_KEY) const {
+    return find(REF_KEY);
 }
 
 END_WS_NAMESPACE

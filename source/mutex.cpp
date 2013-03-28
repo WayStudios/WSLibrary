@@ -1,39 +1,39 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  * todo:WS_Mutex only effect on WS_Thread
  *******************************************************************************/
 #include <mutex.hpp>
 #include <muteximpl.hpp>
-//#include <ws_threadimpl.hpp>
+//#include <threadimpl.hpp>
 
 BEGIN_SOURCECODE
 
 BEGIN_WS_NAMESPACE
 
-Mutex::MutexImplementation::MutexImplementation(Mutex* P) : Handle(P), Locked(false), Owner(0) {
+Mutex::MutexImplementation::MutexImplementation(Mutex* P) : handle(P), locked(false), owner(0) {
 }
 
 Mutex::MutexImplementation::~MutexImplementation() {
 }
 
-void Mutex::MutexImplementation::Initial() {
+void Mutex::MutexImplementation::initialize() {
 #if defined(API_POSIX)
     pthread_mutex_init(&pthread_mutex, 0);
 #elif defined(API_MSWINDOWS)
-    H_MSMutex = CreateMutex(NULL, false, NULL);
+    h_mutex = CreateMutex(NULL, false, NULL);
 #endif
 }
 
-void Mutex::MutexImplementation::Cleanup() {
+void Mutex::MutexImplementation::destroy() {
 #if defined(API_POSIX)
     pthread_mutex_destroy(&pthread_mutex);
 #elif defined(API_MSWINDOWS)
-    CloseHandle(H_MSMutex);
+    CloseHandle(h_mutex);
 #endif
 }
 
-boolean Mutex::MutexImplementation::Lock() {
+BOOLEAN Mutex::MutexImplementation::lock() {
 #if defined(API_POSIX)
     if (pthread_mutex_lock(&pthread_mutex) == 0) {
         Locked = true;
@@ -41,8 +41,8 @@ boolean Mutex::MutexImplementation::Lock() {
     } else
         return false;
 #elif defined(API_MSWINDOWS)
-    if (WaitForSingleObject(H_MSMutex, INFINITE) == WAIT_OBJECT_0) {
-        Locked = true;
+    if (WaitForSingleObject(h_mutex, INFINITE) == WAIT_OBJECT_0) {
+        locked = true;
         return true;
     } else
         return false;
@@ -63,7 +63,7 @@ boolean Mutex::MutexImplementation::Lock() {
     return false;
 }
 
-boolean Mutex::MutexImplementation::Unlock() {
+BOOLEAN Mutex::MutexImplementation::unlock() {
 #if defined(API_POSIX)
     if (pthread_mutex_unlock(&pthread_mutex) == 0) {
         Locked = false;
@@ -71,8 +71,8 @@ boolean Mutex::MutexImplementation::Unlock() {
     } else
         return false;
 #elif defined(API_MSWINDOWS)
-    if (ReleaseMutex(H_MSMutex)) {
-        Locked = false;
+    if (ReleaseMutex(h_mutex)) {
+        locked = false;
         return true;
     } else
         return false;
@@ -93,7 +93,7 @@ boolean Mutex::MutexImplementation::Unlock() {
     return false;
 }
 
-boolean Mutex::MutexImplementation::TryLock() {
+BOOLEAN Mutex::MutexImplementation::tryLock() {
 #if defined(API_POSIX)
     if (pthread_mutex_trylock(&pthread_mutex) == 0) {
         Locked = true;
@@ -101,8 +101,8 @@ boolean Mutex::MutexImplementation::TryLock() {
     } else
         return false;
 #elif defined(API_MSWINDOWS)
-    if (WaitForSingleObject(H_MSMutex, 0) == WAIT_OBJECT_0) {
-        Locked = true;
+    if (WaitForSingleObject(h_mutex, 0) == WAIT_OBJECT_0) {
+        locked = true;
         return true;
     } else
         return false;
@@ -123,47 +123,47 @@ boolean Mutex::MutexImplementation::TryLock() {
     return false;
 }
 
-Mutex::Mutex() : Implementation(0) {
-    Implementation = new MutexImplementation(this);
-    if (Implementation)
-        Implementation->Initial();
+Mutex::Mutex() : implementation(0) {
+    implementation = new MutexImplementation(this);
+    if (implementation)
+        implementation->initialize();
 }
 
 Mutex::~Mutex() {
-    Unlock();
-    if (Implementation) {
-        Implementation->Cleanup();
-        delete Implementation;
+    unlock();
+    if (implementation) {
+        implementation->destroy();
+        delete implementation;
     }
 }
 
-Thread* Mutex::Owner() const {
-    if (Implementation)
-        return Implementation->Owner;
+Thread* Mutex::owner() const {
+    if (implementation)
+        return implementation->owner;
     return 0;
 }
 
-boolean Mutex::IsLocked() const {
-    if (Implementation)
-        return Implementation->Locked;
+BOOLEAN Mutex::isLocked() const {
+    if (implementation)
+        return implementation->locked;
     return false;
 }
 
-boolean Mutex::Lock() {
-    if (Implementation)
-        return Implementation->Lock();
+BOOLEAN Mutex::lock() {
+    if (implementation)
+        return implementation->lock();
     return false;
 }
 
-boolean Mutex::Unlock() {
-    if (Implementation)
-        return Implementation->Unlock();
+BOOLEAN Mutex::unlock() {
+    if (implementation)
+        return implementation->unlock();
     return false;
 }
 
-boolean Mutex::TryLock() {
-    if (Implementation)
-        return Implementation->TryLock();
+BOOLEAN Mutex::tryLock() {
+    if (implementation)
+        return implementation->tryLock();
     return false;
 }
 

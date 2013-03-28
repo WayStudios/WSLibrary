@@ -6,11 +6,11 @@
 #define	DEFINE_COMPILER_HEADER
 
 #if defined(WSC)
-#define C_WSC
+#define COMPILER_WSC
 #elif defined(__GNUC__)
-#define C_GNUC
+#define COMPILER_GNUC
 #elif defined(_MSC_VER)
-#define C_MSC
+#define COMPILER_MSC
 #endif
 
 #endif

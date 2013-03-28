@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <eventloop.hpp>
@@ -15,11 +15,12 @@ BEGIN_SOURCECODE
 
 BEGIN_WS_NAMESPACE
 
-EventLoopSpecific::EventLoopSpecific(EventLoop* P_EL) : H_EventLoop(P_EL), H_EventQueue(0), H_EventDispatcher(0), B_Waiting(false)
+EventLoopSpecific::EventLoopSpecific(EventLoop* P_EL) : eventLoop(P_EL)
+													  , eventQueue(0)
+													  , eventDispatcher(0)
+													  , waiting(false)
 #if defined(API_POSIX)
-, B_Pipe(false)
-#elif defined(API_MSWINDOWS)
-, B_MSEvent(false)
+													  , B_Pipe(false)
 #endif
 {
 }
@@ -27,14 +28,14 @@ EventLoopSpecific::EventLoopSpecific(EventLoop* P_EL) : H_EventLoop(P_EL), H_Eve
 EventLoopSpecific::~EventLoopSpecific() {
 }
 
-EventLoop::EventLoopImplementation::EventLoopImplementation() : B_EventLoop(false), H_Specific(0) {
+EventLoop::EventLoopImplementation::EventLoopImplementation() : active(false), eventLoopSpecific(0) {
 }
 
 EventLoop::EventLoopImplementation::~EventLoopImplementation() {
 }
 
-ws_timeval EventLoop::EventLoopImplementation::Interval() {
-    ws_timeval RET = 0;
+TIMEVAL EventLoop::EventLoopImplementation::interval() {
+    TIMEVAL RET = 0;
     ThreadSpecific* P_THSPEC = 0;
 #if defined(API_POSIX)
     P_THSPEC = reinterpret_cast<ThreadSpecific*> (pthread_getspecific(thread_pthread_key));
@@ -42,17 +43,17 @@ ws_timeval EventLoop::EventLoopImplementation::Interval() {
     P_THSPEC = reinterpret_cast<ThreadSpecific*> (TlsGetValue(thread_tls()));
 #endif
     if (P_THSPEC) {
-        if (!P_THSPEC->LST_TimerSpecific.Empty()) {
-            ws_timeval NOW = Time::Now().Value;
+        if (!P_THSPEC->timerSpecificList.empty()) {
+            TIMEVAL NOW = Time::now().value;
             RET = NOW;
-            for (List<TimerSpecific*>::Iterator ITER = P_THSPEC->LST_TimerSpecific.Begin(); ITER != P_THSPEC->LST_TimerSpecific.End(); ++ITER) {
-                if ((*ITER)->Begin == (*ITER)->End) {
-                    if ((NOW - (*ITER)->Begin) >= (*ITER)->Interval) {
-                        (*ITER)->End = NOW;
-                        H_Specific->H_EventQueue->Append(static_cast<Event*> (new TimeEvent(NOW - (*ITER)->Begin)), (*ITER)->H_Timer, (*ITER)->H_Timer);
+            for (List<TimerSpecific*>::Iterator ITER = P_THSPEC->timerSpecificList.begin(); ITER != P_THSPEC->timerSpecificList.end(); ++ITER) {
+                if ((*ITER)->begin == (*ITER)->end) {
+                    if ((NOW - (*ITER)->begin) >= (*ITER)->interval) {
+                        (*ITER)->end = NOW;
+                        eventLoopSpecific->eventQueue->append(static_cast<Event*> (new TimeEvent(NOW - (*ITER)->begin)), (*ITER)->timer, (*ITER)->timer);
                     } else
-                        if (RET > ((*ITER)->Interval - (NOW - (*ITER)->Begin)))
-                        RET = ((*ITER)->Interval - (NOW - (*ITER)->Begin));
+                        if (RET > ((*ITER)->interval - (NOW - (*ITER)->begin)))
+                        RET = ((*ITER)->interval - (NOW - (*ITER)->begin));
                 }
             }
         }
@@ -60,9 +61,9 @@ ws_timeval EventLoop::EventLoopImplementation::Interval() {
     return RET;
 }
 
-void EventLoop::EventLoopImplementation::Wait(ws_timeval TV_TIMEOUT) {
-    if (H_Specific)
-        if (!(H_Specific->B_Waiting)) {
+void EventLoop::EventLoopImplementation::wait(TIMEVAL TV_TIMEOUT) {
+    if (eventLoopSpecific)
+        if (!(eventLoopSpecific->waiting)) {
 #if defined(API_POSIX)
             if (H_Specific->B_Pipe) {
                 timeval timeout;
@@ -85,32 +86,32 @@ void EventLoop::EventLoopImplementation::Wait(ws_timeval TV_TIMEOUT) {
                 }
             }
 #elif defined(API_MSWINDOWS)
-            if (H_Specific->B_MSEvent) {
-                H_Specific->B_Waiting = true;
+            if (eventLoopSpecific->hEvent) {
+                eventLoopSpecific->waiting = true;
                 if (TV_TIMEOUT != 0)
-                    MsgWaitForMultipleObjects(1, &(H_Specific->H_MSEvent), false, TV_TIMEOUT, QS_ALLEVENTS);
+                    MsgWaitForMultipleObjects(1, &(eventLoopSpecific->hEvent), false, TV_TIMEOUT, QS_ALLEVENTS);
                 else
-                    MsgWaitForMultipleObjects(1, &(H_Specific->H_MSEvent), false, INFINITE, QS_ALLEVENTS);
-                ResetMSEvent();
+                    MsgWaitForMultipleObjects(1, &(eventLoopSpecific->hEvent), false, INFINITE, QS_ALLEVENTS);
+                resetMSEvent();
                 MSG msg;
-                if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+                while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) != 0) {
                     TranslateMessage(&msg);
                     DispatchMessage(&msg);
                 }
-                H_Specific->B_Waiting = false;
+                eventLoopSpecific->waiting = false;
             }
 #endif
         }
 }
 
-void EventLoop::EventLoopImplementation::Awake() {
-    if (H_Specific)
-        if (H_Specific->B_Waiting) {
+void EventLoop::EventLoopImplementation::awake() {
+    if (eventLoopSpecific)
+        if (eventLoopSpecific->waiting) {
 #if defined(API_POSIX)
             byte MSG = 0xff;
             WritePipe(&MSG, 1);
 #elif defined(API_MSWINDOWS)
-            SetMSEvent();
+            setMSEvent();
 #endif
         }
 }
@@ -153,70 +154,81 @@ void EventLoop::EventLoopImplementation::WritePipe(void* P_BYTE, size SZ) {
 }
 #elif defined(API_MSWINDOWS)
 
-void EventLoop::EventLoopImplementation::OpenMSEvent() {
-    if (H_Specific)
-        if (!(H_Specific->B_MSEvent)) {
-            H_Specific->H_MSEvent = CreateEvent(0, true, false, 0);
-            if (H_Specific->H_MSEvent)
-                H_Specific->B_MSEvent = true;
+void EventLoop::EventLoopImplementation::openMSEvent() {
+    if (eventLoopSpecific)
+        if (!(eventLoopSpecific->hEvent)) {
+            eventLoopSpecific->hEvent = CreateEvent(0, true, false, 0);
+//            if (eventLoopSpecific->msEvent)
+//                eventLoopSpecific->B_MSEvent = true;
         }
 }
 
-void EventLoop::EventLoopImplementation::CloseMSEvent() {
-    if (H_Specific)
-        if (H_Specific->B_MSEvent) {
-            CloseHandle(H_Specific->H_MSEvent);
-            H_Specific->B_MSEvent = false;
+void EventLoop::EventLoopImplementation::closeMSEvent() {
+    if (eventLoopSpecific)
+        if (eventLoopSpecific->hEvent) {
+            CloseHandle(eventLoopSpecific->hEvent);
+            eventLoopSpecific->hEvent = NULL;
         }
 }
 
-void EventLoop::EventLoopImplementation::SetMSEvent() {
-    if (H_Specific)
-        if (H_Specific->B_MSEvent)
-            SetEvent(H_Specific->H_MSEvent);
+void EventLoop::EventLoopImplementation::setMSEvent() {
+    if (eventLoopSpecific)
+        if (eventLoopSpecific->hEvent)
+            SetEvent(eventLoopSpecific->hEvent);
 }
 
-void EventLoop::EventLoopImplementation::ResetMSEvent() {
-    if (H_Specific)
-        if (H_Specific->B_MSEvent)
-            ResetEvent(H_Specific->H_MSEvent);
+void EventLoop::EventLoopImplementation::resetMSEvent() {
+    if (eventLoopSpecific)
+        if (eventLoopSpecific->hEvent)
+            ResetEvent(eventLoopSpecific->hEvent);
 }
 #endif
 
-EventLoop::EventLoop(EventQueue* P_EQ, EventDispatcher* P_ED, Object* OBJ) : Object(OBJ), Implementation(0) {
-    Implementation = new EventLoopImplementation;
-    if (Implementation) {
-        Implementation->H_Specific = new EventLoopSpecific(this);
-        Implementation->H_Specific->H_EventQueue = P_EQ;
-        Implementation->H_Specific->H_EventDispatcher = P_ED;
+EventLoop::EventLoop(EventQueue* P_EQ, EventDispatcher* P_ED, Object* OBJ) : Object(OBJ), implementation(0) {
+    implementation = new EventLoopImplementation;
+    if (implementation) {
+        implementation->eventLoopSpecific = new EventLoopSpecific(this);
+        implementation->eventLoopSpecific->eventQueue = P_EQ;
+        implementation->eventLoopSpecific->eventDispatcher = P_ED;
     }
 }
 
 EventLoop::~EventLoop() {
-    if (Implementation) {
-        if (Implementation->H_Specific)
-            delete Implementation->H_Specific;
-        delete Implementation;
+    if (implementation) {
+        if (implementation->eventLoopSpecific)
+            delete implementation->eventLoopSpecific;
+        delete implementation;
     }
 }
 
-boolean EventLoop::PostEvent(Event* E, Object* R, Object* S) {
-    EventQueue* P_EQ = GetEventQueue();
+BOOLEAN EventLoop::postEvent(Event* E, Object* R, Object* S) {
+    EventQueue* P_EQ = getEventQueue();
     if (P_EQ) {
-        P_EQ->Append(E, R, S);
+        P_EQ->append(E, R, S);
+		if(implementation->active)
+			iteration();
         return true;
     }
     return false;
 }
 
-boolean EventLoop::IsActive() const {
-    if (Implementation)
-        return Implementation->B_EventLoop;
+BOOLEAN EventLoop::sendEvent(Event* E, Object* R, Object* S) {
+    EventDispatcher* P_ED = getEventDispatcher();
+    if (P_ED) {
+		return P_ED->dispatch(E, R, S);
+	}
+	else
+		return Object::sendEvent(E, R, S);
+}
+
+BOOLEAN EventLoop::isActive() const {
+    if (implementation)
+        return implementation->active;
     return false;
 }
 
-void EventLoop::Enter() {
-    if (Implementation) {
+void EventLoop::enter() {
+    if (implementation) {
         ThreadSpecific* P_THSPEC = 0;
 #if defined(API_POSIX)
         P_THSPEC = reinterpret_cast<ThreadSpecific*> (pthread_getspecific(thread_pthread_key));
@@ -224,75 +236,80 @@ void EventLoop::Enter() {
         P_THSPEC = reinterpret_cast<ThreadSpecific*> (TlsGetValue(thread_tls()));
 #endif
         if (P_THSPEC)
-            if (!(P_THSPEC->H_EventLoopSpecific))
-                P_THSPEC->H_EventLoopSpecific = Implementation->H_Specific;
+            if (!(P_THSPEC->eventLoopSpecific))
+                P_THSPEC->eventLoopSpecific = implementation->eventLoopSpecific;
 #if defined(API_POSIX)
         Implementation->OpenPipe();
 #elif defined(API_MSWINDOWS)
-        Implementation->OpenMSEvent();
+        implementation->openMSEvent();
 #endif
-        Implementation->B_EventLoop = true;
-        while (Implementation->B_EventLoop) {
-            if (Implementation->H_Specific->H_EventQueue)
-                if (Implementation->H_Specific->H_EventQueue->Empty())
-                    Implementation->Wait(Implementation->Interval());
-            Iteration();
+        implementation->active = true;
+        while (implementation->active) {
+            if (implementation->eventLoopSpecific->eventQueue)
+                if (implementation->eventLoopSpecific->eventQueue->empty())
+                    implementation->wait(implementation->interval());
+            iteration();
         }
 #if defined(API_POSIX)
         Implementation->ClosePipe();
 #elif defined(API_MSWINDOWS)
-        Implementation->CloseMSEvent();
+        implementation->closeMSEvent();
 #endif
         if (P_THSPEC)
-            if (P_THSPEC->H_EventLoopSpecific == Implementation->H_Specific)
-                P_THSPEC->H_EventLoopSpecific = 0;
+            if (P_THSPEC->eventLoopSpecific == implementation->eventLoopSpecific)
+                P_THSPEC->eventLoopSpecific = 0;
     }
 }
 
-void EventLoop::Exit() {
-    if (Implementation) {
-        if (Implementation->B_EventLoop) {
-            Implementation->B_EventLoop = false;
-            Implementation->Awake();
+void EventLoop::exit() {
+    if (implementation) {
+        if (implementation->active) {
+            implementation->active = false;
+            implementation->awake();
         }
     }
 }
 
-EventQueue* EventLoop::GetEventQueue() const {
-    if (Implementation)
-        if (Implementation->H_Specific)
-            return Implementation->H_Specific->H_EventQueue;
+void EventLoop::process() {
+	iteration();
+}
+
+EventQueue* EventLoop::getEventQueue() const {
+    if (implementation)
+        if (implementation->eventLoopSpecific)
+            return implementation->eventLoopSpecific->eventQueue;
     return 0;
 }
 
-void EventLoop::SetEventQueue(EventQueue* P_EQ) {
-    if (Implementation)
-        if (Implementation->H_Specific)
-            Implementation->H_Specific->H_EventQueue = P_EQ;
+void EventLoop::setEventQueue(EventQueue* P_EQ) {
+    if (implementation)
+        if (implementation->eventLoopSpecific)
+            implementation->eventLoopSpecific->eventQueue = P_EQ;
 }
 
-EventDispatcher* EventLoop::GetEventDispatcher() const {
-    if (Implementation)
-        if (Implementation->H_Specific)
-            return Implementation->H_Specific->H_EventDispatcher;
+EventDispatcher* EventLoop::getEventDispatcher() const {
+    if (implementation)
+        if (implementation->eventLoopSpecific)
+            return implementation->eventLoopSpecific->eventDispatcher;
     return 0;
 }
 
-void EventLoop::SetEventDispatcher(EventDispatcher* P_ED) {
-    if (Implementation)
-        if (Implementation->H_Specific)
-            Implementation->H_Specific->H_EventDispatcher = P_ED;
+void EventLoop::setEventDispatcher(EventDispatcher* P_ED) {
+    if (implementation)
+        if (implementation->eventLoopSpecific)
+            implementation->eventLoopSpecific->eventDispatcher = P_ED;
 }
 
-void EventLoop::Iteration() {
-    EventQueue* P_EQ = GetEventQueue();
-    EventDispatcher* P_ED = GetEventDispatcher();
+void EventLoop::iteration() {
+    EventQueue* P_EQ = getEventQueue();
+    EventDispatcher* P_ED = getEventDispatcher();
     if (P_EQ && P_ED)
-        if (!P_EQ->Empty()) {
-            P_ED->Dispatch(P_EQ->Top());
-            delete P_EQ->Top().Content;
-            P_EQ->Pop();
-        }
+		if(!P_EQ->empty())
+			while (!P_EQ->empty()) {
+				P_ED->dispatch(P_EQ->top());
+				delete P_EQ->top().event;
+				P_EQ->pop();
+	        }
 }
 
 END_WS_NAMESPACE

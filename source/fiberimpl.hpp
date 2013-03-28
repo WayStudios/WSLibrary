@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef FIBERIMPLEMENTATION_HEADER
@@ -15,8 +15,8 @@ struct LOCAL FiberSpecific {
     explicit FiberSpecific(Fiber*);
     ~FiberSpecific();
 
-    Fiber* H_Fiber;
-    Thread* H_Thread;
+    Fiber* fiber;
+    Thread* thread;
 
     UNCOPYABLE(FiberSpecific)
 };
@@ -27,13 +27,13 @@ public:
     explicit FiberImplementation(Fiber*);
     ~FiberImplementation();
 
-    void Execute();
-    void Terminate();
-    void Finish();
-    boolean Swap(Fiber*);
+    void execute();
+    void terminate();
+    void finish();
+    BOOLEAN swap(Fiber*);
 
-    Fiber* H_Fiber;
-    FiberSpecific* H_Specific;
+    Fiber* fiber;
+    FiberSpecific* fiberSpecific;
 };
 
 END_WS_NAMESPACE

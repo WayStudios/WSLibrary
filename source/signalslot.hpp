@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef SIGNALSLOT_HEADER
@@ -24,38 +24,38 @@ public:
     BEGIN_TEMPLATE
 
     template <typename T_ARG, typename T_SIGNHOST, typename T_SIGN, typename T_SLOTHOST, typename T_SLOT>
-    static boolean Connect(T_SIGNHOST* P_SIGNHOST, const String& STR_SIGN, T_SIGN I_SIGN, T_SLOTHOST* P_SLOTHOST, const String& STR_SLOT, T_SLOT I_SLOT);
+    static BOOLEAN connect(T_SIGNHOST* P_SIGNHOST, const String& STR_SIGN, T_SIGN I_SIGN, T_SLOTHOST* P_SLOTHOST, const String& STR_SLOT, T_SLOT I_SLOT);
 
     template <typename T_ARG, typename T_SIGNHOST, typename T_SIGN>
-    static Signal* PrepareSignal(T_SIGNHOST* P_SIGNHOST, const String& STR_SIGN, T_SIGN I_SIGN);
+    static Signal* prepareSignal(T_SIGNHOST* P_SIGNHOST, const String& STR_SIGN, T_SIGN I_SIGN);
 
     template <typename T_ARG, typename T_SLOTHOST, typename T_SLOT>
-    static Slot* PrepareSlot(T_SLOTHOST* P_SLOTHOST, const String& STR_SLOT, T_SLOT I_SLOT);
+    static Slot* prepareSlot(T_SLOTHOST* P_SLOTHOST, const String& STR_SLOT, T_SLOT I_SLOT);
 
     END_TEMPLATE
 
-    static boolean Connect(Object*, const String&, Object*, const String&);
-    static boolean Disconnect(Object*, const String&, Object*, const String&);
+    static BOOLEAN connect(Object*, const String&, Object*, const String&);
+    static BOOLEAN disconnect(Object*, const String&, Object*, const String&);
 
-    static boolean Connect(Signal*, Slot*);
-    static boolean Disconnect(Signal*, Slot*);
+    static BOOLEAN connect(Signal*, Slot*);
+    static BOOLEAN disconnect(Signal*, Slot*);
 
-    static Signal* FetchSignal(Object*, const String&);
-    static Slot* FetchSlot(Object*, const String&);
+    static Signal* fetchSignal(Object*, const String&);
+    static Slot* fetchSlot(Object*, const String&);
 
-    static void Emit(Object*, const String&, const SharedPointer<SignalSlotArgument>&);
-    static void Call(Object*, const String&, const SharedPointer<SignalSlotArgument>&);
+    static void emit(Object*, const String&, const SharedPointer<SignalSlotArgument>&);
+    static void call(Object*, const String&, const SharedPointer<SignalSlotArgument>&);
 
-    static void OpenSignal(Object*, Signal*);
-    static void OpenSlot(Object*, Slot*);
+    static void openSignal(Object*, Signal*);
+    static void openSlot(Object*, Slot*);
 
-    static void CloseSignal(Object*, const String&);
-    static void CloseSlot(Object*, const String&);
+    static void closeSignal(Object*, const String&);
+    static void closeSlot(Object*, const String&);
 
-    static void Close(Object*);
+    static void close(Object*);
 
-    static void CloseSignal(Signal*);
-    static void CloseSlot(Slot*);
+    static void closeSignal(Signal*);
+    static void closeSlot(Slot*);
 };
 
 END_WS_NAMESPACE

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef GLOBAL_HEADER
@@ -32,6 +32,9 @@ enum SeekPosition {
     BEGINNING           = 0x01,
     CURRENT             = 0x02,
     END                 = 0x03
+};
+
+enum VOID {
 };
 
 END_WS_NAMESPACE

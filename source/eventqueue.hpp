@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef EVENTQUEUE_HEADER
@@ -15,22 +15,22 @@ BEGIN_WS_NAMESPACE
 class EXPORT EventQueue {
     DECLARE_IMPLEMENTATION(EventQueue)
 public:
-    typedef EventElement VALUE;
+    typedef EventElement TYPE;
 
     EventQueue();
     EventQueue(const EventQueue&);
     ~EventQueue();
 
-    size Total() const;
-    boolean Empty() const;
-    void Clear();
-    void Destroy();
+    SIZE total() const;
+    BOOLEAN empty() const;
+    void clear();
+    void destroy();
 
-    void Append(Event*, Object*, Object*);
-    void Append(const EventElement&);
-    void Pop();
+    void append(Event*, Object*, Object*);
+    void append(const EventElement&);
+    void pop();
 
-    const EventElement& Top() const;
+    const EventElement& top() const;
 
     EventQueue& operator=(const EventQueue&);
 };

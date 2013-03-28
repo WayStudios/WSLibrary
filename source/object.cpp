@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <object.hpp>
@@ -17,99 +17,159 @@ BEGIN_SOURCECODE
 
 USING_WS_NAMESPACE
 
-boolean Object::Exist(Object*) {
+BOOLEAN Object::exist(Object* P) {
+	Meta* P_META=Meta::Pool.find(P);
+	if(P_META)
+		return true;
     return false;
 }
 
-Object::ObjectImplementation::ObjectImplementation(const String& STR, Object* OBJ) : OBJMeta(STR, OBJ) {
+Object::ObjectImplementation::ObjectImplementation(Object* OBJ):meta(OBJ) {}
+
+Object::ObjectImplementation::~ObjectImplementation() {}
+
+void Object::ObjectImplementation::initialize(const String& STR, Object* MASTER) {
+	meta.thread = Thread::current();
+	meta.master = MASTER;
+	meta.identity = STR;
+	if(meta.master)
+	{
+		Meta* P = Meta::Pool.find(meta.master);
+		if(P)
+		{
+			P->children.append(meta.handle);
+		}
+	}
 }
 
-Object::ObjectImplementation::~ObjectImplementation() {
+void Object::ObjectImplementation::destroy() {
+#if !defined(WITHOUT_SIGNALSLOT)
+	SignalSlot::close(meta.handle);
+	for (Map<String, Signal*>::Iterator ITER_SIGNMAP = meta.signalMap.begin(); ITER_SIGNMAP != meta.signalMap.end(); ++ITER_SIGNMAP)
+		delete (*ITER_SIGNMAP).second;
+	meta.signalMap.clear();
+	for (Map<String, Slot*>::Iterator ITER_SLOTMAP = meta.slotMap.begin(); ITER_SLOTMAP != meta.slotMap.end(); ++ITER_SLOTMAP)
+		delete (*ITER_SLOTMAP).second;
+	meta.slotMap.clear();
+#endif
+	if(meta.master)
+	{
+		Meta* P = Meta::Pool.find(meta.master);
+		if(P)
+		{
+			P->children.remove(meta.handle);
+		}
+	}
+	if(!meta.children.empty())
+	{
+		for(List<Object*>::Iterator ITER = meta.children.begin(); ITER != meta.children.end(); ++ITER)
+		{
+			Meta* P=Meta::Pool.find(*ITER);
+			if(P)
+				P->master = 0;
+		}
+	}
 }
 
-Object::Object(Object* OBJ) : Implementation(0) {
-    Implementation = new ObjectImplementation(String("WS::Object"), this);
-    if (Implementation)
-        Implementation->OBJMeta.Master = OBJ;
-    EmitSignal(Constructed, this);
+Object* Object::ObjectImplementation::getMaster() const {
+	return meta.master;
 }
 
-Object::Object(const String& STR, Object* OBJ) : Implementation(0) {
-    Implementation = new ObjectImplementation(STR, this);
-    if (Implementation)
-        Implementation->OBJMeta.Master = OBJ;
-    EmitSignal(Constructed, this);
+void Object::ObjectImplementation::setMaster(Object* MASTER) {
+	if(meta.master)
+	{
+		Meta* P = Meta::Pool.find(meta.master);
+		if(P)
+		{
+			P->children.remove(meta.handle);
+		}
+	}
+	meta.master = MASTER;
+	if(meta.master)
+	{
+		Meta* P = Meta::Pool.find(meta.master);
+		if(P)
+		{
+			P->children.append(meta.handle);
+		}
+	}
+}
+
+Object::Object(Object* OBJ) : implementation(0) {
+	implementation = new ObjectImplementation(this);
+	if(implementation)
+		implementation->initialize(String(), OBJ);
+}
+
+Object::Object(const String& STR, Object* OBJ) : implementation(0) {
+	implementation = new ObjectImplementation(this);
+	if(implementation)
+		implementation->initialize(STR, OBJ);
 }
 
 Object::~Object() {
-    if (Implementation) {
-#if !defined(WITHOUT_SIGNALSLOT)
-        EmitSignal(Destroyed, this);
-        SignalSlot::Close(this);
-        for (Map<String, Signal*>::Iterator ITER_SIGNMAP = Implementation->OBJMeta.SignalMap.Begin(); ITER_SIGNMAP != Implementation->OBJMeta.SignalMap.End(); ++ITER_SIGNMAP)
-            delete (*ITER_SIGNMAP).Second;
-        Implementation->OBJMeta.SignalMap.Clear();
-        for (Map<String, Slot*>::Iterator ITER_SLOTMAP = Implementation->OBJMeta.SlotMap.Begin(); ITER_SLOTMAP != Implementation->OBJMeta.SlotMap.End(); ++ITER_SLOTMAP)
-            delete (*ITER_SLOTMAP).Second;
-        Implementation->OBJMeta.SlotMap.Clear();
-#endif
-        delete Implementation;
+    if (implementation) {
+		implementation->destroy();
+        delete implementation;
     }
 }
 
-Object* Object::GetMaster() const {
-    if (Implementation)
-        return Implementation->OBJMeta.Master;
+Object* Object::getMaster() const {
+    if (implementation)
+		return implementation->getMaster();
     return 0;
 }
 
-void Object::SetMaster(Object* P_OBJ) {
-    if (Implementation)
-        Implementation->OBJMeta.Master = P_OBJ;
+void Object::setMaster(Object* P_OBJ) {
+    if (implementation)
+		implementation->setMaster(P_OBJ);
 }
 
-const String& Object::GetName() const {
-    return Implementation->OBJMeta.Name;
+const String& Object::getIdentity() const {
+    return implementation->meta.identity;
 }
 
-void Object::SetName(const String& STR) {
-    Implementation->OBJMeta.Name = STR;
+void Object::setIdentity(const String& STR) {
+    implementation->meta.identity = STR;
 }
 
-boolean Object::NotifyEvent(Event* E, Object* R, Object* S) {
+BOOLEAN Object::notifyEvent(Event* E, Object* R, Object* S) {
     if (E) {
-        ProcessEvent(E);
+        processEvent(E);
         return true;
     }
     return false;
 }
 
-boolean Object::SendEvent(Event* E, Object* R, Object* S) {
-    if (R)
-        return R->NotifyEvent(E, R, S);
+BOOLEAN Object::sendEvent(Event* E, Object* R, Object* S) {
+    if (Thread::current())
+        return Thread::current()->sendEvent(E, R, S);
+	else
+		if(R)
+			return R->notifyEvent(E, R, S);
     return false;
 }
 
-boolean Object::PostEvent(Event* E, Object* R, Object* S) {
-    if (Thread::Current())
-        return Thread::Current()->PostEvent(E, R, S);
+BOOLEAN Object::postEvent(Event* E, Object* R, Object* S) {
+    if (Thread::current())
+        return Thread::current()->postEvent(E, R, S);
     return false;
 }
 
-void Object::ProcessEvent(Event* E) {
+void Object::processEvent(Event* E) {
     if (E) {
 #if !defined(WITHOUT_SIGNALSLOT)
-        if (E->Type == WS_SIGNALSLOTEVENT)
-            ProcessSignalSlotEvent(static_cast<SignalSlotEvent*> (E));
+        if (E->type == WS_SIGNALSLOTEVENT)
+            processSignalSlotEvent(static_cast<SignalSlotEvent*> (E));
 #endif
     }
 }
 
 #if !defined(WITHOUT_SIGNALSLOT)
 
-void Object::ProcessSignalSlotEvent(SignalSlotEvent* E) {
+void Object::processSignalSlotEvent(SignalSlotEvent* E) {
     if (E)
-        SignalSlot::Call(this, E->STR_Slot, E->SP_Argument);
+        SignalSlot::call(this, E->slotIdentity, E->argument);
 }
 #endif
 

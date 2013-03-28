@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef OBJECT_HEADER
@@ -23,29 +23,28 @@ struct SignalSlotEvent;
 class EXPORT Object {
     DECLARE_IMPLEMENTATION(Object)
     UNCOPYABLE(Object)
-    signal :
-    DECLARE_SIGNAL(Object*, Object, Constructed)
-    DECLARE_SIGNAL(Object*, Object, Destroyed)
+signal:
+	DECLARE_SIGNAL(Object*, Object, masterChanged)
 public:
     explicit Object(Object* OBJ = 0);
     explicit Object(const String&, Object* OBJ = 0);
     virtual ~Object();
 
-    Object* GetMaster() const;
-    void SetMaster(Object*);
+    Object* getMaster() const;
+    void setMaster(Object*);
 
-    const String& GetName() const;
-    void SetName(const String&);
+    const String& getIdentity() const;
+    void setIdentity(const String&);
 
-    virtual boolean NotifyEvent(Event*, Object* R = 0, Object* S = 0);
-    virtual boolean SendEvent(Event*, Object* R = 0, Object* S = 0);
-    virtual boolean PostEvent(Event*, Object* R = 0, Object* S = 0);
+    virtual BOOLEAN notifyEvent(Event*, Object* R = 0, Object* S = 0);
+    virtual BOOLEAN sendEvent(Event*, Object* R = 0, Object* S = 0);
+    virtual BOOLEAN postEvent(Event*, Object* R = 0, Object* S = 0);
 
-    static boolean Exist(Object*);
+    static BOOLEAN exist(Object*);
 protected:
-    virtual void ProcessEvent(Event*);
+    virtual void processEvent(Event*);
 #if !defined(WITHOUT_SIGNALSLOT)
-    virtual void ProcessSignalSlotEvent(SignalSlotEvent*);
+    virtual void processSignalSlotEvent(SignalSlotEvent*);
 #endif
 };
 

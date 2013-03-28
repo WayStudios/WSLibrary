@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef ATOMICPOINTER_HEADER
@@ -13,43 +13,46 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
+template <typename T>
 class EXPORT AtomicPointer {
-    TYPE * volatile Value;
 public:
-    explicit AtomicPointer(TYPE* V = 0);
-    AtomicPointer(const AtomicPointer<TYPE>&);
+    typedef T TYPE;
+
+	explicit AtomicPointer(TYPE* V = 0);
+    AtomicPointer(const AtomicPointer<T>&);
     ~AtomicPointer();
 
-    TYPE* Load() const;
+    TYPE* load() const;
 
-    AtomicPointer<TYPE>& Store(TYPE*);
+    AtomicPointer<T>& store(TYPE*);
 
-    boolean Compare(TYPE*) const;
+    BOOLEAN compare(TYPE*) const;
 
-    TYPE* Swap(TYPE*);
+    TYPE* swap(TYPE*);
 
-    boolean CompareAndSwap(TYPE*, TYPE*);
+    BOOLEAN compareAndSwap(TYPE*, TYPE*);
 
-    TYPE* operator->() const;
+    TYPE* operator ->() const;
 
-    TYPE& operator*() const;
+    TYPE& operator *() const;
 
-    AtomicPointer<TYPE>& operator=(TYPE*);
+    AtomicPointer<T>& operator =(TYPE*);
 
-    AtomicPointer<TYPE>& operator+=(ptrdiff);
-    AtomicPointer<TYPE>& operator-=(ptrdiff);
+    AtomicPointer<T>& operator +=(PTRDIFF);
+    AtomicPointer<T>& operator -=(PTRDIFF);
 
-    boolean operator==(TYPE*) const;
-    boolean operator!=(TYPE*) const;
+    BOOLEAN operator ==(TYPE*) const;
+    BOOLEAN operator !=(TYPE*) const;
 
-    AtomicPointer<TYPE>& operator=(const AtomicPointer<TYPE>&);
+    AtomicPointer<T>& operator =(const AtomicPointer<T>&);
 
-    AtomicPointer<TYPE>& operator++();
-    AtomicPointer<TYPE>& operator--();
+    AtomicPointer<T>& operator ++();
+    AtomicPointer<T>& operator --();
 
-    boolean operator==(const AtomicPointer<TYPE>&) const;
-    boolean operator!=(const AtomicPointer<TYPE>&) const;
+    BOOLEAN operator ==(const AtomicPointer<T>&) const;
+    BOOLEAN operator !=(const AtomicPointer<T>&) const;
+private:
+	TYPE * volatile value;
 };
 
 END_WS_NAMESPACE

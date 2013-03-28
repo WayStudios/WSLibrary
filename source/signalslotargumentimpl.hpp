@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef SIGNALSLOTARGUMENTIMPLEMENTATION_HEADER
@@ -19,11 +19,11 @@ public:
     SignalSlotArgumentImplementation(const T_ARG&);
     ~SignalSlotArgumentImplementation();
 
-    T_ARG Value;
+    T_ARG value;
 };
 
 template <typename T_ARG>
-SignalSlotArgumentImplementation<T_ARG>::SignalSlotArgumentImplementation(const T_ARG& REF_ARG) : SignalSlotArgument(), Value(REF_ARG) {
+SignalSlotArgumentImplementation<T_ARG>::SignalSlotArgumentImplementation(const T_ARG& REF_ARG) : SignalSlotArgument(), value(REF_ARG) {
 }
 
 template <typename T_ARG>

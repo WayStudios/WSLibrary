@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef TIMER_HEADER
@@ -16,21 +16,21 @@ struct TimeEvent;
 class EXPORT Timer : public Object {
     DECLARE_IMPLEMENTATION(Timer)
     UNCOPYABLE(Timer)
-    signal :
-    DECLARE_SIGNAL(ws_timeval, Timer, Timeout)
+signal :
+    DECLARE_SIGNAL(TIMEVAL, Timer, Timeout)
 public:
     explicit Timer(Object* OBJ = 0);
     ~Timer();
 
-    boolean IsActive() const;
+    BOOLEAN isActive() const;
 
-    ws_timeval Interval() const;
+    TIMEVAL interval() const;
 
-    void Start(ws_timeval V = 0);
-    ws_timeval Stop();
+    void start(TIMEVAL V = 0);
+    TIMEVAL stop();
 protected:
-    virtual void ProcessEvent(Event*);
-    virtual void ProcessTimeEvent(TimeEvent*);
+    virtual void processEvent(Event*);
+    virtual void processTimeEvent(TimeEvent*);
 };
 
 END_WS_NAMESPACE

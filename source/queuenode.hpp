@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef QUEUENODE_HEADER
@@ -13,19 +13,21 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
+template <typename T>
 struct EXPORT QueueNode {
-    explicit QueueNode(const TYPE&, QueueNode<TYPE>*);
-    QueueNode(const QueueNode<TYPE>&);
+	typedef T TYPE;
+
+    explicit QueueNode(const TYPE&, QueueNode<T>*);
+    QueueNode(const QueueNode<T>&);
     virtual ~QueueNode();
 
-    QueueNode<TYPE>& operator=(const QueueNode<TYPE>&);
+    QueueNode<T>& operator =(const QueueNode<T>&);
 
-    boolean operator==(const QueueNode<TYPE>&) const;
-    boolean operator!=(const QueueNode<TYPE>&) const;
+    BOOLEAN operator ==(const QueueNode<T>&) const;
+    BOOLEAN operator !=(const QueueNode<T>&) const;
 
-    TYPE Object;
-    QueueNode<TYPE>* Next;
+    TYPE object;
+    QueueNode<T>* next;
 };
 
 END_WS_NAMESPACE

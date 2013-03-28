@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef STRING_HEADER
@@ -14,27 +14,27 @@ BEGIN_WS_NAMESPACE
 class EXPORT String {
     DECLARE_IMPLEMENTATION(String)
 public:
-    typedef ws_char VALUE;
+    typedef CHAR TYPE;
 
-    explicit String(const byte* CSTR = 0);
+    explicit String(const BYTE* CSTR = 0);
     String(const String&);
     ~String();
 
-    size Length() const;
-    boolean Empty() const;
-    void Clear();
+    SIZE length() const;
+    BOOLEAN empty() const;
+    void clear();
 
-    const byte* CString();
+    const BYTE* cstring();
 
-    String& operator=(const byte*);
+    String& operator =(const BYTE*);
 
-    boolean operator==(const byte*) const;
-    boolean operator!=(const byte*) const;
+    BOOLEAN operator ==(const BYTE*) const;
+    BOOLEAN operator !=(const BYTE*) const;
 
-    String& operator=(const String&);
+    String& operator =(const String&);
 
-    boolean operator==(const String&) const;
-    boolean operator!=(const String&) const;
+    BOOLEAN operator ==(const String&) const;
+    BOOLEAN operator !=(const String&) const;
 };
 
 END_WS_NAMESPACE

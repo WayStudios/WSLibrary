@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef SIGNALSLOTEVENT_HEADER
@@ -22,12 +22,12 @@ struct EXPORT SignalSlotEvent : public Event {
     explicit SignalSlotEvent(const String&, const String&, const SharedPointer<SignalSlotArgument>&);
     ~SignalSlotEvent();
 
-    boolean operator==(const SignalSlotEvent&) const;
-    boolean operator!=(const SignalSlotEvent&) const;
+    BOOLEAN operator ==(const SignalSlotEvent&) const;
+    BOOLEAN operator !=(const SignalSlotEvent&) const;
 
-    String STR_Signal;
-    String STR_Slot;
-    SharedPointer<SignalSlotArgument> SP_Argument;
+    String signalIdentity;
+    String slotIdentity;
+    SharedPointer<SignalSlotArgument> argument;
 
     UNCOPYABLE(SignalSlotEvent)
 };

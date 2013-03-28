@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef ARRAY_IMPLEMENTATION_HEADER
@@ -19,192 +19,192 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
-class LOCAL Array<TYPE>::ArrayImplementation : public Allocator<TYPE> {
+template <typename T>
+class LOCAL Array<T>::ArrayImplementation : public Allocator<Array<T>::TYPE> {
     UNCOPYABLE(ArrayImplementation)
 public:
     ArrayImplementation();
     ~ArrayImplementation();
 
-    void Initial(const TYPE&, size);
-    void Initial(TYPE*, size);
-    ArrayImplementation* Duplicate();
-    void Cleanup();
+    void initialize(const TYPE&, SIZE);
+    void initialize(TYPE*, SIZE);
+    ArrayImplementation* duplicate();
+    void destroy();
 
 #if !defined(WITHOUT_THREAD)
-    AtomicInteger Ref;
-    Mutex MLock;
+    AtomicInteger reference;
+    Mutex mutex;
 #endif
-    TYPE* ArrayB;
-    size ArraySize;
+    Array<T>::TYPE* array;
+    SIZE size;
 };
 
-template <typename TYPE>
-Array<TYPE>::ArrayImplementation::ArrayImplementation() : ArrayB(0), ArraySize(0) {
+template <typename T>
+Array<T>::ArrayImplementation::ArrayImplementation() : array(0), size(0) {
 }
 
-template <typename TYPE>
-Array<TYPE>::ArrayImplementation::~ArrayImplementation() {
+template <typename T>
+Array<T>::ArrayImplementation::~ArrayImplementation() {
 }
 
-template <typename TYPE>
-void Array<TYPE>::ArrayImplementation::Initial(const Array<TYPE>::VALUE& REF, size SZ) {
+template <typename T>
+void Array<T>::ArrayImplementation::initialize(const Array<T>::TYPE& REF, SIZE SZ) {
     if (SZ != 0) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        ArrayB = Allocator<TYPE>::Allocate(SZ);
-        ArraySize = SZ;
-        for (size i = 0; i < SZ; ++i)
-            Construct(ArrayB + i, REF);
+        array = allocate(SZ);
+        size = SZ;
+        for (SIZE i = 0; i < SZ; ++i)
+            construct(array + i, REF);
     }
 }
 
-template <typename TYPE>
-void Array<TYPE>::ArrayImplementation::Initial(Array<TYPE>::VALUE* P, size SZ) {
+template <typename T>
+void Array<T>::ArrayImplementation::initialize(Array<T>::TYPE* P, SIZE SZ) {
     if (SZ != 0) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        ArrayB = Allocator<TYPE>::Allocate(SZ);
-        ArraySize = SZ;
+        array = allocate(SZ);
+        size = SZ;
         if (P)
-            for (size i = 0; i < SZ; ++i)
-                Construct(ArrayB + i, *(P + i));
+            for (SIZE i = 0; i < SZ; ++i)
+                construct(array + i, *(P + i));
         else
-            for (size i = 0; i < SZ; ++i)
-                Construct(ArrayB + i, Array<TYPE>::VALUE());
+            for (SIZE i = 0; i < SZ; ++i)
+                construct(array + i, Array<T>::TYPE());
     }
 }
 
-template <typename TYPE>
-class Array<TYPE>::ArrayImplementation* Array<TYPE>::ArrayImplementation::Duplicate() {
+template <typename T>
+class Array<T>::ArrayImplementation* Array<T>::ArrayImplementation::duplicate() {
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
     ArrayImplementation* N_IMPL = new ArrayImplementation;
     if (N_IMPL) {
-        N_IMPL->ArrayB = Allocator<TYPE>::Allocate(ArraySize);
-        N_IMPL->ArraySize = ArraySize;
-        for (size i = 0; i < ArraySize; ++i)
-            Construct(N_IMPL->ArrayB + i, *(ArrayB + i));
+        N_IMPL->array = allocate(size);
+        N_IMPL->size = size;
+        for (SIZE i = 0; i < size; ++i)
+            construct(N_IMPL->array + i, *(array + i));
     }
     return N_IMPL;
 }
 
-template <typename TYPE>
-void Array<TYPE>::ArrayImplementation::Cleanup() {
-    if (ArrayB) {
+template <typename T>
+void Array<T>::ArrayImplementation::destroy() {
+    if (array) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        for (size i = 0; i < ArraySize; ++i)
-            Destruct(ArrayB + i);
-        Deallocate(ArrayB);
-        ArrayB = 0;
-        ArraySize = 0;
+        for (SIZE i = 0; i < size; ++i)
+            destruct(array + i);
+        deallocate(array);
+        array = 0;
+        size = 0;
     }
 }
 
-template <typename TYPE>
-Array<TYPE>::Array(const TYPE& REF, size SZ) : Implementation(0) {
-    Implementation = new ArrayImplementation;
-    if (Implementation) {
+template <typename T>
+Array<T>::Array(const Array<T>::TYPE& REF, SIZE SZ) : implementation(0) {
+    implementation = new ArrayImplementation;
+    if (implementation) {
 #if !defined(WITHOUT_THREAD)
-        ++(Implementation->Ref);
+        ++(implementation->reference);
 #endif
-        Implementation->Initial(REF, SZ);
+        implementation->initialize(REF, SZ);
     }
 }
 
-template <typename TYPE>
-Array<TYPE>::Array(TYPE* P_ARRAY, size SZ) : Implementation(0) {
-    Implementation = new ArrayImplementation;
-    if (Implementation) {
+template <typename T>
+Array<T>::Array(Array<T>::TYPE* P_ARRAY, SIZE SZ) : implementation(0) {
+    implementation = new ArrayImplementation;
+    if (implementation) {
 #if !defined(WITHOUT_THREAD)
-        ++(Implementation->Ref);
+        ++(implementation->reference);
 #endif
-        Implementation->Initial(P_ARRAY, SZ);
+        implementation->initialize(P_ARRAY, SZ);
     }
 }
 
 #if !defined(WITHOUT_THREAD)
 
-template <typename TYPE>
-Array<TYPE>::Array(const Array<TYPE>& REF) : Implementation(REF.Implementation) {
-    if (Implementation)
-        ++(Implementation->Ref);
+template <typename T>
+Array<T>::Array(const Array<T>& REF) : implementation(REF.implementation) {
+    if (implementation)
+        ++(implementation->reference);
 }
 
 #else
 
-template <typename TYPE>
-Array<TYPE>::Array(const Array<TYPE>& REF) : Implementation(0) {
-    Implementation = new ArrayImplementation;
-    if (Implementation) {
-        Implementation->Initial(REF.Implementation->ArrayB, REF.Implementation->ArraySize);
+template <typename T>
+Array<T>::Array(const Array<T>& REF) : implementation(0) {
+    implementation = new ArrayImplementation;
+    if (implementation) {
+        implementation->initial(REF.implementation->array, REF.implementation->size);
     }
 }
 
 #endif
 
-template <typename TYPE>
-Array<TYPE>::~Array() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Cleanup();
-            delete Implementation;
+template <typename T>
+Array<T>::~Array() {
+    if (implementation)
+        if (--(implementation->ref) == 0) {
+            implementation->cleanup();
+            delete implementation;
         }
 }
 
-template <typename TYPE>
-size Array<TYPE>::Size() const {
-    if (Implementation)
-        return Implementation->Size();
+template <typename T>
+SIZE Array<T>::size() const {
+    if (implementation)
+        return implementation->size();
     return 0;
 }
 
-template <typename TYPE>
-TYPE& Array<TYPE>::At(size IDX) {
-    if (Implementation->Ref != 1) {
-        ArrayImplementation* N_IMPL = Implementation->Duplicate();
-        --(Implementation->Ref);
-        Implementation = N_IMPL;
-        ++(Implementation->Ref);
+template <typename T>
+Array<T>::TYPE& Array<T>::at(SIZE IDX) {
+    if (implementation->ref != 1) {
+        ArrayImplementation* N_IMPL = implementation->duplicate();
+        --(implementation->reference);
+        implementation = N_IMPL;
+        ++(implementation->reference);
     }
-    return *(Implementation->ArrayB + IDX);
+    return *(implementation->array + IDX);
 }
 
-template <typename TYPE>
-const TYPE& Array<TYPE>::At(size IDX) const {
-    return *(Implementation->ArrayB + IDX);
+template <typename T>
+const Array<T>::TYPE& Array<T>::at(SIZE IDX) const {
+    return *(implementation->array + IDX);
 }
 
-template <typename TYPE>
-        Array<TYPE>& Array<TYPE>::operator =(const Array<TYPE>& REF) {
-    if (Implementation && REF.Implementation) {
-        ++(REF.Implementation->Ref);
-        if (--(Implementation->Ref) == 0) {
-            ArrayImplementation* OLD = Implementation;
-            Implementation = REF.Implementation;
-            OLD->Cleanup();
+template <typename T>
+Array<T>& Array<T>::operator =(const Array<T>& REF) {
+    if (implementation && REF.implementation) {
+        ++(REF.implementation->ref);
+        if (--(implementation->ref) == 0) {
+            ArrayImplementation* OLD = implementation;
+            implementation = REF.implementation;
+            OLD->cleanup();
             delete OLD;
         } else
-            Implementation = REF.Implementation;
+            implementation = REF.implementation;
     }
     return *this;
 }
 
-template <typename TYPE>
-boolean Array<TYPE>::operator ==(const Array<TYPE>& REF) const {
-    if (Implementation && REF.Implementation) {
-        if (Implementation != REF.Implementation) {
-            ScopedLock<Mutex> SL_Mutex_F(&(REF.Implementation->MLock));
-            ScopedLock<Mutex> SL_Mutex_S(&(Implementation->MLock));
-            if (Implementation->ArraySize != REF.Implementation->ArraySize)
+template <typename T>
+BOOLEAN Array<T>::operator ==(const Array<T>& REF) const {
+    if (implementation && REF.implementation) {
+        if (implementation != REF.implementation) {
+            ScopedLock<Mutex> SL_MUTEX_F(&(REF.implementation->mutex));
+            ScopedLock<Mutex> SL_MUTEX_S(&(implementation->mutex));
+            if (implementation->size != REF.implementation->size)
                 return false;
-            for (size i = 0; i < Implementation->ArraySize; ++i)
-                if (*(Implementation->ArrayB + i) != *(REF.Implementation->ArrayB + i))
+            for (SIZE i = 0; i < implementation->size; ++i)
+                if (*(implementation->array + i) != *(REF.implementation->array + i))
                     return false;
         }
         return true;
@@ -212,16 +212,16 @@ boolean Array<TYPE>::operator ==(const Array<TYPE>& REF) const {
     return false;
 }
 
-template <typename TYPE>
-boolean Array<TYPE>::operator !=(const Array<TYPE>& REF) const {
-    if (Implementation && REF.Implementation) {
-        if (Implementation != REF.Implementation) {
-            ScopedLock<Mutex> SL_Mutex_F(&(REF.Implementation->MLock));
-            ScopedLock<Mutex> SL_Mutex_S(&(Implementation->MLock));
-            if (Implementation->ArraySize != REF.Implementation->ArraySize)
+template <typename T>
+BOOLEAN Array<T>::operator !=(const Array<T>& REF) const {
+    if (implementation && REF.implementation) {
+        if (implementation != REF.implementation) {
+            ScopedLock<Mutex> SL_MUTEX_F(&(REF.implementation->mutex));
+            ScopedLock<Mutex> SL_MUTEX_S(&(implementation->mutex));
+            if (implementation->size != REF.implementation->size)
                 return true;
-            for (size i = 0; i < Implementation->ArraySize; ++i)
-                if (*(Implementation->ArrayB + i) != *(REF.Implementation->ArrayB + i))
+            for (SIZE i = 0; i < implementation->size; ++i)
+                if (*(implementation->array + i) != *(REF.implementation->array + i))
                     return true;
         }
         return false;
@@ -229,14 +229,14 @@ boolean Array<TYPE>::operator !=(const Array<TYPE>& REF) const {
     return true;
 }
 
-template <typename TYPE>
-TYPE& Array<TYPE>::operator [](size IDX) {
-    return At(IDX);
+template <typename T>
+Array<T>::TYPE& Array<T>::operator [](SIZE IDX) {
+    return at(IDX);
 }
 
-template <typename TYPE>
-const TYPE& Array<TYPE>::operator [](size IDX) const {
-    return At(IDX);
+template <typename T>
+const Array<T>::TYPE& Array<T>::operator [](SIZE IDX) const {
+    return at(IDX);
 }
 
 END_WS_NAMESPACE

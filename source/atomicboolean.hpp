@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef ATOMICBOOLEAN_HEADER
@@ -12,31 +12,31 @@ BEGIN_HEADER
 BEGIN_WS_NAMESPACE
 
 class EXPORT AtomicBoolean {
-    volatile boolean Value;
+    volatile BOOLEAN value;
 public:
-    explicit AtomicBoolean(boolean V = false);
+    explicit AtomicBoolean(BOOLEAN V = false);
     AtomicBoolean(const AtomicBoolean&);
     ~AtomicBoolean();
 
-    boolean Load() const;
+    BOOLEAN load() const;
 
-    AtomicBoolean& Store(boolean);
+    AtomicBoolean& store(BOOLEAN);
 
-    boolean Compare(boolean) const;
+    BOOLEAN compare(BOOLEAN) const;
 
-    boolean Swap(boolean);
+    BOOLEAN swap(BOOLEAN);
 
-    boolean CompareAndSwap(boolean, boolean);
+    BOOLEAN compareAndSwap(BOOLEAN, BOOLEAN);
 
-    AtomicBoolean& operator=(boolean);
+    AtomicBoolean& operator =(BOOLEAN);
 
-    boolean operator==(boolean) const;
-    boolean operator!=(boolean) const;
+    BOOLEAN operator ==(BOOLEAN) const;
+    BOOLEAN operator !=(BOOLEAN) const;
 
-    AtomicBoolean& operator=(const AtomicBoolean&);
+    AtomicBoolean& operator =(const AtomicBoolean&);
 
-    boolean operator==(const AtomicBoolean&) const;
-    boolean operator!=(const AtomicBoolean&) const;
+    BOOLEAN operator ==(const AtomicBoolean&) const;
+    BOOLEAN operator !=(const AtomicBoolean&) const;
 };
 
 END_WS_NAMESPACE

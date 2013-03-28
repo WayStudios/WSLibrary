@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef SCOPEDLOCK_IMPLEMENTATION_HEADER
@@ -13,26 +13,26 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename T_LOCK>
-ScopedLock<T_LOCK>::ScopedLock(T_LOCK* P) : Lock(P) {
-    if (P)
-        P->Lock();
+template <typename T>
+ScopedLock<T>::ScopedLock(typename ScopedLock<T>::TYPE* P) : lock(P) {
+    if (lock)
+        lock->lock();
 }
 
-template <typename T_LOCK>
-ScopedLock<T_LOCK>::~ScopedLock() {
-    if (Lock)
-        Lock->Unlock();
+template <typename T>
+ScopedLock<T>::~ScopedLock() {
+    if (lock)
+        lock->unlock();
 }
 
-template <typename T_LOCK>
-boolean ScopedLock<T_LOCK>::operator ==(T_LOCK* P) const {
-    return Lock == P;
+template <typename T>
+BOOLEAN ScopedLock<T>::operator ==(typename ScopedLock<T>::TYPE* P) const {
+    return lock == P;
 }
 
-template <typename T_LOCK>
-boolean ScopedLock<T_LOCK>::operator !=(T_LOCK* P) const {
-    return Lock != P;
+template <typename T>
+BOOLEAN ScopedLock<T>::operator !=(typename ScopedLock<T>::TYPE* P) const {
+    return lock != P;
 }
 
 END_WS_NAMESPACE

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef DEFINE_OPERATINGSYSTEM_HEADER
@@ -10,7 +10,7 @@
 #elif defined(__FreeBSD__)
 #define OS_FREEBSD
 #elif defined(__APPLE__)
-#define OS_MACOSX
+#define OS_APPLEMACOSX
 #elif defined(__linux__)
 #define OS_LINUX
 #elif defined(_WIN32) || defined(_WIN64)

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef APPLICATION_HEADER
@@ -15,15 +15,15 @@ class EXPORT Application : public Object {
     DECLARE_IMPLEMENTATION(Application)
     UNCOPYABLE(Application)
 public:
-    Application(integer, byte**);
+    Application(INTEGER, BYTE**);
     virtual ~Application();
 
-    boolean IsRunning() const;
+    BOOLEAN isRunning() const;
 
-    integer Execute();
-    void Terminate();
+    INTEGER execute();
+    void terminate();
 
-    static Application* Instance();
+    static Application* instance();
 };
 
 END_WS_NAMESPACE

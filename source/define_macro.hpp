@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef DEFINE_MACRO_HEADER
@@ -47,7 +47,7 @@
 #define UNCOPYABLE(CLASS)\
 private:\
     CLASS(const CLASS&);\
-    CLASS& operator=(const CLASS&);
+    CLASS& operator =(const CLASS&);
 #endif
 
 #if !defined(DECLARE_IMPLEMENTATION)
@@ -55,7 +55,14 @@ private:\
     private:\
         class CLASS##Implementation;\
         friend class CLASS##Implementation;\
-        CLASS##Implementation* Implementation;
+        CLASS##Implementation* implementation;
+#endif
+
+#if !defined(DECLARE_SHARED_IMPLEMENTATION)
+#define DECLARE_SHARED_IMPLEMENTATION(CLASS)\
+	private:\
+		class CLASS##Implementation;\
+		SharedPointer<CLASS##Implementation> implementation;
 #endif
 
 #if !defined(WITHOUT_SIGNALSLOT)
@@ -64,14 +71,14 @@ private:\
 #define SLOT public
 #endif
 #if !defined(CONNECT_SIGNALSLOT)
-#define CONNECT_SIGNALSLOT(T_ARG, T_SIGNHOST, SIGNHOST, SIGN, T_SLOTHOST, SLOTHOST, SLOT) SignalSlot::Connect<T_ARG, T_SIGNHOST, void(T_SIGNHOST::*)(T_ARG), T_SLOTHOST, void(T_SLOTHOST::*)(T_ARG)>(SIGNHOST, String(#SIGN), &T_SIGNHOST::SIGN, SLOTHOST, String(#SLOT), &T_SLOTHOST::SLOT)
+#define CONNECT_SIGNALSLOT(T_ARG, T_SIGNHOST, SIGNHOST, SIGN, T_SLOTHOST, SLOTHOST, SLOT) WS::SignalSlot::Connect<T_ARG, T_SIGNHOST, void(T_SIGNHOST::*)(T_ARG), T_SLOTHOST, void(T_SLOTHOST::*)(T_ARG)>(SIGNHOST, WS::String(#SIGN), &T_SIGNHOST::SIGN, SLOTHOST, WS::String(#SLOT), &T_SLOTHOST::SLOT)
 #endif
 #if !defined(DISCONNECT_SIGNALSLOT)
-#define DISCONNECT_SIGNALSLOT(OBJ_SIGNHOST, STR_SIGN, OBJ_SLOTHOST, STR_SLOT) SignalSlot::Disconnect(SIGNHOST, String(#STR_SIGN), SLOTHOST, String(#STR_SLOT));
+#define DISCONNECT_SIGNALSLOT(OBJ_SIGNHOST, STR_SIGN, OBJ_SLOTHOST, STR_SLOT) WS::SignalSlot::Disconnect(SIGNHOST, WS::String(#STR_SIGN), SLOTHOST, WS::String(#STR_SLOT));
 #endif
 #if !defined(DECLARE_SIGNAL)
 #define DECLARE_SIGNAL(T_ARG, T_SIGNHOST, SIGN)\
-        void SIGN(T_ARG ARG){SignalSlot::Emit(static_cast<Object*>(this), String(#SIGN), SharedPointer<SignalSlotArgument>(static_cast<SignalSlotArgument*>(new SignalSlotArgumentImplementation<T_ARG>(ARG))));}
+        void SIGN(T_ARG ARG){WS::SignalSlot::emit(static_cast<WS::Object*>(this), WS::String(#SIGN), WS::SharedPointer<WS::SignalSlotArgument>(static_cast<WS::SignalSlotArgument*>(new WS::SignalSlotArgumentImplementation<T_ARG>(ARG))));}
 #endif
 #if !defined(EMIT_SIGNAL)
 #define EMIT_SIGNAL(SIGN, ARG) SIGN(ARG)
@@ -79,10 +86,18 @@ private:\
 #if !defined(signal) && !defined(slot) && !defined(ConnectSignalSlot) && !defined(DisconnectSignalSlot) && !defined(EmitSignal)
 #define signal SIGNAL
 #define slot SLOT
-#define ConnectSignalSlot CONNECT_SIGNALSLOT
-#define DisconnectSignalSlot DISCONNECT_SIGNALSLOT
-#define EmitSignal EMIT_SIGNAL
+#define connectSignalSlot CONNECT_SIGNALSLOT
+#define disconnectSignalSlot DISCONNECT_SIGNALSLOT
+#define emitSignal EMIT_SIGNAL
 #endif
+
+//#if !defined(connect) && !defined(disconnect) && !defined(emit) && !defined(call)
+//#define connect connectSignalSlot
+//#define disconnect disconnectSignalSlot
+//#define emit emitSignal
+//#define call callSlot
+//#endif
+
 #endif
 
 #endif

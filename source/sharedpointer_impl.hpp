@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef SHAREDPOINTER_IMPLEMENTATION_HEADER
@@ -13,74 +13,74 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
-SharedPointer<TYPE>::SharedPointer(TYPE* P_ADDR) : Implementation(0) {
-    Implementation = new SmartPointerImplementation<TYPE > (P_ADDR);
-    if (Implementation)
-        ++(Implementation->Ref_Shared);
+template <typename T>
+SharedPointer<T>::SharedPointer(typename SharedPointer<T>::TYPE * P_ADDR) : implementation(0) {
+    implementation = new SmartPointerImplementation<TYPE>(P_ADDR);
+    if (implementation)
+        ++(implementation->sharedReference);
 }
 
-template <typename TYPE>
-SharedPointer<TYPE>::SharedPointer(const SharedPointer<TYPE>& REF) : Implementation(REF.Implementation) {
-    if (Implementation)
-        ++(Implementation->Ref_Shared);
+template <typename T>
+SharedPointer<T>::SharedPointer(const SharedPointer<T>& REF) : implementation(REF.implementation) {
+    if (implementation)
+        ++(implementation->sharedReference);
 }
 
-template <typename TYPE>
-SharedPointer<TYPE>::~SharedPointer() {
-    if (Implementation)
-        if (--(Implementation->Ref_Shared) == 0) {
-            delete Implementation->Address;
-            if ((Implementation->Ref_Weak) == 0)
-                delete Implementation;
+template <typename T>
+SharedPointer<T>::~SharedPointer() {
+    if (implementation)
+        if (--(implementation->sharedReference) == 0) {
+            delete implementation->address;
+            if ((implementation->weakReference) == 0)
+                delete implementation;
             else
-                Implementation->Address = 0;
+                implementation->address = 0;
         }
 }
 
-template <typename TYPE>
-TYPE* SharedPointer<TYPE>::Address() const {
-    if (Implementation)
-        return Implementation->Address;
+template <typename T>
+typename SharedPointer<T>::TYPE* SharedPointer<T>::address() const {
+    if (implementation)
+        return implementation->address;
     return 0;
 }
 
-template <typename TYPE>
-SharedPointer<TYPE>::operator bool() const {
-    if (Implementation)
-        return Implementation->Address != 0;
+template <typename T>
+SharedPointer<T>::operator bool() const {
+    if (implementation)
+        return implementation->address != 0;
     return false;
 }
 
-template <typename TYPE>
-boolean SharedPointer<TYPE>::operator!() const {
-    if (Implementation)
-        return !Implementation->Address;
+template <typename T>
+BOOLEAN SharedPointer<T>::operator !() const {
+    if (implementation)
+        return !implementation->address;
     return true;
 }
 
-template <typename TYPE>
-TYPE* SharedPointer<TYPE>::operator ->() const {
-    if (Implementation)
-        return Implementation->Address;
+template <typename T>
+typename SharedPointer<T>::TYPE* SharedPointer<T>::operator ->() const {
+    if (implementation)
+        return implementation->address;
     return 0;
 }
 
-template <typename TYPE>
-TYPE& SharedPointer<TYPE>::operator *() const {
-    if (Implementation)
-        return *(Implementation->Address);
+template <typename T>
+typename SharedPointer<T>::TYPE& SharedPointer<T>::operator *() const {
+    if (implementation)
+        return *(implementation->address);
     throw;
 }
 
-template <typename TYPE>
-boolean SharedPointer<TYPE>::operator ==(const SharedPointer<TYPE>& REF) const {
-    return Implementation == REF.Implementation;
+template <typename T>
+BOOLEAN SharedPointer<T>::operator ==(const SharedPointer<T>& REF) const {
+    return implementation == REF.implementation;
 }
 
-template <typename TYPE>
-boolean SharedPointer<TYPE>::operator !=(const SharedPointer<TYPE>& REF) const {
-    return Implementation != REF.Implementation;
+template <typename T>
+BOOLEAN SharedPointer<T>::operator !=(const SharedPointer<T>& REF) const {
+    return implementation != REF.implementation;
 }
 
 END_WS_NAMESPACE

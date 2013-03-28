@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef SMARTPOINTERIMPLEMENTATION_HEADER
@@ -14,24 +14,26 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
+template <typename T>
 class LOCAL SmartPointerImplementation {
     UNCOPYABLE(SmartPointerImplementation)
 public:
+	typedef T TYPE;
+
     explicit SmartPointerImplementation(TYPE*);
     ~SmartPointerImplementation();
 
-    TYPE* Address;
-    AtomicInteger Ref_Shared;
-    AtomicInteger Ref_Weak;
+    TYPE* address;
+    AtomicInteger sharedReference;
+    AtomicInteger weakReference;
 };
 
-template <typename TYPE>
-SmartPointerImplementation<TYPE>::SmartPointerImplementation(TYPE* P_ADDR) : Address(P_ADDR) {
+template <typename T>
+SmartPointerImplementation<T>::SmartPointerImplementation(typename SmartPointerImplementation<T>::TYPE * P_ADDR) : address(P_ADDR) {
 }
 
-template <typename TYPE>
-SmartPointerImplementation<TYPE>::~SmartPointerImplementation() {
+template <typename T>
+SmartPointerImplementation<T>::~SmartPointerImplementation() {
 }
 
 END_WS_NAMESPACE

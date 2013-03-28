@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef FIBER_HEADER
@@ -20,17 +20,17 @@ public:
     explicit Fiber(Object* OBJ = 0);
     virtual ~Fiber();
 
-    Thread* Owner() const;
+    Thread* owner() const;
 
-    void Execute();
-    void Terminate();
-    void Finish();
-    boolean Swap(Fiber*);
+    void execute();
+    void terminate();
+    void finish();
+    BOOLEAN swap(Fiber*);
 
-    static Fiber* Current();
-    static boolean Swap(Fiber*, Fiber*);
+    static Fiber* current();
+    static BOOLEAN swap(Fiber*, Fiber*);
 protected:
-    virtual void Routine() = 0;
+    virtual void routine() = 0;
 };
 
 END_WS_NAMESPACE

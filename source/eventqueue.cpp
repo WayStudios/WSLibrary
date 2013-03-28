@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <eventqueue.hpp>
@@ -11,75 +11,75 @@ BEGIN_SOURCECODE
 
 USING_WS_NAMESPACE
 
-EventQueue::EventQueueImplementation::EventQueueImplementation() : QueB(0), QueE(0) {
+EventQueue::EventQueueImplementation::EventQueueImplementation() : head(0), tail(0) {
 }
 
 EventQueue::EventQueueImplementation::~EventQueueImplementation() {
 }
 
-size EventQueue::EventQueueImplementation::Total() const {
-    size RET = 0;
-    if (!Empty()) {
-        ScopedLock<Mutex> SL_Mutex(const_cast<Mutex*> (&MLock));
-        QueueNode<EventQueue::VALUE>* P_N = QueB;
+SIZE EventQueue::EventQueueImplementation::total() const {
+    SIZE RET = 0;
+    if (!empty()) {
+        ScopedLock<Mutex> SL_MUTEX(const_cast<Mutex*> (&mutex));
+        QueueNode<EventQueue::TYPE>* P_N = head;
         while (P_N) {
             ++RET;
-            P_N = P_N->Next;
+            P_N = P_N->next;
         }
     }
     return RET;
 }
 
-boolean EventQueue::EventQueueImplementation::Empty() const {
-    return !QueB;
+BOOLEAN EventQueue::EventQueueImplementation::empty() const {
+    return !head;
 }
 
-void EventQueue::EventQueueImplementation::Clear() {
-    if (!Empty()) {
-        ScopedLock<Mutex> SL_Mutex(&MLock);
-        while (!Empty()) {
-            QueueNode<EventQueue::VALUE>* P_N = QueB->Next;
-            Destruct(QueB);
-            Deallocate(QueB);
-            QueB = P_N;
-            if (Empty())
-                QueE = QueB = 0;
+void EventQueue::EventQueueImplementation::clear() {
+    if (!empty()) {
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
+        while (!empty()) {
+            QueueNode<EventQueue::TYPE>* P_N = head->next;
+            destruct(head);
+            deallocate(head);
+            head = P_N;
+            if (empty())
+                tail = head = 0;
         }
     }
 }
 
-void EventQueue::EventQueueImplementation::Destroy() {
+void EventQueue::EventQueueImplementation::destroy() {
     //destroy all appended events or aka delete Event*;
-    if (!Empty()) {
-        ScopedLock<Mutex> SL_Mutex(&MLock);
-        while (!Empty()) {
-            QueueNode<EventQueue::VALUE>* P_N = QueB->Next;
-            delete (QueB->Object.Content);
-            Destruct(QueB);
-            Deallocate(QueB);
-            QueB = P_N;
-            if (Empty())
-                QueE = QueB = 0;
+    if (!empty()) {
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
+        while (!empty()) {
+            QueueNode<EventQueue::TYPE>* P_N = head->next;
+            delete (head->object.event);
+            destruct(head);
+            deallocate(head);
+            head = P_N;
+            if (empty())
+                tail = head = 0;
         }
     }
 }
 
-EventQueue::EventQueueImplementation* EventQueue::EventQueueImplementation::Duplicate() {
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+EventQueue::EventQueueImplementation* EventQueue::EventQueueImplementation::duplicate() {
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
     EventQueueImplementation* N_IMPL = new EventQueueImplementation;
     if (N_IMPL) {
-        if (!Empty()) {
-            QueueNode<EventQueue::VALUE>* P_ITER = QueB;
+        if (!empty()) {
+            QueueNode<EventQueue::TYPE>* P_ITER = head;
             while (P_ITER) {
-                QueueNode<EventQueue::VALUE>* P_N = Allocate(1);
-                new(P_N) QueueNode<EventQueue::VALUE > (P_ITER->Object, 0);
-                if (N_IMPL->Empty())
-                    N_IMPL->QueE = N_IMPL->QueB = P_N;
+                QueueNode<EventQueue::TYPE>* P_N = allocate(1);
+                new(P_N) QueueNode<EventQueue::TYPE> (P_ITER->object, 0);
+                if (N_IMPL->empty())
+                    N_IMPL->tail = N_IMPL->head = P_N;
                 else {
-                    N_IMPL->QueE->Next = P_N;
-                    N_IMPL->QueE = P_N;
+                    N_IMPL->tail->next = P_N;
+                    N_IMPL->tail = P_N;
                 }
-                P_ITER = P_ITER->Next;
+                P_ITER = P_ITER->next;
             }
         }
         return N_IMPL;
@@ -87,125 +87,125 @@ EventQueue::EventQueueImplementation* EventQueue::EventQueueImplementation::Dupl
     return 0;
 }
 
-void EventQueue::EventQueueImplementation::Append(const EventQueue::VALUE& REF) {
-    ScopedLock<Mutex> SL_Mutex(&MLock);
-    QueueNode<EventQueue::VALUE>* P_N = Allocate(1);
-    new(P_N) QueueNode<EventQueue::VALUE > (REF, 0);
-    if (Empty())
-        QueE = QueB = P_N;
+void EventQueue::EventQueueImplementation::append(const EventQueue::TYPE& REF) {
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
+    QueueNode<EventQueue::TYPE>* P_N = allocate(1);
+    new(P_N) QueueNode<EventQueue::TYPE>(REF, 0);
+    if (empty())
+        tail = head = P_N;
     else {
-        QueE->Next = P_N;
-        QueE = P_N;
+        tail->next = P_N;
+        tail = P_N;
     }
 }
 
-void EventQueue::EventQueueImplementation::Pop() {
-    if (!Empty()) {
-        ScopedLock<Mutex> SL_Mutex(&MLock);
-        QueueNode<EventQueue::VALUE>* P_N = QueB->Next;
-        Destruct(QueB);
-        Deallocate(QueB);
-        QueB = P_N;
-        if (Empty())
-            QueE = QueB = 0;
+void EventQueue::EventQueueImplementation::pop() {
+    if (!empty()) {
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
+        QueueNode<EventQueue::TYPE>* P_N = head->next;
+        destruct(head);
+        deallocate(head);
+        head = P_N;
+        if (empty())
+            tail = head = 0;
     }
 }
 
-EventQueue::EventQueue() : Implementation(0) {
-    Implementation = new EventQueueImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+EventQueue::EventQueue() : implementation(0) {
+    implementation = new EventQueueImplementation;
+    if (implementation)
+        ++(implementation->reference);
 }
 
-EventQueue::EventQueue(const EventQueue& REF) : Implementation(REF.Implementation) {
-    if (Implementation)
-        ++(Implementation->Ref);
+EventQueue::EventQueue(const EventQueue& REF) : implementation(REF.implementation) {
+    if (implementation)
+        ++(implementation->reference);
 }
 
 EventQueue::~EventQueue() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Clear();
-            delete Implementation;
+    if (implementation)
+        if (--(implementation->reference) == 0) {
+            implementation->clear();
+            delete implementation;
         }
 }
 
-size EventQueue::Total() const {
-    if (Implementation)
-        return Implementation->Total();
+SIZE EventQueue::total() const {
+    if (implementation)
+        return implementation->total();
     return 0;
 }
 
-boolean EventQueue::Empty() const {
-    if (Implementation)
-        return Implementation->Empty();
+BOOLEAN EventQueue::empty() const {
+    if (implementation)
+        return implementation->empty();
     return true;
 }
 
-void EventQueue::Clear() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Clear();
-            delete Implementation;
+void EventQueue::clear() {
+    if (implementation)
+        if (--(implementation->reference) == 0) {
+            implementation->clear();
+            delete implementation;
         }
-    Implementation = new EventQueueImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+    implementation = new EventQueueImplementation;
+    if (implementation)
+        ++(implementation->reference);
 }
 
-void EventQueue::Destroy() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Destroy();
-            delete Implementation;
+void EventQueue::destroy() {
+    if (implementation)
+        if (--(implementation->reference) == 0) {
+            implementation->destroy();
+            delete implementation;
         }
-    Implementation = new EventQueueImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+    implementation = new EventQueueImplementation;
+    if (implementation)
+        ++(implementation->reference);
 }
 
-void EventQueue::Append(Event* E, Object* R, Object* S) {
-    Append(EventElement(E, R, S));
+void EventQueue::append(Event* E, Object* R, Object* S) {
+    append(EventElement(E, R, S));
 }
 
-void EventQueue::Append(const EventElement& REF) {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            EventQueueImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+void EventQueue::append(const EventElement& REF) {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            EventQueueImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->Append(REF);
+        implementation->append(REF);
     }
 }
 
-void EventQueue::Pop() {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            EventQueueImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+void EventQueue::pop() {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            EventQueueImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->Pop();
+        implementation->pop();
     }
 }
 
-const EventElement& EventQueue::Top() const {
-    return Implementation->QueB->Object;
+const EventElement& EventQueue::top() const {
+    return implementation->head->object;
 }
 
 EventQueue& EventQueue::operator =(const EventQueue& REF) {
-    if (Implementation && REF.Implementation) {
-        ++(REF.Implementation->Ref);
-        if (--(Implementation->Ref) == 0) {
-            EventQueueImplementation* OLD = Implementation;
-            Implementation = REF.Implementation;
-            OLD->Clear();
+    if (implementation && REF.implementation) {
+        ++(REF.implementation->reference);
+        if (--(implementation->reference) == 0) {
+            EventQueueImplementation* OLD = implementation;
+            implementation = REF.implementation;
+            OLD->clear();
             delete OLD;
         } else
-            Implementation = REF.Implementation;
+            implementation = REF.implementation;
     }
     return *this;
 }

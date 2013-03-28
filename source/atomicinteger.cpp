@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <atomicinteger.hpp>
@@ -8,41 +8,41 @@ BEGIN_SOURCECODE
 
 USING_WS_NAMESPACE
 
-#if defined(C_GNUC) && (defined(ARCH_X86) || defined(ARCH_X64))
-integer AtomicInteger::Swap(integer V) {
+#if defined(COMPILER_GNUC) && (defined(ARCHITECTURE_X86) || defined(ARCHITECTURE_X64))
+INTEGER AtomicInteger::swap(INTEGER V) {
     asm volatile("xchgl %1,%0"
                 : "=r"(V)
-                : "m"(Value), "0"(V)
+                : "m"(value), "0"(V)
                 : "memory");
     return V;
 }
 
-boolean AtomicInteger::CompareAndSwap(integer COND, integer V) {
-    byte RESULT;
+BOOLEAN AtomicInteger::compareAndSwap(INTEGER COND, INTEGER V) {
+    BYTE RESULT;
     asm volatile("lock;cmpxchgl %3,%0;setz %1"
-                : "=m"(Value), "=q"(RESULT)
-                : "m"(Value), "r"(V), "a"(COND)
+                : "=m"(value), "=q"(RESULT)
+                : "m"(value), "r"(V), "a"(COND)
                 : "memory");
     return RESULT != 0;
 }
 /*#elif defined(C_MSC)
-integer AtomicInteger::Swap(integer V)
+INTEGER AtomicInteger::swap(INTEGER V)
 {
         _asm
         {
                 mov eax, [V]
-                mov edx, [Value]
+                mov edx, [value]
                 xchg [edx], eax
         }
     return V;
 }
 
-boolean AtomicInteger::CompareAndSwap(integer COND, integer V)
+BOOLEAN AtomicInteger::cas(INTEGER COND, INTEGER V)
 {
-    byte RESULT;
+    BYTE RESULT;
         _asm
         {
-                mov eax, [Value]
+                mov eax, [value]
                 mov ecx, [V]
                 mov edx, [COND]
                 lock cmpxchg [edx], ecx
@@ -51,84 +51,84 @@ boolean AtomicInteger::CompareAndSwap(integer COND, integer V)
     return RESULT!=0;
 }*/
 #else
-integer AtomicInteger::Swap(integer V) {
-    integer TMP = Value;
-    Value = V;
+INTEGER AtomicInteger::swap(INTEGER V) {
+    INTEGER TMP = value;
+    value = V;
     return TMP;
 }
 
-boolean AtomicInteger::CompareAndSwap(integer COND, integer V) {
-    if (Value == COND) {
-        Value = V;
+BOOLEAN AtomicInteger::compareAndSwap(INTEGER COND, INTEGER V) {
+    if (value == COND) {
+        value = V;
         return true;
     }
     return false;
 }
 #endif
 
-AtomicInteger::AtomicInteger(integer V) : Value(V) {
+AtomicInteger::AtomicInteger(INTEGER V) : value(V) {
 }
 
-AtomicInteger::AtomicInteger(const AtomicInteger& REF) : Value(REF.Value) {
+AtomicInteger::AtomicInteger(const AtomicInteger& REF) : value(REF.value) {
 }
 
 AtomicInteger::~AtomicInteger() {
 }
 
-integer AtomicInteger::Load() const {
-    return Value;
+INTEGER AtomicInteger::load() const {
+    return value;
 }
 
-AtomicInteger& AtomicInteger::Store(integer V) {
-    Value = V;
+AtomicInteger& AtomicInteger::store(INTEGER V) {
+    value = V;
     return *this;
 }
 
-boolean AtomicInteger::Compare(integer V) const {
-    return Value == V;
+BOOLEAN AtomicInteger::compare(INTEGER V) const {
+    return value == V;
 }
 
-AtomicInteger& AtomicInteger::operator =(integer V) {
-    return Store(V);
+AtomicInteger& AtomicInteger::operator =(INTEGER V) {
+    return store(V);
 }
 
-AtomicInteger& AtomicInteger::operator +=(integer V) {
-    while (!CompareAndSwap(Load(), Load() + V));
+AtomicInteger& AtomicInteger::operator +=(INTEGER V) {
+    while (!compareAndSwap(load(), load() + V));
     return *this;
 }
 
-AtomicInteger& AtomicInteger::operator -=(integer V) {
-    while (!CompareAndSwap(Load(), Load() - V));
+AtomicInteger& AtomicInteger::operator -=(INTEGER V) {
+    while (!compareAndSwap(load(), load() - V));
     return *this;
 }
 
-boolean AtomicInteger::operator ==(integer V) const {
-    return Compare(V);
+BOOLEAN AtomicInteger::operator ==(INTEGER V) const {
+    return compare(V);
 }
 
-boolean AtomicInteger::operator !=(integer V) const {
-    return !Compare(V);
+BOOLEAN AtomicInteger::operator !=(INTEGER V) const {
+    return !compare(V);
 }
 
 AtomicInteger& AtomicInteger::operator =(const AtomicInteger& REF) {
-    return Store(REF.Value);
+    return store(REF.value);
 }
 
-boolean AtomicInteger::operator ==(const AtomicInteger& REF) const {
-    return Compare(REF.Value);
+BOOLEAN AtomicInteger::operator ==(const AtomicInteger& REF) const {
+    return compare(REF.value);
 }
 
-boolean AtomicInteger::operator !=(const AtomicInteger& REF) const {
-    return !Compare(REF.Value);
+BOOLEAN AtomicInteger::operator !=(const AtomicInteger& REF) const {
+    return !compare(REF.value);
 }
 
 AtomicInteger& AtomicInteger::operator ++() {
-    while (!CompareAndSwap(Load(), Load() + 1));
+    while (!compareAndSwap(load(), load() + 1));
     return *this;
 }
 
 AtomicInteger& AtomicInteger::operator --() {
-    while (!CompareAndSwap(Load(), Load() - 1));
+    while (!compareAndSwap(load(), load() - 1));
     return *this;
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <atomicboolean.hpp>
@@ -8,41 +8,41 @@ BEGIN_SOURCECODE
 
 USING_WS_NAMESPACE
 
-#if defined(C_GNUC) && (defined(ARCH_X86) || defined(ARCH_X64))
-boolean AtomicBoolean::Swap(boolean V) {
+#if defined(COMPILER_GNUC) && (defined(ARCHITECTURE_X86) || defined(ARCHITECTURE_X64))
+BOOLEAN AtomicBoolean::swap(BOOLEAN V) {
     asm volatile("xchgb %1,%0"
                 : "=r"(V)
-                : "m"(Value), "0"(V)
+                : "m"(value), "0"(V)
                 : "memory");
     return V;
 }
 
-boolean AtomicBoolean::CompareAndSwap(boolean COND, boolean V) {
-    byte RESULT;
+BOOLEAN AtomicBoolean::compareAndSwap(BOOLEAN COND, BOOLEAN V) {
+    BYTE RESULT;
     asm volatile("lock;cmpxchgb %3,%0;setz %1"
-                : "=m"(Value), "=q"(RESULT)
-                : "m"(Value), "r"(V), "a"(COND)
+                : "=m"(value), "=q"(RESULT)
+                : "m"(value), "r"(V), "a"(COND)
                 : "memory");
     return RESULT != 0;
 }
 /*#elif defined(C_MSC)
-boolean AtomicBoolean::Swap(boolean V)
+BOOLEAN AtomicBoolean::swap(BOOLEAN V)
 {
         _asm
         {
                 mov eax, DWORD PTR V
-                mov edx, DWORD PTR Value
+                mov edx, DWORD PTR value
                 xchg [edx], eax
         }
     return V;
 }
 
-boolean AtomicBoolean::CompareAndSwap(boolean COND, boolean V)
+BOOLEAN AtomicBoolean::cas(BOOLEAN COND, BOOLEAN V)
 {
-        byte RESULT;
+        BYTE RESULT;
         _asm
         {
-                mov eax, [Value]
+                mov eax, [value]
                 mov ecx, DWORD PTR V
                 mov edx, DWORD PTR COND
                 lock cmpxchg [edx], ecx
@@ -51,65 +51,65 @@ boolean AtomicBoolean::CompareAndSwap(boolean COND, boolean V)
         return RESULT!=0;
 }*/
 #else
-boolean AtomicBoolean::Swap(boolean V) {
-    boolean TMP = Value;
-    Value = V;
+BOOLEAN AtomicBoolean::swap(BOOLEAN V) {
+    BOOLEAN TMP = value;
+    value = V;
     return TMP;
 }
 
-boolean AtomicBoolean::CompareAndSwap(boolean COND, boolean V) {
-    if (Value == COND) {
-        Value = V;
+BOOLEAN AtomicBoolean::compareAndSwap(BOOLEAN COND, BOOLEAN V) {
+    if (value == COND) {
+        value = V;
         return true;
     }
     return false;
 }
 #endif
 
-AtomicBoolean::AtomicBoolean(boolean V) : Value(V) {
+AtomicBoolean::AtomicBoolean(BOOLEAN V) : value(V) {
 }
 
-AtomicBoolean::AtomicBoolean(const AtomicBoolean& REF) : Value(REF.Value) {
+AtomicBoolean::AtomicBoolean(const AtomicBoolean& REF) : value(REF.value) {
 }
 
 AtomicBoolean::~AtomicBoolean() {
 }
 
-boolean AtomicBoolean::Load() const {
-    return Value;
+BOOLEAN AtomicBoolean::load() const {
+    return value;
 }
 
-AtomicBoolean& AtomicBoolean::Store(boolean V) {
-    Value = V;
+AtomicBoolean& AtomicBoolean::store(BOOLEAN V) {
+    value = V;
     return *this;
 }
 
-boolean AtomicBoolean::Compare(boolean V) const {
-    return Value == V;
+BOOLEAN AtomicBoolean::compare(BOOLEAN V) const {
+    return value == V;
 }
 
-AtomicBoolean& AtomicBoolean::operator =(boolean V) {
-    return Store(V);
+AtomicBoolean& AtomicBoolean::operator =(BOOLEAN V) {
+    return store(V);
 }
 
-boolean AtomicBoolean::operator ==(boolean V) const {
-    return Compare(V);
+BOOLEAN AtomicBoolean::operator ==(BOOLEAN V) const {
+    return compare(V);
 }
 
-boolean AtomicBoolean::operator !=(boolean V) const {
-    return !Compare(V);
+BOOLEAN AtomicBoolean::operator !=(BOOLEAN V) const {
+    return !compare(V);
 }
 
 AtomicBoolean& AtomicBoolean::operator =(const AtomicBoolean& REF) {
-    return Store(REF.Value);
+    return store(REF.value);
 }
 
-boolean AtomicBoolean::operator ==(const AtomicBoolean& REF) const {
-    return Compare(REF.Value);
+BOOLEAN AtomicBoolean::operator ==(const AtomicBoolean& REF) const {
+    return compare(REF.value);
 }
 
-boolean AtomicBoolean::operator !=(const AtomicBoolean& REF) const {
-    return !Compare(REF.Value);
+BOOLEAN AtomicBoolean::operator !=(const AtomicBoolean& REF) const {
+    return !compare(REF.value);
 }
 
 END_SOURCECODE

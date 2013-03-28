@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef THREADIMPLEMENTATION_HEADER
@@ -34,11 +34,11 @@ struct LOCAL ThreadSpecific {
     explicit ThreadSpecific(Thread*);
     ~ThreadSpecific();
 
-    Thread* H_Thread;
-    EventQueue* H_EventQueue;
-    EventLoopSpecific* H_EventLoopSpecific;
-    List<Mutex*> LST_Mutex;
-    List<TimerSpecific*> LST_TimerSpecific;
+    Thread* thread;
+    EventQueue* eventQueue;
+    EventLoopSpecific* eventLoopSpecific;
+    List<Mutex*> mutexList;
+    List<TimerSpecific*> timerSpecificList;
 
     UNCOPYABLE(ThreadSpecific)
 };
@@ -49,19 +49,19 @@ public:
     explicit ThreadImplementation(Thread*);
     ~ThreadImplementation();
 
-    void Execute();
-    void Terminate();
-    void Finish();
-    void FixSpecific();
+    void execute();
+    void terminate();
+    void finish();
+    void fixSpecific();
 
-    Thread* H_Thread;
-    ThreadSpecific* H_Specific;
+    Thread* thread;
+    ThreadSpecific* threadSpecific;
 #if defined(API_POSIX)
-    static void* StartRoutine(void*);
-    pthread_t H_PThread;
+    static void* startRoutine(void*);
+    pthread_t pThread;
 #elif defined(API_MSWINDOWS)
-    static DWORD WINAPI StartRoutine(LPVOID);
-    HANDLE H_MSThread;
+    static DWORD WINAPI startRoutine(LPVOID);
+    HANDLE hThread;
 #endif
 };
 

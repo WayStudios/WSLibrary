@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef DOCUMENTIMPLEMENTATION_HEADER
@@ -19,9 +19,9 @@ public:
     DocumentImplementation();
     ~DocumentImplementation();
 
-    AtomicInteger Ref;
-    Mutex MLock;
-    String Buf;
+    AtomicInteger reference;
+    Mutex mutex;
+    String buffer;
 };
 
 END_WS_NAMESPACE

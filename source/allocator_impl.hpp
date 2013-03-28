@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef ALLOCATOR_IMPLEMENTATION_HEADER
@@ -12,7 +12,7 @@ BEGIN_HEADER
 #if defined(_NEW) || defined(_NEW_)
 #else
 
-inline void* operator new(ws_size, void* PTR) throw () {
+inline void* operator new(WS::SIZE, void* PTR) throw () {
     return PTR;
 }
 
@@ -25,36 +25,36 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
-Allocator<TYPE>::Allocator() {
+template <typename T>
+Allocator<T>::Allocator() {
 }
 
-template <typename TYPE>
-Allocator<TYPE>::~Allocator() {
+template <typename T>
+Allocator<T>::~Allocator() {
 }
 
-template <typename TYPE>
-TYPE* Allocator<TYPE>::Allocate(size T_SIZE) {
-    void* P_ALLOC = ::operator new(T_SIZE * sizeof (TYPE));
+template <typename T>
+typename Allocator<T>::TYPE* Allocator<T>::allocate(SIZE T_SIZE) {
+    void* P_ALLOC = ::operator new(T_SIZE * sizeof (Allocator<T>::TYPE));
     if (P_ALLOC)
-        return reinterpret_cast<TYPE*> (P_ALLOC);
+        return reinterpret_cast<Allocator<T>::TYPE*> (P_ALLOC);
     return 0;
 }
 
-template <typename TYPE>
-void Allocator<TYPE>::Deallocate(TYPE* P_ALLOC) {
+template <typename T>
+void Allocator<T>::deallocate(typename Allocator<T>::TYPE* P_ALLOC) {
     if (P_ALLOC)
         ::operator delete(P_ALLOC);
 }
 
-template <typename TYPE>
-void Allocator<TYPE>::Construct(TYPE* P_T, const TYPE& REF_T) {
+template <typename T>
+void Allocator<T>::construct(typename Allocator<T>::TYPE* P_T, const typename Allocator<T>::TYPE& REF_T) {
     if (P_T)
-        new(P_T) TYPE(REF_T);
+        new(P_T) Allocator<T>::TYPE(REF_T);
 }
 
-template <typename TYPE>
-void Allocator<TYPE>::Destruct(TYPE* P_T) {
+template <typename T>
+void Allocator<T>::destruct(typename Allocator<T>::TYPE* P_T) {
     if (P_T)
         P_T->~TYPE();
 }

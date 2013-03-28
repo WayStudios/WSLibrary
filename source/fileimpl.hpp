@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef FILEIMPLEMENTATION_HEADER
@@ -20,16 +20,16 @@ struct LOCAL FileSpecific {
     explicit FileSpecific(const String&, AccessMode);
     ~FileSpecific();
 
-    //static Map<String, Vector<FileSpecific*> > Map;
+    //static Map<String, Vector<FileSpecific*> > map;
 
-    AtomicInteger AI_Reference;
-    String STR_Path;
-    AccessMode ENUM_Mode;
+    AtomicInteger reference;
+    String path;
+    AccessMode mode;
 
 #if defined(API_POSIX)
     integer FD_File;
 #elif defined(API_MSWINDOWS)
-    HFILE H_File;
+    HFILE hFile;
 #endif
 
     UNCOPYABLE(FileSpecific)
@@ -41,16 +41,16 @@ public:
     FileImplementation();
     ~FileImplementation();
 
-    boolean Open(const String&, AccessMode);
-    boolean Close();
+    BOOLEAN open(const String&, AccessMode);
+    BOOLEAN close();
     
-    size Size() const;
+    SIZE size() const;
     
-    size Read(void*, size);
-    size Write(void*, size);
-    size Seek(size, SeekPosition);
+    SIZE read(void*, SIZE);
+    SIZE write(void*, SIZE);
+    SIZE seek(SIZE, SeekPosition);
 
-    FileSpecific* H_Specific;
+    FileSpecific* specific;
 };
 
 END_WS_NAMESPACE

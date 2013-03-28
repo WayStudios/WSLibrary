@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef METAPOOLIMPLEMENTATION_HEADER
@@ -18,12 +18,12 @@ struct LOCAL MetaPoolNode {
     MetaPoolNode(const MetaPoolNode&);
     ~MetaPoolNode();
 
-    MetaPoolNode& operator=(const MetaPoolNode&);
+    MetaPoolNode& operator =(const MetaPoolNode&);
 
-    Meta* OBJMeta;
-    ubyte Priority;
-    MetaPoolNode* Prev;
-    MetaPoolNode* Next;
+    Meta* meta;
+    UBYTE priority;
+    MetaPoolNode* prev;
+    MetaPoolNode* next;
 };
 
 class LOCAL MetaPool::MetaPoolImplementation : public Allocator<MetaPoolNode> {
@@ -32,14 +32,14 @@ public:
     MetaPoolImplementation();
     ~MetaPoolImplementation();
 
-    void Append(Meta*);
-    void Remove(Meta*);
-    void Clear();
+    void append(Meta*);
+    void remove(Meta*);
+    void clear();
 
-    Meta* Find(Object*);
+    Meta* find(Object*);
 
-    Mutex MLock;
-    MetaPoolNode* ListB;
+    Mutex mutex;
+    MetaPoolNode* node; //beginning of all nodes
 };
 
 END_WS_NAMESPACE

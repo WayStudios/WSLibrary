@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef EVENTELEMENT_HEADER
@@ -19,14 +19,14 @@ struct EXPORT EventElement {
     EventElement(const EventElement&);
     ~EventElement();
 
-    EventElement& operator=(const EventElement&);
+    EventElement& operator =(const EventElement&);
 
-    boolean operator==(const EventElement&) const;
-    boolean operator!=(const EventElement&) const;
+    BOOLEAN operator ==(const EventElement&) const;
+    BOOLEAN operator !=(const EventElement&) const;
 
-    Event* Content;
-    Object* Receiver;
-    Object* Sender;
+    Event* event;
+    Object* receiver;
+    Object* sender;
 };
 
 END_WS_NAMESPACE

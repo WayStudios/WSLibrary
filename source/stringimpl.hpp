@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef STRINGIMPLEMENTATION_HEADER
@@ -14,25 +14,25 @@ BEGIN_HEADER
 
 BEGIN_WS_NAMESPACE
 
-class LOCAL String::StringImplementation : public Allocator<String::VALUE> {
+class LOCAL String::StringImplementation : public Allocator<String::TYPE> {
     UNCOPYABLE(StringImplementation)
 public:
     StringImplementation();
     ~StringImplementation();
 
-    void ConstructString(const byte*);
-    void ConstructString(const String::VALUE*, size);
-    void ConstructCString(const String::VALUE*, size);
-    StringImplementation* Duplicate();
-    void DestructString();
+    void constructString(const BYTE*);
+    void constructString(const String::TYPE*, SIZE);
+    void constructCString(const String::TYPE*, SIZE);
+    StringImplementation* duplicate();
+    void destructString();
 
 #if !defined(WITHOUT_THREAD)
-    AtomicInteger Ref;
-    Mutex MLock;
+    AtomicInteger ref;
+    Mutex mutex;
 #endif
-    String::VALUE* StringB;
-    byte* CStringB;
-    size Length;
+    String::TYPE* string;
+    BYTE* cstring;
+    SIZE length;
 };
 
 END_WS_NAMESPACE

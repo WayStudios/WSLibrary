@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <eventelement.hpp>
@@ -8,28 +8,28 @@ BEGIN_SOURCECODE
 
 USING_WS_NAMESPACE
 
-EventElement::EventElement(Event* E, Object* R, Object* S) : Content(E), Receiver(R), Sender(S) {
+EventElement::EventElement(Event* E, Object* R, Object* S) : event(E), receiver(R), sender(S) {
 }
 
-EventElement::EventElement(const EventElement& REF) : Content(REF.Content), Receiver(REF.Receiver), Sender(REF.Sender) {
+EventElement::EventElement(const EventElement& REF) : event(REF.event), receiver(REF.receiver), sender(REF.sender) {
 }
 
 EventElement::~EventElement() {
 }
 
 EventElement& EventElement::operator =(const EventElement& REF) {
-    Content = REF.Content;
-    Receiver = REF.Receiver;
-    Sender = REF.Sender;
+	event = REF.event;
+    receiver = REF.receiver;
+    sender = REF.sender;
     return *this;
 }
 
-boolean EventElement::operator ==(const EventElement& REF) const {
-    return Content == REF.Content && Receiver == REF.Receiver && Sender == REF.Sender;
+BOOLEAN EventElement::operator ==(const EventElement& REF) const {
+	return event == REF.event && receiver == REF.receiver && sender == REF.sender;
 }
 
-boolean EventElement::operator !=(const EventElement& REF) const {
-    return Content != REF.Content || Receiver != REF.Receiver || Sender != REF.Sender;
+BOOLEAN EventElement::operator !=(const EventElement& REF) const {
+	return event != REF.event || receiver != REF.receiver || sender != REF.sender;
 }
 
 END_SOURCECODE

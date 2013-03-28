@@ -14,8 +14,8 @@ BEGIN_SOURCECODE
 
 BEGIN_WS_NAMESPACE
 
-Time Time::Now() {
-    ws_timeval V = 0;
+Time Time::now() {
+    TIMEVAL V = 0;
 #if defined(API_POSIX)
     timeval tm_v;
     gettimeofday(&tm_v, 0);
@@ -30,60 +30,60 @@ Time Time::Now() {
     return Time(V);
 }
 
-Time::Time(ws_timeval V) : Value(V) {
+Time::Time(TIMEVAL V) : value(V) {
 }
 
-Time::Time(const Time& REF) : Value(REF.Value) {
+Time::Time(const Time& REF) : value(REF.value) {
 }
 
 Time::~Time() {
 }
 
-ws_timeval Time::Hour() const {
-    return Value / 3600000;
+TIMEVAL Time::hours() const {
+    return value / 3600000;
 }
 
-ws_timeval Time::Minute() const {
-    return Value / 60000;
+TIMEVAL Time::minutes() const {
+    return value / 60000;
 }
 
-ws_timeval Time::Second() const {
-    return Value / 1000;
+TIMEVAL Time::seconds() const {
+    return value / 1000;
 }
 
-ws_timeval Time::MilliSecond() const {
-    return Value;
+TIMEVAL Time::milliseconds() const {
+    return value;
 }
 
 Time& Time::operator =(const Time& REF) {
-    Value = REF.Value;
+    value = REF.value;
     return *this;
 }
 
-boolean Time::operator ==(const Time& REF) const {
-    return Value == REF.Value;
+BOOLEAN Time::operator ==(const Time& REF) const {
+    return value == REF.value;
 }
 
-boolean Time::operator !=(const Time& REF) const {
-    return Value != REF.Value;
+BOOLEAN Time::operator !=(const Time& REF) const {
+    return value != REF.value;
 }
 
 Time& Time::operator +=(const Time& REF) {
-    Value += REF.Value;
+    value += REF.value;
     return *this;
 }
 
 Time& Time::operator -=(const Time& REF) {
-    Value -= REF.Value;
+    value -= REF.value;
     return *this;
 }
 
 Time Time::operator +(const Time& REF) const {
-    return Time(Value + REF.Value);
+    return Time(value + REF.value);
 }
 
 Time Time::operator -(const Time& REF) const {
-    return Time(Value - REF.Value);
+    return Time(value - REF.value);
 }
 
 END_WS_NAMESPACE

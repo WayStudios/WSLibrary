@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef QUEUE_HEADER
@@ -13,44 +13,44 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
+template <typename T>
 class EXPORT Queue {
     DECLARE_IMPLEMENTATION(Queue)
 public:
-    typedef TYPE VALUE;
+    typedef T TYPE;
 
     class Iterator;
 
     Queue();
-    Queue(const Queue<TYPE>&);
+    Queue(const Queue<T>&);
     ~Queue();
 
-    size Total() const;
-    boolean Empty() const;
-    void Clear();
+    SIZE total() const;
+    BOOLEAN empty() const;
+    void clear();
 
-    boolean Exist(const TYPE&) const;
+    BOOLEAN exist(const TYPE&) const;
 
-    TYPE& Top();
+    TYPE& top();
 
-    const TYPE& Top() const;
+    const TYPE& top() const;
 
-    void Push(const TYPE&);
+    void push(const TYPE&);
 
-    void Pop();
+    void pop();
 
-    void Append(const TYPE&);
+    void append(const TYPE&);
 
-    Iterator Begin();
-    Iterator End();
+    Iterator begin();
+    Iterator end();
 
-    const Iterator Begin() const;
-    const Iterator End() const;
+    const Iterator begin() const;
+    const Iterator end() const;
 
-    Queue<TYPE>& operator=(const Queue<TYPE>&);
+    Queue<T>& operator =(const Queue<T>&);
 
-    boolean operator==(const Queue<TYPE>&) const;
-    boolean operator!=(const Queue<TYPE>&) const;
+    BOOLEAN operator ==(const Queue<T>&) const;
+    BOOLEAN operator !=(const Queue<T>&) const;
 };
 
 END_WS_NAMESPACE

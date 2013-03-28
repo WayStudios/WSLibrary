@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef THREAD_HEADER
@@ -10,6 +10,10 @@
 BEGIN_HEADER
         
 BEGIN_WS_NAMESPACE
+
+/*
+TODO:Thread will handle the signal and slot, remove signal and slot from event 
+*/
         
 class EXPORT Thread:public Object
 {
@@ -19,17 +23,18 @@ public:
     explicit Thread(Object* OBJ=0);
     virtual ~Thread();
     
-    boolean IsRunning() const;
+    BOOLEAN isRunning() const;
     
-    void Execute();
-    void Terminate();
-    void Finish();
+    void execute();
+    void terminate();
+    void finish();
     
-    boolean PostEvent(Event*,Object* R=0,Object* S=0);
-    
-    static Thread* Current();
+    BOOLEAN postEvent(Event*, Object* R=0, Object* S=0);
+    BOOLEAN sendEvent(Event*, Object* R=0, Object* S=0);
+
+    static Thread* current();
 protected:
-    virtual void Routine();
+    virtual void routine();
 };
         
 END_WS_NAMESPACE

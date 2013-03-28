@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef EVENTLOOPIMPLEMENTATION_HEADER
@@ -22,18 +22,17 @@ struct LOCAL EventLoopSpecific {
     explicit EventLoopSpecific(EventLoop*);
     ~EventLoopSpecific();
 
-    EventLoop* H_EventLoop;
-    EventQueue* H_EventQueue;
-    EventDispatcher* H_EventDispatcher;
-    boolean B_Waiting;
+    EventLoop* eventLoop;
+    EventQueue* eventQueue;
+    EventDispatcher* eventDispatcher;
+    boolean waiting;
 
 #if defined(API_POSIX)
     static integer FD_MAX;
     integer FD_Pipe[2];
     boolean B_Pipe;
 #elif defined(API_MSWINDOWS)
-    HANDLE H_MSEvent;
-    boolean B_MSEvent;
+    HANDLE hEvent;
 #endif
 
     UNCOPYABLE(EventLoopSpecific)
@@ -45,23 +44,23 @@ public:
     EventLoopImplementation();
     ~EventLoopImplementation();
 
-    ws_timeval Interval();
-    void Wait(ws_timeval);
-    void Awake();
+    TIMEVAL interval();
+    void wait(TIMEVAL);
+    void awake();
 #if defined(API_POSIX)
-    void OpenPipe();
-    void ClosePipe();
-    void ReadPipe(void*, size);
-    void WritePipe(void*, size);
+    void openPipe();
+    void closePipe();
+    void readPipe(void*, SIZE);
+    void writePipe(void*, SIZE);
 #elif defined(API_MSWINDOWS)
-    void OpenMSEvent();
-    void CloseMSEvent();
-    void SetMSEvent();
-    void ResetMSEvent();
+    void openMSEvent();
+    void closeMSEvent();
+    void setMSEvent();
+    void resetMSEvent();
 #endif
 
-    boolean B_EventLoop;
-    EventLoopSpecific* H_Specific;
+    BOOLEAN active;
+    EventLoopSpecific* eventLoopSpecific;
 };
 
 END_WS_NAMESPACE

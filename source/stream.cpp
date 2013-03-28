@@ -7,23 +7,26 @@
 
 BEGIN_SOURCECODE
         
-USING_WS_NAMESPACE
+BEGIN_WS_NAMESPACE
         
-Stream::StreamImplementation::StreamImplementation(StreamBuffer* P):Buf(P){}
+Stream::StreamImplementation::StreamImplementation(StreamBuffer* P):buffer(P){}
 
 Stream::StreamImplementation::~StreamImplementation(){}
 
-Stream::Stream(StreamBuffer* BUF):Implementation(0)
+Stream::Stream(StreamBuffer* BUF):implementation(0)
 {
-    Implementation=new StreamImplementation(BUF);
+    implementation=new StreamImplementation(BUF);
 }
 
 Stream::~Stream(){}
 
-StreamBuffer* Stream::Buffer() const
+StreamBuffer* Stream::buffer() const
 {
-    if(Implementation)
-        return Implementation->Buf;
+    if(implementation)
+        return implementation->buffer;
+	return 0;
 }
+
+END_WS_NAMESPACE
         
 END_SOURCECODE

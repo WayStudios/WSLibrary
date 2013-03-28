@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef VECTOR_IMPLEMENTATION_HEADER
@@ -17,554 +17,554 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
-class LOCAL Vector<TYPE>::VectorImplementation : public Allocator<TYPE> {
+template <typename T>
+class LOCAL Vector<T>::VectorImplementation : public Allocator<typename Vector<T>::TYPE> {
     UNCOPYABLE(VectorImplementation)
 public:
     VectorImplementation();
     ~VectorImplementation();
 
-    size Total() const;
-    boolean Full() const;
-    boolean Empty() const;
-    VectorImplementation* Duplicate();
-    void Clear();
+    SIZE total() const;
+    BOOLEAN full() const;
+    BOOLEAN empty() const;
+    VectorImplementation* duplicate();
+    void clear();
 
-    void Reallocate(size B_OFFSET = 0);
+    void reallocate(SIZE B_OFFSET = 0);
 
-    void PushFront(const TYPE&);
-    void PopFront();
+    void pushFront(const typename Vector<T>::TYPE&);
+    void popFront();
 
-    void PushBack(const TYPE&);
-    void PopBack();
+    void pushBack(const typename Vector<T>::TYPE&);
+    void popBack();
 
-    void Remove(TYPE*);
-    void Remove(const TYPE&);
+    void remove(typename Vector<T>::TYPE*);
+    void remove(const typename Vector<T>::TYPE&);
 
 #if !defined(WITHOUT_THREAD)
-    AtomicInteger Ref;
-    Mutex MLock;
+    AtomicInteger reference;
+    Mutex mutex;
 #endif
-    TYPE* VecAB;
-    TYPE* VecAE;
-    TYPE* VecB;
-    TYPE* VecE;
+    typename Vector<T>::TYPE* allocatedBegin;
+    typename Vector<T>::TYPE* allocatedEnd;
+    typename Vector<T>::TYPE* begin;
+    typename Vector<T>::TYPE* end;
 };
 
-template <typename TYPE>
-class EXPORT Vector<TYPE>::Iterator {
-    TYPE* Current;
+template <typename T>
+class EXPORT Vector<T>::Iterator {
+    typename Vector<T>::TYPE* current;
 public:
-    explicit Iterator(TYPE*);
+    explicit Iterator(typename Vector<T>::TYPE*);
     Iterator(const Iterator&);
     ~Iterator();
 
-    Iterator& operator=(const Iterator&);
-    Iterator& operator++();
-    Iterator& operator--();
-    Iterator& operator+=(integer);
-    Iterator& operator-=(integer);
+    Iterator& operator =(const Iterator&);
+    Iterator& operator ++();
+    Iterator& operator --();
+    Iterator& operator +=(INTEGER);
+    Iterator& operator -=(INTEGER);
 
-    Iterator operator+(integer) const;
-    Iterator operator-(integer) const;
+    Iterator operator +(INTEGER) const;
+    Iterator operator -(INTEGER) const;
 
-    TYPE& operator*();
+    typename Vector<T>::TYPE& operator *();
 
-    const TYPE& operator*() const;
+    const typename Vector<T>::TYPE& operator *() const;
 
-    boolean operator==(const Iterator&) const;
-    boolean operator!=(const Iterator&) const;
+    BOOLEAN operator ==(const Iterator&) const;
+    BOOLEAN operator !=(const Iterator&) const;
 };
 
-template <typename TYPE>
-Vector<TYPE>::VectorImplementation::VectorImplementation() : VecAB(0), VecAE(0), VecB(0), VecE(0) {
+template <typename T>
+Vector<T>::VectorImplementation::VectorImplementation() : allocatedBegin(0), allocatedEnd(0), begin(0), end(0) {
 }
 
-template <typename TYPE>
-Vector<TYPE>::VectorImplementation::~VectorImplementation() {
+template <typename T>
+Vector<T>::VectorImplementation::~VectorImplementation() {
 }
 
-template <typename TYPE>
-size Vector<TYPE>::VectorImplementation::Total() const {
-    return VecE - VecB;
+template <typename T>
+SIZE Vector<T>::VectorImplementation::total() const {
+    return end - begin;
 }
 
-template <typename TYPE>
-boolean Vector<TYPE>::VectorImplementation::Full() const {
-    return VecB == VecAB || VecE == VecAE;
+template <typename T>
+BOOLEAN Vector<T>::VectorImplementation::full() const {
+    return begin == allocatedBegin || end == allocatedEnd;
 }
 
-template <typename TYPE>
-boolean Vector<TYPE>::VectorImplementation::Empty() const {
-    return VecB == VecE;
+template <typename T>
+BOOLEAN Vector<T>::VectorImplementation::empty() const {
+    return begin == end;
 }
 
-template <typename TYPE>
-typename Vector<TYPE>::VectorImplementation* Vector<TYPE>::VectorImplementation::Duplicate() {
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+template <typename T>
+typename Vector<T>::VectorImplementation* Vector<T>::VectorImplementation::duplicate() {
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
     VectorImplementation* N_IMPL = new VectorImplementation;
     if (N_IMPL) {
-        if (!Empty()) {
-            size N_ALLOC_VOL = VecAE - VecAB;
-            if (Full())
+        if (!empty()) {
+            SIZE N_ALLOC_VOL = allocatedEnd - allocatedBegin;
+            if (full())
                 N_ALLOC_VOL *= N_ALLOC_VOL;
-            size N_VOL = Total();
-            N_IMPL->VecAB = Allocator<TYPE>::Allocate(N_ALLOC_VOL);
-            N_IMPL->VecAE = N_IMPL->VecAB + N_ALLOC_VOL;
-            N_IMPL->VecB = N_IMPL->VecAB + (N_ALLOC_VOL - N_VOL) / 2;
-            N_IMPL->VecE = N_IMPL->VecB + N_VOL;
-            for (size i = 0; i < N_VOL; ++i)
-                Construct(N_IMPL->VecB + i, *(VecB + i));
+            SIZE N_VOL = total();
+            N_IMPL->allocatedBegin = allocate(N_ALLOC_VOL);
+            N_IMPL->allocatedEnd = N_IMPL->allocatedBegin + N_ALLOC_VOL;
+            N_IMPL->begin = N_IMPL->allocatedBegin + (N_ALLOC_VOL - N_VOL) / 2;
+            N_IMPL->end = N_IMPL->begin + N_VOL;
+            for (SIZE i = 0; i < N_VOL; ++i)
+                construct(N_IMPL->begin + i, *(begin + i));
         }
         return N_IMPL;
     }
     return 0;
 }
 
-template <typename TYPE>
-void Vector<TYPE>::VectorImplementation::Clear() {
-    if (VecAB && VecAE) {
-        ScopedLock<Mutex> SL_Mutex(&MLock);
-        if (VecB && VecE) {
-            for (TYPE* P_ITER = VecB; P_ITER != VecE; ++P_ITER)
-                Destruct(P_ITER);
-            VecE = VecB = 0;
+template <typename T>
+void Vector<T>::VectorImplementation::clear() {
+    if (allocatedBegin && allocatedEnd) {
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
+        if (begin && end) {
+            for (Vector<T>::TYPE* P_ITER = begin; P_ITER != end; ++P_ITER)
+                destruct(P_ITER);
+            end = begin = 0;
         }
-        Deallocate(VecAB);
-        VecAE = VecAB = 0;
+        deallocate(allocatedBegin);
+        allocatedEnd = allocatedBegin = 0;
     }
 }
 
-template <typename TYPE>
-void Vector<TYPE>::VectorImplementation::Reallocate(size B_OFFSET) {
-    if (!Full())
+template <typename T>
+void Vector<T>::VectorImplementation::reallocate(SIZE B_OFFSET) {
+    if (!full())
         return;
-    ScopedLock<Mutex> SL_Mutex(&MLock);
-    size N_ALLOC_VOL = 2;
-    if (VecAB != VecAE) {
-        N_ALLOC_VOL = VecAE - VecAB;
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
+    SIZE N_ALLOC_VOL = 2;
+    if (allocatedBegin != allocatedEnd) {
+        N_ALLOC_VOL = allocatedEnd - allocatedBegin;
         N_ALLOC_VOL *= N_ALLOC_VOL;
     }
-    TYPE* N_VecAB = Allocator<TYPE>::Allocate(N_ALLOC_VOL);
-    TYPE* N_VecAE = N_VecAB + N_ALLOC_VOL;
-    TYPE* N_VecB = N_VecAB + B_OFFSET;
-    TYPE* N_VecE = N_VecB;
-    if (!Empty())
-        for (TYPE* P_ITER = VecB; P_ITER != VecE; ++P_ITER) {
-            Construct(N_VecE++, *P_ITER);
-            Destruct(P_ITER);
+    Vector<T>::TYPE* N_VecAB = allocate(N_ALLOC_VOL);
+    Vector<T>::TYPE* N_VecAE = N_VecAB + N_ALLOC_VOL;
+    Vector<T>::TYPE* N_VecB = N_VecAB + B_OFFSET;
+    Vector<T>::TYPE* N_VecE = N_VecB;
+    if (!empty())
+        for (Vector<T>::TYPE* P_ITER = begin; P_ITER != end; ++P_ITER) {
+            construct(N_VecE++, *P_ITER);
+            destruct(P_ITER);
         }
-    if (VecAB)
-        Deallocate(VecAB);
-    VecB = N_VecB;
-    VecE = N_VecE;
-    VecAB = N_VecAB;
-    VecAE = N_VecAE;
+    if (allocatedBegin)
+        deallocate(allocatedBegin);
+    begin = N_VecB;
+    end = N_VecE;
+    allocatedBegin = N_VecAB;
+    allocatedEnd = N_VecAE;
 }
 
-template <typename TYPE>
-void Vector<TYPE>::VectorImplementation::PushFront(const TYPE& REF) {
-    if (Full())
-        Reallocate((VecAE - VecAB - Total()) / 2);
-    ScopedLock<Mutex> SL_Mutex(&MLock);
-    Construct(--VecB, REF);
+template <typename T>
+void Vector<T>::VectorImplementation::pushFront(const typename Vector<T>::TYPE& REF) {
+    if (full())
+        reallocate((allocatedEnd - allocatedBegin - total()) / 2);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
+    construct(--begin, REF);
 }
 
-template <typename TYPE>
-void Vector<TYPE>::VectorImplementation::PopFront() {
-    if (!Empty())
-        if (Total() == 1)
-            Clear();
+template <typename T>
+void Vector<T>::VectorImplementation::popFront() {
+    if (!empty())
+        if (total() == 1)
+            clear();
         else {
-            ScopedLock<Mutex> SL_Mutex(&MLock);
-            Destruct(VecB++);
+            ScopedLock<Mutex> SL_MUTEX(&mutex);
+            destruct(begin++);
         }
 }
 
-template <typename TYPE>
-void Vector<TYPE>::VectorImplementation::PushBack(const TYPE& REF) {
-    if (Full())
-        Reallocate((VecAE - VecAB - Total()) / 2);
-    ScopedLock<Mutex> SL_Mutex(&MLock);
-    Construct(VecE++, REF);
+template <typename T>
+void Vector<T>::VectorImplementation::pushBack(const typename  Vector<T>::TYPE& REF) {
+    if (full())
+        reallocate((allocatedEnd - allocatedBegin - total()) / 2);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
+    construct(end++, REF);
 }
 
-template <typename TYPE>
-void Vector<TYPE>::VectorImplementation::PopBack() {
-    if (!Empty())
-        if (Total() == 1)
-            Clear();
+template <typename T>
+void Vector<T>::VectorImplementation::popBack() {
+    if (!empty())
+        if (total() == 1)
+            clear();
         else {
-            ScopedLock<Mutex> SL_Mutex(&MLock);
-            Destruct(--VecE);
+            ScopedLock<Mutex> SL_MUTEX(&mutex);
+            destruct(--end);
         }
 }
 
-template <typename TYPE>
-void Vector<TYPE>::VectorImplementation::Remove(TYPE* P) {
-    if (!Empty()) {
-        if (P == VecB)
-            return PopFront();
-        if (P == (VecE - 1))
-            return PopBack();
-        if (P > VecB && P < VecE) {
-            ScopedLock<Mutex> SL_Mutex(&MLock);
-            Destruct(P);
-            if ((P - VecB) >= (Total() / 2)) {
-                for (TYPE* P_ITER = (P + 1); P_ITER != VecE; ++P_ITER) {
-                    Construct(P++, *P_ITER);
-                    Destruct(P_ITER);
+template <typename T>
+void Vector<T>::VectorImplementation::remove(typename Vector<T>::TYPE* P) {
+    if (!empty()) {
+        if (P == begin)
+            return popFront();
+        if (P == (end - 1))
+            return popBack();
+        if (P > begin && P < end) {
+            ScopedLock<Mutex> SL_MUTEX(&mutex);
+            destruct(P);
+            if ((P - begin) >= (total() / 2)) {
+                for (TYPE* P_ITER = (P + 1); P_ITER != end; ++P_ITER) {
+                    construct(P++, *P_ITER);
+                    destruct(P_ITER);
                 }
-                --VecE;
+                --end;
             } else {
-                TYPE* MAX = VecB - 1;
+                TYPE* MAX = begin - 1;
                 for (TYPE* P_ITER = (P - 1); P_ITER != MAX; --P_ITER) {
-                    Construct(P--, *P_ITER);
-                    Destruct(P_ITER);
+                    construct(P--, *P_ITER);
+                    destruct(P_ITER);
                 }
-                ++VecB;
+                ++begin;
             }
         }
     }
 }
 
-template <typename TYPE>
-void Vector<TYPE>::VectorImplementation::Remove(const TYPE& REF) {
-    if (!Empty()) {
-        ScopedLock<Mutex> SL_Mutex(&MLock);
-        for (TYPE* P_ITER = VecB; P_ITER != VecE; ++P_ITER)
+template <typename T>
+void Vector<T>::VectorImplementation::remove(const typename Vector<T>::TYPE& REF) {
+    if (!empty()) {
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
+        for (TYPE* P_ITER = begin; P_ITER != end; ++P_ITER)
             if ((*P_ITER) == REF) {
-                if (P_ITER == VecB) {
-                    Destruct(VecB++);
+                if (P_ITER == begin) {
+                    destruct(begin++);
                     return;
                 }
-                if (P_ITER == (VecE - 1)) {
-                    Destruct(--VecE);
+                if (P_ITER == (end - 1)) {
+                    destruct(--end);
                     return;
                 }
-                Destruct(P_ITER);
-                if (static_cast<size> ((P_ITER - VecB)) >= static_cast<size> ((Total() / 2))) {
-                    for (TYPE* P_ITER_S = (P_ITER + 1); P_ITER_S != VecE; ++P_ITER_S) {
-                        Construct(P_ITER++, *P_ITER_S);
-                        Destruct(P_ITER_S);
+                destruct(P_ITER);
+                if (static_cast<SIZE> ((P_ITER - begin)) >= static_cast<SIZE> ((total() / 2))) {
+                    for (TYPE* P_ITER_S = (P_ITER + 1); P_ITER_S != end; ++P_ITER_S) {
+                        construct(P_ITER++, *P_ITER_S);
+                        destruct(P_ITER_S);
                     }
-                    --VecE;
+                    --end;
                 } else {
-                    TYPE* MAX = VecB - 1;
+                    TYPE* MAX = begin - 1;
                     for (TYPE* P_ITER_S = (P_ITER - 1); P_ITER_S != MAX; --P_ITER_S) {
-                        Construct(P_ITER--, *P_ITER_S);
-                        Destruct(P_ITER_S);
+                        construct(P_ITER--, *P_ITER_S);
+                        destruct(P_ITER_S);
                     }
-                    ++VecB;
+                    ++begin;
                 }
                 return;
             }
     }
 }
 
-template <typename TYPE>
-Vector<TYPE>::Iterator::Iterator(TYPE* P_ITER) : Current(P_ITER) {
+template <typename T>
+Vector<T>::Iterator::Iterator(typename Vector<T>::TYPE* P_ITER) : current(P_ITER) {
 }
 
-template <typename TYPE>
-Vector<TYPE>::Iterator::Iterator(const Iterator& REF) : Current(REF.Current) {
+template <typename T>
+Vector<T>::Iterator::Iterator(const typename Vector<T>::Iterator& REF) : current(REF.current) {
 }
 
-template <typename TYPE>
-Vector<TYPE>::Iterator::~Iterator() {
+template <typename T>
+Vector<T>::Iterator::~Iterator() {
 }
 
-template <typename TYPE>
-        typename Vector<TYPE>::Iterator& Vector<TYPE>::Iterator::operator =(const Iterator& REF) {
-    Current = REF.Current;
+template <typename T>
+typename Vector<T>::Iterator& Vector<T>::Iterator::operator =(const Iterator& REF) {
+    current = REF.current;
     return *this;
 }
 
-template <typename TYPE>
-typename Vector<TYPE>::Iterator& Vector<TYPE>::Iterator::operator ++() {
-    ++Current;
+template <typename T>
+typename Vector<T>::Iterator& Vector<T>::Iterator::operator ++() {
+    ++current;
     return *this;
 }
 
-template <typename TYPE>
-typename Vector<TYPE>::Iterator& Vector<TYPE>::Iterator::operator --() {
-    --Current;
+template <typename T>
+typename Vector<T>::Iterator& Vector<T>::Iterator::operator --() {
+    --current;
     return *this;
 }
 
-template <typename TYPE>
-        typename Vector<TYPE>::Iterator& Vector<TYPE>::Iterator::operator +=(integer DIFF) {
-    Current += DIFF;
+template <typename T>
+typename Vector<T>::Iterator& Vector<T>::Iterator::operator +=(INTEGER DIFF) {
+    current += DIFF;
     return *this;
 }
 
-template <typename TYPE>
-        typename Vector<TYPE>::Iterator& Vector<TYPE>::Iterator::operator -=(integer DIFF) {
-    Current -= DIFF;
+template <typename T>
+typename Vector<T>::Iterator& Vector<T>::Iterator::operator -=(INTEGER DIFF) {
+    current -= DIFF;
     return *this;
 }
 
-template <typename TYPE>
-typename Vector<TYPE>::Iterator Vector<TYPE>::Iterator::operator +(integer DIFF) const {
-    return Iterator(Current + DIFF);
+template <typename T>
+typename Vector<T>::Iterator Vector<T>::Iterator::operator +(INTEGER DIFF) const {
+    return Iterator(current + DIFF);
 }
 
-template <typename TYPE>
-typename Vector<TYPE>::Iterator Vector<TYPE>::Iterator::operator -(integer DIFF) const {
-    return Iterator(Current - DIFF);
+template <typename T>
+typename Vector<T>::Iterator Vector<T>::Iterator::operator -(INTEGER DIFF) const {
+    return Iterator(current - DIFF);
 }
 
-template <typename TYPE>
-TYPE& Vector<TYPE>::Iterator::operator *() {
-    return *Current;
+template <typename T>
+typename Vector<T>::TYPE& Vector<T>::Iterator::operator *() {
+    return *current;
 }
 
-template <typename TYPE>
-const TYPE& Vector<TYPE>::Iterator::operator *() const {
-    return *Current;
+template <typename T>
+const typename Vector<T>::TYPE& Vector<T>::Iterator::operator *() const {
+    return *current;
 }
 
-template <typename TYPE>
-boolean Vector<TYPE>::Iterator::operator ==(const Iterator& REF) const {
-    return Current == REF.Current;
+template <typename T>
+BOOLEAN Vector<T>::Iterator::operator ==(const typename Vector<T>::Iterator& REF) const {
+    return current == REF.current;
 }
 
-template <typename TYPE>
-boolean Vector<TYPE>::Iterator::operator !=(const Iterator& REF) const {
-    return Current != REF.Current;
+template <typename T>
+BOOLEAN Vector<T>::Iterator::operator !=(const typename Vector<T>::Iterator& REF) const {
+    return current != REF.current;
 }
 
-template <typename TYPE>
-Vector<TYPE>::Vector() : Implementation(0) {
-    Implementation = new VectorImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+template <typename T>
+Vector<T>::Vector() : implementation(0) {
+    implementation = new VectorImplementation;
+    if (implementation)
+        ++(implementation->reference);
 }
 
-template <typename TYPE>
-Vector<TYPE>::Vector(const Vector<TYPE>& REF) : Implementation(REF.Implementation) {
-    if (Implementation)
-        ++(Implementation->Ref);
+template <typename T>
+Vector<T>::Vector(const Vector<T>& REF) : implementation(REF.implementation) {
+    if (implementation)
+        ++(implementation->reference);
 }
 
-template <typename TYPE>
-Vector<TYPE>::~Vector() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Clear();
-            delete Implementation;
+template <typename T>
+Vector<T>::~Vector() {
+    if (implementation)
+        if (--(implementation->reference) == 0) {
+            implementation->clear();
+            delete implementation;
         }
 }
 
-template <typename TYPE>
-size Vector<TYPE>::Total() const {
-    if (Implementation)
-        return Implementation->Total();
+template <typename T>
+SIZE Vector<T>::total() const {
+    if (implementation)
+        return implementation->total();
     return 0;
 }
 
-template <typename TYPE>
-boolean Vector<TYPE>::Empty() const {
-    if (Implementation)
-        return Implementation->Empty();
+template <typename T>
+BOOLEAN Vector<T>::empty() const {
+    if (implementation)
+        return implementation->empty();
     return true;
 }
 
-template <typename TYPE>
-void Vector<TYPE>::Clear() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Clear();
-            delete Implementation;
+template <typename T>
+void Vector<T>::clear() {
+    if (implementation)
+        if (--(implementation->reference) == 0) {
+            implementation->clear();
+            delete implementation;
         }
-    Implementation = new VectorImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+    implementation = new VectorImplementation;
+    if (implementation)
+        ++(implementation->reference);
 }
 
-template <typename TYPE>
-boolean Vector<TYPE>::Exist(const TYPE& REF) const {
-    if (Implementation) {
-        ScopedLock<Mutex> SL_Mutex(&(Implementation->MLock));
-        for (Iterator P_ITER = Begin(); P_ITER != End(); ++P_ITER)
+template <typename T>
+BOOLEAN Vector<T>::exist(const typename Vector<T>::TYPE& REF) const {
+    if (implementation) {
+        ScopedLock<Mutex> SL_MUTEX(&(implementation->mutex));
+        for (Iterator P_ITER = begin(); P_ITER != end(); ++P_ITER)
             if (*P_ITER == REF)
                 return true;
     }
     return false;
 }
 
-template <typename TYPE>
-TYPE& Vector<TYPE>::First() {
-    if (Implementation->Ref != 1) {
-        VectorImplementation* N_IMPL = Implementation->Duplicate();
-        --(Implementation->Ref);
-        Implementation = N_IMPL;
-        ++(Implementation->Ref);
+template <typename T>
+typename Vector<T>::TYPE& Vector<T>::first() {
+    if (implementation->reference != 1) {
+        VectorImplementation* N_IMPL = implementation->duplicate();
+        --(implementation->reference);
+        implementation = N_IMPL;
+        ++(implementation->reference);
     }
-    return *(Implementation->VecB);
+    return *(implementation->begin);
 }
 
-template <typename TYPE>
-TYPE& Vector<TYPE>::Last() {
-    if (Implementation->Ref != 1) {
-        VectorImplementation* N_IMPL = Implementation->Duplicate();
-        --(Implementation->Ref);
-        Implementation = N_IMPL;
-        ++(Implementation->Ref);
+template <typename T>
+typename Vector<T>::TYPE& Vector<T>::last() {
+    if (implementation->reference != 1) {
+        VectorImplementation* N_IMPL = implementation->duplicate();
+        --(implementation->reference);
+        implementation = N_IMPL;
+        ++(implementation->reference);
     }
-    return *(Implementation->VecE - 1);
+    return *(implementation->end - 1);
 }
 
-template <typename TYPE>
-TYPE& Vector<TYPE>::At(size IDX) {
-    if (Implementation->Ref != 1) {
-        VectorImplementation* N_IMPL = Implementation->Duplicate();
-        --(Implementation->Ref);
-        Implementation = N_IMPL;
-        ++(Implementation->Ref);
+template <typename T>
+typename Vector<T>::TYPE& Vector<T>::at(SIZE IDX) {
+    if (implementation->reference != 1) {
+        VectorImplementation* N_IMPL = implementation->duplicate();
+        --(implementation->reference);
+        implementation = N_IMPL;
+        ++(implementation->reference);
     }
-    return *(Implementation->VecB + IDX);
+    return *(implementation->begin + IDX);
 }
 
-template <typename TYPE>
-const TYPE& Vector<TYPE>::First() const {
-    return *(Implementation->VecB);
+template <typename T>
+const typename Vector<T>::TYPE& Vector<T>::first() const {
+    return *(implementation->begin);
 }
 
-template <typename TYPE>
-const TYPE& Vector<TYPE>::Last() const {
-    return *(Implementation->VecE - 1);
+template <typename T>
+const typename Vector<T>::TYPE& Vector<T>::last() const {
+    return *(implementation->end - 1);
 }
 
-template <typename TYPE>
-const TYPE& Vector<TYPE>::At(size IDX) const {
-    return *(Implementation->VecB + IDX);
+template <typename T>
+const typename Vector<T>::TYPE& Vector<T>::at(SIZE IDX) const {
+    return *(implementation->begin + IDX);
 }
 
-template <typename TYPE>
-void Vector<TYPE>::PushFront(const TYPE& REF) {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            VectorImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void Vector<T>::pushFront(const typename Vector<T>::TYPE& REF) {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            VectorImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->PushFront(REF);
+        implementation->pushFront(REF);
     }
 }
 
-template <typename TYPE>
-void Vector<TYPE>::PopFront() {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            VectorImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void Vector<T>::popFront() {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            VectorImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->PopFront();
+        implementation->popFront();
     }
 }
 
-template <typename TYPE>
-void Vector<TYPE>::PushBack(const TYPE& REF) {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            VectorImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void Vector<T>::pushBack(const typename Vector<T>::TYPE& REF) {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            VectorImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->PushBack(REF);
+        implementation->pushBack(REF);
     }
 }
 
-template <typename TYPE>
-void Vector<TYPE>::PopBack() {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            VectorImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void Vector<T>::popBack() {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            VectorImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->PopBack();
+        implementation->popBack();
     }
 }
 
-template <typename TYPE>
-void Vector<TYPE>::Append(const TYPE& REF) {
-    PushBack(REF);
+template <typename T>
+void Vector<T>::append(const typename Vector<T>::TYPE& REF) {
+    pushBack(REF);
 }
 
-template <typename TYPE>
-void Vector<TYPE>::Remove(const TYPE& REF) {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            VectorImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void Vector<T>::remove(const typename Vector<T>::TYPE& REF) {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            VectorImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->Remove(REF);
+        implementation->remove(REF);
     }
 }
 
-template <typename TYPE>
-typename Vector<TYPE>::Iterator Vector<TYPE>::Begin() {
-    if (Implementation)
-        return Iterator(Implementation->VecB);
+template <typename T>
+typename Vector<T>::Iterator Vector<T>::begin() {
+    if (implementation)
+        return Iterator(implementation->begin);
     return Iterator(0);
 }
 
-template <typename TYPE>
-typename Vector<TYPE>::Iterator Vector<TYPE>::End() {
-    if (Implementation)
-        return Iterator(Implementation->VecE);
+template <typename T>
+typename Vector<T>::Iterator Vector<T>::end() {
+    if (implementation)
+        return Iterator(implementation->end);
     return Iterator(0);
 }
 
-template <typename TYPE>
-const typename Vector<TYPE>::Iterator Vector<TYPE>::Begin() const {
-    if (Implementation)
-        return Iterator(Implementation->VecB);
+template <typename T>
+const typename Vector<T>::Iterator Vector<T>::begin() const {
+    if (implementation)
+        return Iterator(implementation->begin);
     return Iterator(0);
 }
 
-template <typename TYPE>
-const typename Vector<TYPE>::Iterator Vector<TYPE>::End() const {
-    if (Implementation)
-        return Iterator(Implementation->VecE);
+template <typename T>
+const typename Vector<T>::Iterator Vector<T>::end() const {
+    if (implementation)
+        return Iterator(implementation->end);
     return Iterator(0);
 }
 
-template <typename TYPE>
-        Vector<TYPE>& Vector<TYPE>::operator =(const Vector<TYPE>& REF) {
-    if (Implementation && REF.Implementation) {
-        ++(REF.Implementation->Ref);
-        if (--(Implementation->Ref) == 0) {
-            VectorImplementation* OLD = Implementation;
-            Implementation = REF.Implementation;
-            OLD->Clear();
+template <typename T>
+Vector<T>& Vector<T>::operator =(const Vector<T>& REF) {
+    if (implementation && REF.implementation) {
+        ++(REF.implementation->reference);
+        if (--(implementation->reference) == 0) {
+            VectorImplementation* OLD = implementation;
+            implementation = REF.implementation;
+            OLD->clear();
             delete OLD;
         } else
-            Implementation = REF.Implementation;
+            implementation = REF.implementation;
     }
     return *this;
 }
 
-template <typename TYPE>
-boolean Vector<TYPE>::operator ==(const Vector<TYPE>& REF) const {
-    if (Implementation && REF.Implementation) {
-        if (Implementation != REF.Implementation) {
-            ScopedLock<Mutex> SL_Mutex_F(&(REF.Implementation->MLock));
-            ScopedLock<Mutex> SL_Mutex_S(&(Implementation->MLock));
-            size MAX = Total();
-            if (MAX != REF.Total())
+template <typename T>
+BOOLEAN Vector<T>::operator ==(const Vector<T>& REF) const {
+    if (implementation && REF.implementation) {
+        if (implementation != REF.implementation) {
+            ScopedLock<Mutex> SL_MUTEX_F(&(REF.implementation->mutex));
+            ScopedLock<Mutex> SL_MUTEX_S(&(implementation->mutex));
+            SIZE MAX = total();
+            if (MAX != REF.total())
                 return false;
-            for (size i = 0; i < MAX; ++i)
-                if (*(Implementation->VecB + i) != *(REF.Implementation->VecB + i))
+            for (SIZE i = 0; i < MAX; ++i)
+                if (*(implementation->begin + i) != *(REF.implementation->begin + i))
                     return false;
         }
         return true;
@@ -572,17 +572,17 @@ boolean Vector<TYPE>::operator ==(const Vector<TYPE>& REF) const {
     return false;
 }
 
-template <typename TYPE>
-boolean Vector<TYPE>::operator !=(const Vector<TYPE>& REF) const {
-    if (Implementation && REF.Implementation) {
-        if (Implementation != REF.Implementation) {
-            ScopedLock<Mutex> SL_Mutex_F(&(REF.Implementation->MLock));
-            ScopedLock<Mutex> SL_Mutex_S(&(Implementation->MLock));
-            size MAX = Total();
-            if (MAX != REF.Total())
+template <typename T>
+BOOLEAN Vector<T>::operator !=(const Vector<T>& REF) const {
+    if (implementation && REF.implementation) {
+        if (implementation != REF.implementation) {
+            ScopedLock<Mutex> SL_MUTEX_F(&(REF.implementation->mutex));
+            ScopedLock<Mutex> SL_MUTEX_S(&(implementation->mutex));
+            SIZE MAX = total();
+            if (MAX != REF.total())
                 return true;
-            for (size i = 0; i < MAX; ++i)
-                if (*(Implementation->VecB + i) != *(REF.Implementation->VecB + i))
+            for (SIZE i = 0; i < MAX; ++i)
+                if (*(implementation->begin + i) != *(REF.implementation->begin + i))
                     return true;
         }
         return false;
@@ -590,14 +590,14 @@ boolean Vector<TYPE>::operator !=(const Vector<TYPE>& REF) const {
     return true;
 }
 
-template <typename TYPE>
-TYPE& Vector<TYPE>::operator [](size IDX) {
-    return At(IDX);
+template <typename T>
+typename Vector<T>::TYPE& Vector<T>::operator [](SIZE IDX) {
+    return at(IDX);
 }
 
-template <typename TYPE>
-const TYPE& Vector<TYPE>::operator [](size IDX) const {
-    return At(IDX);
+template <typename T>
+const typename Vector<T>::TYPE& Vector<T>::operator [](SIZE IDX) const {
+    return at(IDX);
 }
 
 END_WS_NAMESPACE

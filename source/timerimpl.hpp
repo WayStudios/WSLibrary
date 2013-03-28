@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef TIMERIMPLEMENTATION_HEADER
@@ -18,10 +18,10 @@ struct LOCAL TimerSpecific {
 
     //    static ws_timeval Now();
 
-    Timer* H_Timer;
-    ws_timeval Begin;
-    ws_timeval End;
-    ws_timeval Interval;
+    Timer* timer;
+    TIMEVAL begin;
+    TIMEVAL end;
+    TIMEVAL interval;
 
     UNCOPYABLE(TimerSpecific)
 };
@@ -32,11 +32,11 @@ public:
     explicit TimerImplementation(Timer*);
     ~TimerImplementation();
 
-    void Start();
-    ws_timeval Stop();
+    void start();
+    ws_timeval stop();
 
-    TimerSpecific* H_Specific;
-    boolean B_Active;
+    TimerSpecific* timerSpecific;
+    BOOLEAN active;
 };
 
 END_WS_NAMESPACE

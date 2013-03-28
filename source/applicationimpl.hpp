@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef APPLICATIONIMPLEMENTATION_HEADER
@@ -17,10 +17,10 @@ struct LOCAL ApplicationSpecific {
     explicit ApplicationSpecific(Application*);
     ~ApplicationSpecific();
 
-    Application* H_Application;
+    Application* application;
     //   Thread* H_Thread;
-    ThreadSpecific* H_ThreadSpecific;
-    List<String> LST_Argument;
+    ThreadSpecific* threadSpecific;
+    List<String> argumentList;
 
     UNCOPYABLE(ApplicationSpecific)
 };
@@ -31,18 +31,18 @@ public:
     ApplicationImplementation();
     ~ApplicationImplementation();
 
-    boolean Initial(integer, byte**, Application*);
-    void Cleanup();
+    BOOLEAN initialize(INTEGER, BYTE**, Application*);
+    void destroy();
 
-    static integer Execute(ApplicationSpecific*);
-    static void Terminate();
+    static INTEGER execute(ApplicationSpecific*);
+    static void terminate();
 
-    static ApplicationSpecific* H_Instance;
+    static ApplicationSpecific* instanceSpecific;
 
 #if defined(API_MACOSX)
     //NSApplication
 #endif
-    ApplicationSpecific* H_Specific;
+    ApplicationSpecific* applicationSpecific;
 };
 
 END_WS_NAMESPACE

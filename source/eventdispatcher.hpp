@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef EVENTDISPATCHER_HEADER
@@ -18,8 +18,8 @@ public:
     explicit EventDispatcher(Object* OBJ = 0);
     virtual ~EventDispatcher();
     //to do: host event and release mem after event finished
-    virtual boolean Dispatch(Event*, Object*, Object*);
-    virtual boolean Dispatch(const EventElement&);
+    virtual BOOLEAN dispatch(Event*, Object*, Object*);
+    virtual BOOLEAN dispatch(const EventElement&);
 };
 
 END_WS_NAMESPACE

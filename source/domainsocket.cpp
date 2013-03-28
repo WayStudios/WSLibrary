@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <domainsocket.hpp>
@@ -9,11 +9,12 @@ BEGIN_SOURCECODE
 
 BEGIN_WS_NAMESPACE
 
-DomainSocket::DomainSocketImplementation::DomainSocketImplementation() : Listening(false), Connected(false)
+DomainSocket::DomainSocketImplementation::DomainSocketImplementation() : listening(false)
+																	   , connected(false)
 #if defined(API_POSIX)
 , fd_socket(0)
 #elif defined(API_MSWINDOWS)
-, H_Socket(NULL)
+																	   , hSocket(NULL)
 #endif
 {
 }
@@ -21,7 +22,7 @@ DomainSocket::DomainSocketImplementation::DomainSocketImplementation() : Listeni
 DomainSocket::DomainSocketImplementation::~DomainSocketImplementation() {
 }
 
-boolean DomainSocket::DomainSocketImplementation::Listen(const String&) {
+BOOLEAN DomainSocket::DomainSocketImplementation::listenAt(const String&) {
 #if defined(API_POSIX)
     if ((fd_socket = socket(AF_LOCAL, SOCK_STREAM, 0)) != -1) {
         socket_address.sun_family = AF_LOCAL;
@@ -31,12 +32,12 @@ boolean DomainSocket::DomainSocketImplementation::Listen(const String&) {
             if (listen(fd_socket, SOMAXCONN) != -1);
     }
 #elif defined(API_MSWINDOWS)
-    ConnectNamedPipe(H_Socket, 0);
+    ConnectNamedPipe(hSocket, 0);
 #endif        
     return false;
 }
 
-boolean DomainSocket::DomainSocketImplementation::Connect(const String&) {
+BOOLEAN DomainSocket::DomainSocketImplementation::connectTo(const String&) {
 #if defined(API_POSIX)
     if ((fd_socket = socket(AF_LOCAL, SOCK_STREAM, 0)) != -1) {
         socket_address.sun_family = AF_LOCAL;
@@ -51,61 +52,61 @@ boolean DomainSocket::DomainSocketImplementation::Connect(const String&) {
     return false;
 }
 
-void DomainSocket::DomainSocketImplementation::Shutdown() {
+void DomainSocket::DomainSocketImplementation::shutdown() {
 #if defined(API_POSIX)
     shutdown(fd_socket, SHUT_RDWR);
     fd_socket = 0;
 #elif defined(API_MSWINDOWS)
-    CloseHandle(H_Socket);
+    CloseHandle(hSocket);
 #endif
 }
 
-DomainSocket::DomainSocket(Object* OBJ) : Socket(WS_DOMAINSOCKET, OBJ), Implementation(0) {
-    Implementation = new DomainSocketImplementation;
+DomainSocket::DomainSocket(Object* OBJ) : Socket(WS_DOMAINSOCKET, OBJ), implementation(0) {
+    implementation = new DomainSocketImplementation;
 }
 
 DomainSocket::~DomainSocket() {
-    Shutdown();
-    if (Implementation)
-        delete Implementation;
+    shutdown();
+    if (implementation)
+        delete implementation;
 }
 
-const String DomainSocket::Path() const {
-    if (Implementation)
-        return Implementation->Path;
+const String DomainSocket::path() const {
+    if (implementation)
+        return implementation->path;
     return String();
 }
 
-boolean DomainSocket::Listen(const String& STR) {
-    if (Implementation)
-        return Implementation->Listen(STR);
+BOOLEAN DomainSocket::listenAt(const String& STR) {
+    if (implementation)
+        return implementation->listenAt(STR);
     return false;
 }
 
-boolean DomainSocket::Connect(const String& STR) {
-    if (Implementation)
-        return Implementation->Connect(STR);
+BOOLEAN DomainSocket::connectTo(const String& STR) {
+    if (implementation)
+        return implementation->connectTo(STR);
     return false;
 }
 
-boolean DomainSocket::IsConnected() const {
-    if (Implementation)
-        return Implementation->Connected;
+BOOLEAN DomainSocket::isConnected() const {
+    if (implementation)
+        return implementation->connected;
     return false;
 }
 
-boolean DomainSocket::IsListening() const {
-    if (Implementation)
-        return Implementation->Listening;
+BOOLEAN DomainSocket::isListening() const {
+    if (implementation)
+        return implementation->listening;
     return false;
 }
 
-void DomainSocket::Shutdown() {
-    if (Implementation)
-        Implementation->Shutdown();
+void DomainSocket::shutdown() {
+    if (implementation)
+        implementation->shutdown();
 }
 
-void DomainSocket::ProcessEvent(Event*) {
+void DomainSocket::processEvent(Event*) {
 }
 
 END_WS_NAMESPACE

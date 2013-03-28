@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef MAP_HEADER
@@ -14,47 +14,42 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename T_KEY, typename T_VALUE>
+template <typename T_KEY, typename T>
 class EXPORT Map {
     DECLARE_IMPLEMENTATION(Map)
 public:
-    typedef T_VALUE VALUE;
+    typedef T TYPE;
     typedef T_KEY KEY;
-    typedef Pair<T_KEY, T_VALUE> PAIR;
+	typedef Pair<KEY, TYPE> PAIR;
 
     class Iterator;
 
     Map();
-    Map(const Map<T_KEY, T_VALUE>&);
+    Map(const Map<KEY, TYPE>&);
     ~Map();
 
-    size Total() const;
-    boolean Empty() const;
-    void Clear();
+    SIZE total() const;
+    BOOLEAN empty() const;
+    void clear();
 
-    boolean Exist(const T_KEY&);
+    BOOLEAN exist(const KEY&);
 
-    //    T_VALUE& Find(const T_KEY&);
+    void append(const KEY&, const TYPE&);
+    void remove(const KEY&);
 
-    //    const T_VALUE& Find(const T_KEY&) const;
+    Iterator begin();
+    Iterator end();
+    Iterator find(const KEY&);
 
-    void Append(const T_KEY&, const T_VALUE&);
+    const Iterator begin() const;
+    const Iterator end() const;
+    const Iterator find(const KEY&) const;
 
-    void Remove(const T_KEY&);
+    Map<KEY, TYPE>& operator=(const Map<KEY, TYPE>&);
 
-    Iterator Begin();
-    Iterator End();
-    Iterator Find(const T_KEY&);
+    TYPE& operator[](const KEY&);
 
-    const Iterator Begin() const;
-    const Iterator End() const;
-    const Iterator Find(const T_KEY&) const;
-
-    Map<T_KEY, T_VALUE>& operator=(const Map<T_KEY, T_VALUE>&);
-
-    T_VALUE& operator[](const T_KEY&);
-
-    const T_VALUE& operator[](const T_KEY&) const;
+    const TYPE& operator[](const KEY&) const;
 };
 
 END_WS_NAMESPACE

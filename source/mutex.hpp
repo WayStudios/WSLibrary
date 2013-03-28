@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef MUTEX_HEADER
@@ -20,13 +20,14 @@ public:
     Mutex();
     ~Mutex();
 
-    Thread* Owner() const;
-    boolean IsLocked() const;
+    Thread* owner() const;
 
-    boolean Lock();
-    boolean Unlock();
+	BOOLEAN isLocked() const;
 
-    boolean TryLock();
+    BOOLEAN lock();
+    BOOLEAN unlock();
+
+    BOOLEAN tryLock();
 };
 
 END_WS_NAMESPACE

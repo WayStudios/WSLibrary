@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef SIGNAL_HEADER
@@ -21,18 +21,21 @@ class Slot;
 class EXPORT Signal {
     UNCOPYABLE(Signal)
 
-    Object* Master;
-    String SignName;
-    Vector<Slot*> SlotVector;
+    Object* master;
+    String signIdentity;
+    Vector<Slot*> slotVector;
 public:
     explicit Signal(const String&, Object*);
     virtual ~Signal() = 0;
 
-    Object* Host() const;
-    const String& Name() const;
-    Vector<Slot*>& Connections();
+    Object* host() const;
+    const String& identity() const;
+    Vector<Slot*>& connections();
 
-    virtual void Emit(const SharedPointer<SignalSlotArgument>&) = 0;
+	void close();
+	static void close(Signal*);
+
+	virtual void emit(const SharedPointer<SignalSlotArgument>&) = 0;
 };
 
 END_WS_NAMESPACE

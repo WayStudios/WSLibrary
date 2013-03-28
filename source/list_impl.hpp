@@ -1,9 +1,9 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
-#ifndef LIST_IMPLEMENTATION_HEADER
-#define	LIST_IMPLEMENTATION_HEADER
+#ifndef LIST_implementation_HEADER
+#define	LIST_implementation_HEADER
 
 #include <list.hpp>
 #include <allocator.hpp>
@@ -18,98 +18,98 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
-class LOCAL List<TYPE>::ListImplementation : public Allocator< ListNode<TYPE> > {
+template <typename T>
+class LOCAL List<T>::ListImplementation : public Allocator< ListNode<typename List<T>::TYPE> > {
     UNCOPYABLE(ListImplementation)
 public:
     ListImplementation();
     ~ListImplementation();
 
-    size Total() const;
-    boolean Empty() const;
-    ListImplementation* Duplicate();
-    void Clear();
+    SIZE total() const;
+    BOOLEAN empty() const;
+    ListImplementation* duplicate();
+    void clear();
 
-    void PushFront(const TYPE&);
-    void PopFront();
+    void pushFront(const T&);
+    void popFront();
 
-    void PushBack(const TYPE&);
-    void PopBack();
+    void pushBack(const T&);
+    void popBack();
 
-    void Remove(ListNode<TYPE>*);
-    void Remove(const TYPE&);
+    void remove(ListNode<T>*);
+    void remove(const T&);
 
 #if !defined(WITHOUT_THREAD)
-    AtomicInteger Ref;
-    Mutex MLock;
+    mutable AtomicInteger reference;
+    mutable Mutex mutex;
 #endif
-    ListNode<TYPE>* LstB;
-    ListNode<TYPE>* LstE;
+    ListNode<T>* begin;
+    ListNode<T>* end;
 };
 
-template <typename TYPE>
-class EXPORT List<TYPE>::Iterator {
-    ListNode<TYPE>* Current;
+template <typename T>
+class EXPORT List<T>::Iterator {
+    ListNode<T>* current; //the pointer of current address of node
 public:
-    explicit Iterator(ListNode<TYPE>*);
+    explicit Iterator(ListNode<T>*);
     Iterator(const Iterator&);
     ~Iterator();
 
-    Iterator& operator=(const Iterator&);
-    Iterator& operator++();
-    Iterator& operator--();
+    Iterator& operator =(const Iterator&);
+    Iterator& operator ++();
+    Iterator& operator --();
 
-    TYPE& operator*();
+    T& operator*();
 
-    const TYPE& operator*() const;
+    const T& operator*() const;
 
-    boolean operator==(const Iterator&) const;
-    boolean operator!=(const Iterator&) const;
+    BOOLEAN operator ==(const Iterator&) const;
+    BOOLEAN operator !=(const Iterator&) const;
 };
 
-template <typename TYPE>
-List<TYPE>::ListImplementation::ListImplementation() : LstB(0), LstE(0) {
+template <typename T>
+List<T>::ListImplementation::ListImplementation() : begin(0), end(0) {
 }
 
-template <typename TYPE>
-List<TYPE>::ListImplementation::~ListImplementation() {
+template <typename T>
+List<T>::ListImplementation::~ListImplementation() {
 }
 
-template <typename TYPE>
-size List<TYPE>::ListImplementation::Total() const {
-    size RET = 0;
-    if (!Empty()) {
+template <typename T>
+SIZE List<T>::ListImplementation::total() const {
+    SIZE RET = 0;
+    if (!empty()) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        for (ListNode<TYPE>* P_ITER = LstB; P_ITER != 0; P_ITER = P_ITER->Next)
+        for (ListNode<T>* P_ITER = begin; P_ITER != 0; P_ITER = P_ITER->next)
             ++RET;
     }
     return RET;
 }
 
-template <typename TYPE>
-boolean List<TYPE>::ListImplementation::Empty() const {
-    return !LstB;
+template <typename T>
+BOOLEAN List<T>::ListImplementation::empty() const {
+    return !begin;
 }
 
-template <typename TYPE>
-typename List<TYPE>::ListImplementation* List<TYPE>::ListImplementation::Duplicate() {
+template <typename T>
+typename List<T>::ListImplementation* List<T>::ListImplementation::duplicate() {
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
     ListImplementation* N_IMPL = new ListImplementation;
     if (N_IMPL) {
-        if (!Empty()) {
-            for (ListNode<TYPE>* P_ITER = LstB; P_ITER != 0; P_ITER = P_ITER->Next) {
-                ListNode<TYPE>* P_N = Allocator< ListNode<TYPE> >::Allocate(1);
-                new(P_N) ListNode<TYPE > (P_ITER->Object, 0, 0);
-                if (N_IMPL->Empty())
-                    N_IMPL->LstE = N_IMPL->LstB = P_N;
+        if (!empty()) {
+            for (ListNode<T>* P_ITER = begin; P_ITER != 0; P_ITER = P_ITER->next) {
+                ListNode<T>* P_N = Allocator< ListNode<T> >::allocate(1);
+                new(P_N) ListNode<T> (P_ITER->object, 0, 0);
+                if (N_IMPL->empty())
+                    N_IMPL->end = N_IMPL->begin = P_N;
                 else {
-                    P_N->Prev = N_IMPL->LstE;
-                    N_IMPL->LstE->Next = P_N;
-                    N_IMPL->LstE = P_N;
+                    P_N->prev = N_IMPL->end;
+                    N_IMPL->end->next = P_N;
+                    N_IMPL->end = P_N;
                 }
             }
         }
@@ -118,421 +118,421 @@ typename List<TYPE>::ListImplementation* List<TYPE>::ListImplementation::Duplica
     return 0;
 }
 
-template <typename TYPE>
-void List<TYPE>::ListImplementation::Clear() {
-    if (!Empty()) {
+template <typename T>
+void List<T>::ListImplementation::clear() {
+    if (!empty()) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        while (!Empty()) {
-            ListNode<TYPE>* P_N = LstB->Next;
-            Destruct(LstB);
-            Deallocate(LstB);
-            LstB = P_N;
-            if (Empty())
-                LstE = LstB = 0;
+        while (!empty()) {
+            ListNode<T>* P_N = begin->next;
+            destruct(begin);
+            deallocate(begin);
+            begin = P_N;
+            if (empty())
+                end = begin = 0;
         }
     }
 }
 
-template <typename TYPE>
-void List<TYPE>::ListImplementation::PushFront(const TYPE& REF) {
+template <typename T>
+void List<T>::ListImplementation::pushFront(const typename List<T>::TYPE& REF) {
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-    ListNode<TYPE>* P_N = Allocator< ListNode<TYPE> >::Allocate(1);
-    new(P_N) ListNode<TYPE > (REF, 0, 0);
-    if (Empty())
-        LstE = LstB = P_N;
+    ListNode<T>* P_N = allocate(1);
+    new(P_N) ListNode<T> (REF, 0, 0);
+    if (empty())
+        end = begin = P_N;
     else {
-        P_N->Next = LstB;
-        LstB->Prev = P_N;
-        LstB = P_N;
+        P_N->next = begin;
+        begin->prev = P_N;
+        begin = P_N;
     }
 }
 
-template <typename TYPE>
-void List<TYPE>::ListImplementation::PopFront() {
-    if (!Empty()) {
+template <typename T>
+void List<T>::ListImplementation::popFront() {
+    if (!empty()) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        ListNode<TYPE>* P_N = LstB->Next;
+        ListNode<T>* P_N = begin->next;
         if (P_N)
-            P_N->Prev = 0;
-        Destruct(LstB);
-        Deallocate(LstB);
-        LstB = P_N;
-        if (Empty())
-            LstE = LstB = 0;
+            P_N->prev = 0;
+        destruct(begin);
+        deallocate(begin);
+        begin = P_N;
+        if (empty())
+            end = begin = 0;
     }
 }
 
-template <typename TYPE>
-void List<TYPE>::ListImplementation::PushBack(const TYPE& REF) {
+template <typename T>
+void List<T>::ListImplementation::pushBack(const typename List<T>::TYPE& REF) {
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&MLock);
+    ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-    ListNode<TYPE>* P_N = Allocator< ListNode<TYPE> >::Allocate(1);
-    new(P_N) ListNode<TYPE > (REF, 0, 0);
-    if (Empty())
-        LstE = LstB = P_N;
+    ListNode<T>* P_N = allocate(1);
+    new(P_N) ListNode<T> (REF, 0, 0);
+    if (empty())
+        end = begin = P_N;
     else {
-        P_N->Prev = LstE;
-        LstE->Next = P_N;
-        LstE = P_N;
+        P_N->prev = end;
+        end->next = P_N;
+        end = P_N;
     }
 }
 
-template <typename TYPE>
-void List<TYPE>::ListImplementation::PopBack() {
-    if (!Empty()) {
+template <typename T>
+void List<T>::ListImplementation::popBack() {
+    if (!empty()) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        ListNode<TYPE>* P_N = LstE->Prev;
+        ListNode<T>* P_N = end->prev;
         if (P_N)
-            P_N->Next = 0;
-        Destruct(LstE);
-        Deallocate(LstE);
-        LstE = P_N;
-        if (Empty())
-            LstE = LstB = 0;
+            P_N->next = 0;
+        destruct(end);
+        deallocate(end);
+        end = P_N;
+        if (empty())
+            end = begin = 0;
     }
 }
 
-template <typename TYPE>
-void List<TYPE>::ListImplementation::Remove(ListNode<TYPE>* P_N) {
-    if (!Empty() && P_N) {
-        if (P_N == LstB)
-            return PopFront();
-        if (P_N == LstE)
-            return PopBack();
+template <typename T>
+void List<T>::ListImplementation::remove(ListNode<T>* P_N) {
+    if (!empty() && P_N) {
+        if (P_N == begin)
+            return popFront();
+        if (P_N == end)
+            return popBack();
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        P_N->Prev->Next = P_N->Next;
-        P_N->Next->Prev = P_N->Prev;
-        Destruct(P_N);
-        Deallocate(P_N);
+        P_N->prev->next = P_N->next;
+        P_N->next->prev = P_N->prev;
+        destruct(P_N);
+        deallocate(P_N);
     }
 }
 
-template <typename TYPE>
-void List<TYPE>::ListImplementation::Remove(const TYPE& REF) {
-    if (!Empty()) {
+template <typename T>
+void List<T>::ListImplementation::remove(const typename List<T>::TYPE& REF) {
+    if (!empty()) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&MLock);
+        ScopedLock<Mutex> SL_MUTEX(&mutex);
 #endif
-        for (ListNode<TYPE>* P_ITER = LstB; P_ITER != 0; P_ITER = P_ITER->Next)
-            if (P_ITER->Object == REF) {
-                if (P_ITER == LstB)
-                    LstB = LstB->Next;
-                if (P_ITER == LstE)
-                    LstE = LstE->Prev;
-                if (P_ITER->Prev)
-                    P_ITER->Prev->Next = P_ITER->Next;
-                if (P_ITER->Next)
-                    P_ITER->Next->Prev = P_ITER->Prev;
-                Destruct(P_ITER);
-                Deallocate(P_ITER);
+        for (ListNode<T>* P_ITER = begin; P_ITER != 0; P_ITER = P_ITER->next)
+            if (P_ITER->object == REF) {
+                if (P_ITER == begin)
+                    begin = begin->next;
+                if (P_ITER == end)
+                    end = end->prev;
+                if (P_ITER->prev)
+                    P_ITER->prev->next = P_ITER->next;
+                if (P_ITER->next)
+                    P_ITER->next->prev = P_ITER->prev;
+                destruct(P_ITER);
+                deallocate(P_ITER);
                 return;
             }
     }
 }
 
-template <typename TYPE>
-List<TYPE>::Iterator::Iterator(ListNode<TYPE>* P_ITER) : Current(P_ITER) {
+template <typename T>
+List<T>::Iterator::Iterator(ListNode<T>* P_ITER) : current(P_ITER) {
 }
 
-template <typename TYPE>
-List<TYPE>::Iterator::Iterator(const Iterator& REF) : Current(REF.Current) {
+template <typename T>
+List<T>::Iterator::Iterator(const Iterator& REF) : current(REF.current) {
 }
 
-template <typename TYPE>
-List<TYPE>::Iterator::~Iterator() {
+template <typename T>
+List<T>::Iterator::~Iterator() {
 }
 
-template <typename TYPE>
-        typename List<TYPE>::Iterator& List<TYPE>::Iterator::operator =(const Iterator& REF) {
-    Current = REF.Current;
+template <typename T>
+typename List<T>::Iterator& List<T>::Iterator::operator =(const Iterator& REF) {
+    current = REF.current;
     return *this;
 }
 
-template <typename TYPE>
-typename List<TYPE>::Iterator& List<TYPE>::Iterator::operator ++() {
-    Current = Current->Next;
+template <typename T>
+typename List<T>::Iterator& List<T>::Iterator::operator ++() {
+    current = current->next;
     return *this;
 }
 
-template <typename TYPE>
-typename List<TYPE>::Iterator& List<TYPE>::Iterator::operator --() {
-    Current = Current->Prev;
+template <typename T>
+typename List<T>::Iterator& List<T>::Iterator::operator --() {
+    current = current->prev;
     return *this;
 }
 
-template <typename TYPE>
-TYPE& List<TYPE>::Iterator::operator *() {
-    return Current->Object;
+template <typename T>
+typename List<T>::TYPE& List<T>::Iterator::operator *() {
+    return current->object;
 }
 
-template <typename TYPE>
-const TYPE& List<TYPE>::Iterator::operator *() const {
-    return Current->Object;
+template <typename T>
+const typename  List<T>::TYPE& List<T>::Iterator::operator *() const {
+    return current->object;
 }
 
-template <typename TYPE>
-boolean List<TYPE>::Iterator::operator ==(const Iterator& REF) const {
-    return Current == REF.Current;
+template <typename T>
+BOOLEAN List<T>::Iterator::operator ==(const Iterator& REF) const {
+    return current == REF.current;
 }
 
-template <typename TYPE>
-boolean List<TYPE>::Iterator::operator !=(const Iterator& REF) const {
-    return Current != REF.Current;
+template <typename T>
+BOOLEAN List<T>::Iterator::operator !=(const Iterator& REF) const {
+    return current != REF.current;
 }
 
-template <typename TYPE>
-List<TYPE>::List() : Implementation(0) {
-    Implementation = new ListImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+template <typename T>
+List<T>::List() : implementation(0) {
+    implementation = new ListImplementation;
+    if (implementation)
+        ++(implementation->reference);
 }
 
-template <typename TYPE>
-List<TYPE>::List(const List<TYPE>& REF) : Implementation(REF.Implementation) {
-    if (Implementation)
-        ++(Implementation->Ref);
+template <typename T>
+List<T>::List(const List<T>& REF) : implementation(REF.implementation) {
+    if (implementation)
+        ++(implementation->reference);
 }
 
-template <typename TYPE>
-List<TYPE>::~List() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Clear();
-            delete Implementation;
+template <typename T>
+List<T>::~List() {
+    if (implementation)
+        if (--(implementation->reference) == 0) {
+            implementation->clear();
+            delete implementation;
         }
 }
 
-template <typename TYPE>
-size List<TYPE>::Total() const {
-    if (Implementation)
-        return Implementation->Total();
+template <typename T>
+SIZE List<T>::total() const {
+    if (implementation)
+        return implementation->total();
     return 0;
 }
 
-template <typename TYPE>
-boolean List<TYPE>::Empty() const {
-    if (Implementation)
-        return Implementation->Empty();
+template <typename T>
+BOOLEAN List<T>::empty() const {
+    if (implementation)
+        return implementation->empty();
     return true;
 }
 
-template <typename TYPE>
-void List<TYPE>::Clear() {
-    if (Implementation)
-        if (--(Implementation->Ref) == 0) {
-            Implementation->Clear();
-            delete Implementation;
+template <typename T>
+void List<T>::clear() {
+    if (implementation)
+        if (--(implementation->Ref) == 0) {
+            implementation->clear();
+            delete implementation;
         }
-    Implementation = new ListImplementation;
-    if (Implementation)
-        ++(Implementation->Ref);
+    implementation = new ListImplementation;
+    if (implementation)
+        ++(implementation->Ref);
 }
 
-template <typename TYPE>
-boolean List<TYPE>::Exist(const TYPE& REF) const {
-    if (Implementation) {
+template <typename T>
+BOOLEAN List<T>::exist(const typename List<T>::TYPE& REF) const {
+    if (implementation) {
 #if !defined(WITHOUT_THREAD)
-        ScopedLock<Mutex> SL_Mutex(&(Implementation->MLock));
+        ScopedLock<Mutex> SL_MUTEX(&(implementation->mutex));
 #endif
-        for (Iterator P_ITER = Begin(); P_ITER != End(); ++P_ITER)
+        for (Iterator P_ITER = begin(); P_ITER != end(); ++P_ITER)
             if (*P_ITER == REF)
                 return true;
     }
     return false;
 }
 
-template <typename TYPE>
-TYPE& List<TYPE>::First() {
-    if (Implementation->Ref != 1) {
-        ListImplementation* N_IMPL = Implementation->Duplicate();
-        --(Implementation->Ref);
-        Implementation = N_IMPL;
-        ++(Implementation->Ref);
+template <typename T>
+typename List<T>::TYPE& List<T>::first() {
+    if (implementation->ref != 1) {
+        ListImplementation* N_IMPL = implementation->duplicate();
+        --(implementation->ref);
+        implementation = N_IMPL;
+        ++(implementation->ref);
     }
-    return Implementation->LstB->Object;
+    return implementation->begin->object;
 }
 
-template <typename TYPE>
-TYPE& List<TYPE>::Last() {
-    if (Implementation->Ref != 1) {
-        ListImplementation* N_IMPL = Implementation->Duplicate();
-        --(Implementation->Ref);
-        Implementation = N_IMPL;
-        ++(Implementation->Ref);
+template <typename T>
+typename List<T>::TYPE& List<T>::last() {
+    if (implementation->ref != 1) {
+        ListImplementation* N_IMPL = implementation->duplicate();
+        --(implementation->ref);
+        implementation = N_IMPL;
+        ++(implementation->ref);
     }
-    return Implementation->LstE->Object;
+    return implementation->end->object;
 }
 
-template <typename TYPE>
-TYPE& List<TYPE>::At(size IDX) {
-    if (Implementation->Ref != 1) {
-        ListImplementation* N_IMPL = Implementation->Duplicate();
-        --(Implementation->Ref);
-        Implementation = N_IMPL;
-        ++(Implementation->Ref);
+template <typename T>
+typename List<T>::TYPE& List<T>::at(SIZE IDX) {
+    if (implementation->ref != 1) {
+        ListImplementation* N_IMPL = implementation->duplicate();
+        --(implementation->ref);
+        implementation = N_IMPL;
+        ++(implementation->ref);
     }
 #if !defined(WITHOUT_THREAD)
-    ScopedLock<Mutex> SL_Mutex(&(Implementation->MLock));
+    ScopedLock<Mutex> SL_MUTEX(&(implementation->mutex));
 #endif
-    Iterator ITER = Implementation->LstB;
-    for (size i = 0; i <= IDX; ++i)
+    Iterator ITER = implementation->begin;
+    for (SIZE i = 0; i <= IDX; ++i)
         ++ITER;
     return *ITER;
 }
 
-template <typename TYPE>
-const TYPE& List<TYPE>::First() const {
-    return Implementation->LstB->Object;
+template <typename T>
+const typename List<T>::TYPE& List<T>::first() const {
+    return implementation->begin->object;
 }
 
-template <typename TYPE>
-const TYPE& List<TYPE>::Last() const {
-    return Implementation->LstE->Object;
+template <typename T>
+const typename List<T>::TYPE& List<T>::last() const {
+    return implementation->end->object;
 }
 
-template <typename TYPE>
-const TYPE& List<TYPE>::At(size IDX) const {
-    Iterator ITER = Implementation->LstB;
-    for (size i = 0; i <= IDX; ++i)
+template <typename T>
+const typename List<T>::TYPE& List<T>::at(SIZE IDX) const {
+    Iterator ITER = implementation->begin;
+    for (SIZE i = 0; i <= IDX; ++i)
         ++ITER;
     return *ITER;
 }
 
-template <typename TYPE>
-void List<TYPE>::PushFront(const TYPE& REF) {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            ListImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void List<T>::pushFront(const typename List<T>::TYPE& REF) {
+    if (implementation) {
+        if (implementation->ref != 1) {
+            ListImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->ref);
+            implementation = N_IMPL;
+            ++(implementation->ref);
         }
-        Implementation->PushFront(REF);
+        implementation->pushFront(REF);
     }
 }
 
-template <typename TYPE>
-void List<TYPE>::PopFront() {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            ListImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void List<T>::popFront() {
+    if (implementation) {
+        if (implementation->ref != 1) {
+            ListImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->ref);
+            implementation = N_IMPL;
+            ++(implementation->ref);
         }
-        Implementation->PopFront();
+        implementation->popFront();
     }
 }
 
-template <typename TYPE>
-void List<TYPE>::PushBack(const TYPE& REF) {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            ListImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void List<T>::pushBack(const T& REF) {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            ListImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->PushBack(REF);
+        implementation->pushBack(REF);
     }
 }
 
-template <typename TYPE>
-void List<TYPE>::PopBack() {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            ListImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void List<T>::popBack() {
+    if (implementation) {
+        if (implementation->ref != 1) {
+            ListImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->ref);
+            implementation = N_IMPL;
+            ++(implementation->ref);
         }
-        Implementation->PopBack();
+        implementation->popBack();
     }
 }
 
-template <typename TYPE>
-void List<TYPE>::Append(const TYPE& REF) {
-    PushBack(REF);
+template <typename T>
+void List<T>::append(const typename List<T>::TYPE& REF) {
+    pushBack(REF);
 }
 
-template <typename TYPE>
-void List<TYPE>::Remove(const TYPE& REF) {
-    if (Implementation) {
-        if (Implementation->Ref != 1) {
-            ListImplementation* N_IMPL = Implementation->Duplicate();
-            --(Implementation->Ref);
-            Implementation = N_IMPL;
-            ++(Implementation->Ref);
+template <typename T>
+void List<T>::remove(const typename List<T>::TYPE& REF) {
+    if (implementation) {
+        if (implementation->reference != 1) {
+            ListImplementation* N_IMPL = implementation->duplicate();
+            --(implementation->reference);
+            implementation = N_IMPL;
+            ++(implementation->reference);
         }
-        Implementation->Remove(REF);
+        implementation->remove(REF);
     }
 }
 
-template <typename TYPE>
-typename List<TYPE>::Iterator List<TYPE>::Begin() {
-    if (Implementation)
-        return Iterator(Implementation->LstB);
+template <typename T>
+typename List<T>::Iterator List<T>::begin() {
+    if (implementation)
+        return Iterator(implementation->begin);
     return Iterator(0);
 }
 
-template <typename TYPE>
-typename List<TYPE>::Iterator List<TYPE>::End() {
+template <typename T>
+typename List<T>::Iterator List<T>::end() {
     return Iterator(0);
 }
 
-template <typename TYPE>
-const typename List<TYPE>::Iterator List<TYPE>::Begin() const {
-    if (Implementation)
-        return Iterator(Implementation->LstB);
+template <typename T>
+const typename List<T>::Iterator List<T>::begin() const {
+    if (implementation)
+        return Iterator(implementation->begin);
     return Iterator(0);
 }
 
-template <typename TYPE>
-const typename List<TYPE>::Iterator List<TYPE>::End() const {
+template <typename T>
+const typename List<T>::Iterator List<T>::end() const {
     return Iterator(0);
 }
 
-template <typename TYPE>
-        List<TYPE>& List<TYPE>::operator =(const List<TYPE>& REF) {
-    if (Implementation && REF.Implementation) {
-        ++(REF.Implementation->Ref);
-        if (--(Implementation->Ref) == 0) {
-            ListImplementation* OLD = Implementation;
-            Implementation = REF.Implementation;
-            OLD->Clear();
+template <typename T>
+List<T>& List<T>::operator =(const List<T>& REF) {
+    if (implementation && REF.implementation) {
+        ++(REF.implementation->ref);
+        if (--(implementation->ref) == 0) {
+            ListImplementation* OLD = implementation;
+            implementation = REF.implementation;
+            OLD->clear();
             delete OLD;
         } else
-            Implementation = REF.Implementation;
+            implementation = REF.implementation;
     }
     return *this;
 }
 
-template <typename TYPE>
-boolean List<TYPE>::operator ==(const List<TYPE>& REF) const {
-    if (Implementation && REF.Implementation) {
-        if (Implementation != REF.Implementation) {
+template <typename T>
+BOOLEAN List<T>::operator ==(const List<T>& REF) const {
+    if (implementation && REF.implementation) {
+        if (implementation != REF.implementation) {
 #if !defined(WITHOUT_THREAD)
-            ScopedLock<Mutex> SL_Mutex_F(&(REF.Implementation->MLock));
-            ScopedLock<Mutex> SL_Mutex_S(&(Implementation->MLock));
+            ScopedLock<Mutex> SL_MUTEX_F(&(REF.implementation->mutex));
+            ScopedLock<Mutex> SL_MUTEX_S(&(implementation->mutex));
 #endif
-            ListNode<TYPE>* P_ITER_F = REF.Implementation->LstB;
-            ListNode<TYPE>* P_ITER_S = Implementation->LstB;
+            ListNode<TYPE>* P_ITER_F = REF.implementation->begin;
+            ListNode<TYPE>* P_ITER_S = implementation->begin;
             while (P_ITER_F && P_ITER_S) {
-                if (P_ITER_F->Object != P_ITER_S->Object)
+                if (P_ITER_F->object != P_ITER_S->object)
                     return false;
-                P_ITER_F = P_ITER_F->Next;
-                P_ITER_S = P_ITER_S->Next;
+                P_ITER_F = P_ITER_F->next;
+                P_ITER_S = P_ITER_S->next;
             }
         }
         return true;
@@ -540,21 +540,21 @@ boolean List<TYPE>::operator ==(const List<TYPE>& REF) const {
     return false;
 }
 
-template <typename TYPE>
-boolean List<TYPE>::operator !=(const List<TYPE>& REF) const {
-    if (Implementation && REF.Implementation) {
-        if (Implementation != REF.Implementation) {
+template <typename T>
+BOOLEAN List<T>::operator !=(const List<T>& REF) const {
+    if (implementation && REF.implementation) {
+        if (implementation != REF.implementation) {
 #if !defined(WITHOUT_THREAD)
-            ScopedLock<Mutex> SL_Mutex_F(&(REF.Implementation->MLock));
-            ScopedLock<Mutex> SL_Mutex_S(&(Implementation->MLock));
+            ScopedLock<Mutex> SL_MUTEX_F(&(REF.implementation->mutex));
+            ScopedLock<Mutex> SL_MUTEX_S(&(implementation->mutex));
 #endif
-            ListNode<TYPE>* P_ITER_F = REF.Implementation->LstB;
-            ListNode<TYPE>* P_ITER_S = Implementation->LstB;
+            ListNode<TYPE>* P_ITER_F = REF.implementation->begin;
+            ListNode<TYPE>* P_ITER_S = implementation->begin;
             while (P_ITER_F && P_ITER_S) {
-                if (P_ITER_F->Object != P_ITER_S->Object)
+                if (P_ITER_F->object != P_ITER_S->object)
                     return true;
-                P_ITER_F = P_ITER_F->Next;
-                P_ITER_S = P_ITER_S->Next;
+                P_ITER_F = P_ITER_F->next;
+                P_ITER_S = P_ITER_S->next;
             }
         }
         return false;
@@ -562,14 +562,14 @@ boolean List<TYPE>::operator !=(const List<TYPE>& REF) const {
     return true;
 }
 
-template <typename TYPE>
-TYPE& List<TYPE>::operator [](size IDX) {
-    return At(IDX);
+template <typename T>
+typename List<T>::TYPE& List<T>::operator [](SIZE IDX) {
+    return at(IDX);
 }
 
-template <typename TYPE>
-const TYPE& List<TYPE>::operator [](size IDX) const {
-    return At(IDX);
+template <typename T>
+const typename List<T>::TYPE& List<T>::operator [](SIZE IDX) const {
+    return at(IDX);
 }
 
 END_WS_NAMESPACE

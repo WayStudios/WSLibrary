@@ -8,25 +8,25 @@ BEGIN_SOURCECODE
 
 USING_WS_NAMESPACE
 
-Slot::Slot(const String& STR, Object* OBJ) : Master(OBJ), SlotName(STR) {
+Slot::Slot(const String& STR, Object* OBJ) : master(OBJ), slotIdentity(STR) {
 }
 
 Slot::~Slot() {
 }
 
-Object* Slot::Host() const {
-    return Master;
+Object* Slot::host() const {
+    return master;
 }
 
-const String& Slot::Name() const {
-    return SlotName;
+const String& Slot::identity() const {
+    return slotIdentity;
 }
 
-Vector<Signal*>& Slot::Connections() {
-    return SignVector;
+Vector<Signal*>& Slot::connections() {
+    return signVector;
 }
 
-void Slot::Call(const SharedPointer<SignalSlotArgument>&) {
+void Slot::call(const SharedPointer<SignalSlotArgument>&) {
 }
 
 END_SOURCECODE

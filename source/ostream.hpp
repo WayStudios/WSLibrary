@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef OSTREAM_HEADER
@@ -18,7 +18,7 @@ public:
     explicit OStream(StreamBuffer*);
     virtual ~OStream();
     
-    virtual void Write(const byte* IN, size IN_SZ);
+    virtual void write(const BYTE* IN, SIZE IN_SZ);
 };
 
 END_WS_NAMESPACE

@@ -18,18 +18,20 @@ StreamBuffer::~StreamBuffer() {
 //    return 0;
 //}
 
-AccessMode StreamBuffer::Mode() const {
+AccessMode StreamBuffer::mode() const {
     return UNDEFINED_MODE;
 }
 
-size StreamBuffer::Read(void*, size) {
+SIZE StreamBuffer::read(void*, SIZE) {
     return 0;
 }
 
-size StreamBuffer::Write(void*, size) {
+SIZE StreamBuffer::write(void*, SIZE) {
     return 0;
 }
 
-size StreamBuffer::Seek(size OFFSET, SeekPosition){return 0;}
+SIZE StreamBuffer::seek(SIZE OFFSET, SeekPosition) {
+	return 0;
+}
 
 END_SOURCECODE

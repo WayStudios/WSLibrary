@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <timer.hpp>
@@ -17,9 +17,9 @@
 
 BEGIN_SOURCECODE
 
-USING_WS_NAMESPACE
+BEGIN_WS_NAMESPACE
 
-TimerSpecific::TimerSpecific(Timer* P) : H_Timer(P), Begin(0), End(0), Interval(0) {
+TimerSpecific::TimerSpecific(Timer* P) : timer(P), begin(0), end(0), interval(0) {
     //	EventLoopSpecific::LST_TimerSpecific.Append(this);
 }
 
@@ -48,29 +48,29 @@ ws_timeval TimerSpecific::Now()
 }
  */
 
-Timer::TimerImplementation::TimerImplementation(Timer* H) : H_Specific(0), B_Active(false) {
-    H_Specific = new TimerSpecific(H);
+Timer::TimerImplementation::TimerImplementation(Timer* H) : timerSpecific(0), active(false) {
+    timerSpecific = new TimerSpecific(H);
 }
 
 Timer::TimerImplementation::~TimerImplementation() {
-    if (H_Specific)
-        delete H_Specific;
+    if (timerSpecific)
+        delete timerSpecific;
 }
 
-void Timer::TimerImplementation::Start() {
+void Timer::TimerImplementation::start() {
     ThreadSpecific* P_THSPEC = 0;
 #if defined(API_POSIX)
     P_THSPEC = reinterpret_cast<ThreadSpecific*> (pthread_getspecific(thread_pthread_key));
 #elif defined(API_MSWINDOWS)
     P_THSPEC = reinterpret_cast<ThreadSpecific*> (TlsGetValue(thread_tls()));
 #endif
-    H_Specific->End = H_Specific->Begin = Time::Now().Value;
+    timerSpecific->end = timerSpecific->begin = Time::now().value;
     if (P_THSPEC)
-        P_THSPEC->LST_TimerSpecific.Append(H_Specific);
+        P_THSPEC->timerSpecificList.append(timerSpecific);
 }
 
-ws_timeval Timer::TimerImplementation::Stop() {
-    if (H_Specific) {
+TIMEVAL Timer::TimerImplementation::stop() {
+    if (timerSpecific) {
         ThreadSpecific* P_THSPEC = 0;
 #if defined(API_POSIX)
         P_THSPEC = reinterpret_cast<ThreadSpecific*> (pthread_getspecific(thread_pthread_key));
@@ -78,59 +78,59 @@ ws_timeval Timer::TimerImplementation::Stop() {
         P_THSPEC = reinterpret_cast<ThreadSpecific*> (TlsGetValue(thread_tls()));
 #endif
         if (P_THSPEC)
-            P_THSPEC->LST_TimerSpecific.Remove(H_Specific);
-        H_Specific->End = Time::Now().Value;
-        return (H_Specific->End) - (H_Specific->Begin);
+            P_THSPEC->timerSpecificList.remove(timerSpecific);
+        timerSpecific->end = Time::now().value;
+        return (timerSpecific->end) - (timerSpecific->begin);
     }
     return 0;
 }
 
-Timer::Timer(Object* OBJ) : Object(OBJ), Implementation(0) {
-    Implementation = new TimerImplementation(this);
+Timer::Timer(Object* OBJ) : Object(OBJ), implementation(0) {
+    implementation = new TimerImplementation(this);
 }
 
 Timer::~Timer() {
-    Stop();
-    if (Implementation)
-        delete Implementation;
+    stop();
+    if (implementation)
+        delete implementation;
 }
 
-boolean Timer::IsActive() const {
-    return Implementation->B_Active;
+BOOLEAN Timer::isActive() const {
+    return implementation->active;
 }
 
-ws_timeval Timer::Interval() const {
-    if (Implementation)
-        if (Implementation->H_Specific)
-            return Implementation->H_Specific->Interval;
+TIMEVAL Timer::interval() const {
+    if (implementation)
+        if (implementation->timerSpecific)
+            return implementation->timerSpecific->interval;
     return 0;
 }
 
-void Timer::Start(ws_timeval V) {
-    if (IsActive())
+void Timer::start(TIMEVAL V) {
+    if (isActive())
         return;
-    if (Implementation) {
-        if (Implementation->H_Specific) {
-            Implementation->H_Specific->Interval = V;
+    if (implementation) {
+        if (implementation->timerSpecific) {
+            implementation->timerSpecific->interval = V;
             if (V != 0)
-                Implementation->Start();
+                implementation->start();
             else if (V == 0)
-                Implementation->H_Specific->Begin = Time::Now().Value;
-            Implementation->B_Active = true;
+                implementation->timerSpecific->begin = Time::now().value;
+            implementation->active = true;
         }
     }
 }
 
-ws_timeval Timer::Stop() {
-    if (IsActive()) {
-        if (Implementation)
-            if (Implementation->H_Specific) {
-                Implementation->B_Active = false;
-                if (Implementation->H_Specific->Interval != 0)
-                    return Implementation->Stop();
-                else if (Implementation->H_Specific->Interval == 0) {
-                    Implementation->H_Specific->End = Time::Now().Value;
-                    ws_timeval RET = Implementation->H_Specific->End - Implementation->H_Specific->Begin;
+TIMEVAL Timer::stop() {
+    if (isActive()) {
+        if (implementation)
+            if (implementation->timerSpecific) {
+                implementation->active = false;
+                if (implementation->timerSpecific->interval != 0)
+                    return implementation->stop();
+                else if (implementation->timerSpecific->interval == 0) {
+                    implementation->timerSpecific->end = Time::now().value;
+                    TIMEVAL RET = implementation->timerSpecific->end - implementation->timerSpecific->begin;
                     return RET;
                 }
             }
@@ -138,15 +138,18 @@ ws_timeval Timer::Stop() {
     return 0;
 }
 
-void Timer::ProcessEvent(Event* E) {
+void Timer::processEvent(Event* E) {
     if (E)
-        if (E->Type == WS_TIMEEVENT)
-            ProcessTimeEvent(static_cast<TimeEvent*> (E));
+        if (E->type == WS_TIMEEVENT)
+            processTimeEvent(static_cast<TimeEvent*> (E));
 }
 
-void Timer::ProcessTimeEvent(TimeEvent* E) {
+void Timer::processTimeEvent(TimeEvent* E) {
     if (E)
-        if (E->Interval >= Interval());
+		if (E->interval >= interval()) {
+		}
 }
+
+END_WS_NAMESPACE
 
 END_SOURCECODE

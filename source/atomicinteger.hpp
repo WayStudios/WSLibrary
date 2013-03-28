@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef ATOMICINTEGER_HEADER
@@ -12,37 +12,37 @@ BEGIN_HEADER
 BEGIN_WS_NAMESPACE
 
 class EXPORT AtomicInteger {
-    volatile integer Value;
+    volatile INTEGER value;
 public:
-    explicit AtomicInteger(integer V = 0);
+    explicit AtomicInteger(INTEGER V = 0);
     AtomicInteger(const AtomicInteger&);
     ~AtomicInteger();
 
-    integer Load() const;
+    INTEGER load() const;
 
-    AtomicInteger& Store(integer);
+    AtomicInteger& store(INTEGER);
 
-    boolean Compare(integer) const;
+    BOOLEAN compare(INTEGER) const;
 
-    integer Swap(integer);
+    INTEGER swap(INTEGER);
+	
+    BOOLEAN compareAndSwap(INTEGER, INTEGER);
 
-    boolean CompareAndSwap(integer, integer);
+    AtomicInteger& operator =(INTEGER);
 
-    AtomicInteger& operator=(integer);
+    AtomicInteger& operator +=(INTEGER);
+    AtomicInteger& operator -=(INTEGER);
 
-    AtomicInteger& operator+=(integer);
-    AtomicInteger& operator-=(integer);
+    BOOLEAN operator ==(INTEGER) const;
+    BOOLEAN operator !=(INTEGER) const;
 
-    boolean operator==(integer) const;
-    boolean operator!=(integer) const;
+    AtomicInteger& operator =(const AtomicInteger&);
 
-    AtomicInteger& operator=(const AtomicInteger&);
+    BOOLEAN operator ==(const AtomicInteger&) const;
+    BOOLEAN operator !=(const AtomicInteger&) const;
 
-    boolean operator==(const AtomicInteger&) const;
-    boolean operator!=(const AtomicInteger&) const;
-
-    AtomicInteger& operator++();
-    AtomicInteger& operator--();
+    AtomicInteger& operator ++();
+    AtomicInteger& operator --();
 };
 
 END_WS_NAMESPACE

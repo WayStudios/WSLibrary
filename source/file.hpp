@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef FILE_HEADER
@@ -21,29 +21,29 @@ public:
 //  File(const File&);
     ~File();
 
-    AccessMode Mode() const;
+    AccessMode mode() const;
     
-    String Path() const;
+    String path() const;
 
-    size Size() const;
+    SIZE size() const;
 
-//    size Capacity() const;
+//    SIZE capacity() const;
 
-    boolean Open(const byte*, AccessMode);
-    boolean Open(const String&, AccessMode);
-    void Close();
+    BOOLEAN open(const BYTE*, AccessMode);
+    BOOLEAN open(const String&, AccessMode);
+    void close();
 
-    static boolean Access(const byte*, AccessMode);
-    static boolean Create(const byte*);
-    static boolean Remove(const byte*);
+    static BOOLEAN access(const BYTE*, AccessMode);
+    static BOOLEAN create(const BYTE*);
+    static BOOLEAN remove(const BYTE*);
 
-    static boolean Access(const String&, AccessMode);
-    static boolean Create(const String&);
-    static boolean Remove(const String&);
+    static BOOLEAN access(const String&, AccessMode);
+    static BOOLEAN create(const String&);
+    static BOOLEAN remove(const String&);
     
-    size Read(void*, size);
-    size Write(void*, size);
-    size Seek(size, SeekPosition);
+    SIZE read(void*, SIZE);
+    SIZE write(void*, SIZE);
+    SIZE seek(SIZE, SeekPosition);
 };
 
 END_WS_NAMESPACE

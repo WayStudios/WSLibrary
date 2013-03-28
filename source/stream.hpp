@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef STREAM_HEADER
@@ -21,7 +21,7 @@ public:
     explicit Stream(StreamBuffer*);
     virtual ~Stream();
 protected:
-    StreamBuffer* Buffer() const;
+    StreamBuffer* buffer() const;
 };
         
 END_WS_NAMESPACE

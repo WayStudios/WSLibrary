@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <file.hpp>
@@ -12,13 +12,13 @@
 
 BEGIN_SOURCECODE
 
-USING_WS_NAMESPACE
+BEGIN_WS_NAMESPACE
 
-FileSpecific::FileSpecific(const String& PATH, AccessMode MODE) : STR_Path(PATH), ENUM_Mode(MODE)
+FileSpecific::FileSpecific(const String& PATH, AccessMode MODE) : path(PATH), mode(MODE)
 #if defined(API_POSIX)
 , FD_File(0)
 #elif defined(API_MSWINDOWS)
-, H_File(0)
+, hFile(0)
 #endif
 {
 }
@@ -26,15 +26,15 @@ FileSpecific::FileSpecific(const String& PATH, AccessMode MODE) : STR_Path(PATH)
 FileSpecific::~FileSpecific() {
 }
 
-File::FileImplementation::FileImplementation() : H_Specific(0) {
+File::FileImplementation::FileImplementation() : specific(0) {
 }
 
 File::FileImplementation::~FileImplementation() {
 }
 
-boolean File::FileImplementation::Open(const String& STR, AccessMode MODE) {
-    if (!STR.Empty() && MODE != UNDEFINED_MODE)
-        if (H_Specific) {
+BOOLEAN File::FileImplementation::open(const String& STR, AccessMode MODE) {
+    if (!STR.empty() && MODE != UNDEFINED_MODE)
+        if (specific) {
 #if defined(API_POSIX)
             integer FLAG = 0;
             switch (MODE) {
@@ -51,10 +51,10 @@ boolean File::FileImplementation::Open(const String& STR, AccessMode MODE) {
             if (FLAG != 0) {
                 integer FD = open(String(STR).CString(), FLAG);
                 if (FD >= 0) {
-                    H_Specific = new FileSpecific(STR, MODE);
-                    H_Specific->FD_File = FD;
-                    H_Specific->ENUM_Mode = MODE;
-                    ++(H_Specific->AI_Reference);
+                    specific = new FileSpecific(STR, MODE);
+                    specific->FD_File = FD;
+                    specific->mode = MODE;
+                    ++(specific->reference);
                     return true;
                 }
             }
@@ -64,29 +64,29 @@ boolean File::FileImplementation::Open(const String& STR, AccessMode MODE) {
     return false;
 }
 
-boolean File::FileImplementation::Close() {
-    boolean RET = false;
-    if (H_Specific) {
+BOOLEAN File::FileImplementation::close() {
+    BOOLEAN RET = false;
+    if (specific) {
 #if defined(API_POSIX)
-        if (H_Specific->FD_File != 0)
-            if (close(H_Specific->FD_File) == 0)
+        if (specific->FD_File != 0)
+            if (close(specific->FD_File) == 0)
                 RET = true;
 #elif defined(API_MSWINDOWS)
-        if (H_Specific->H_File != 0)
-            if (CloseHandle(H_Specific->H_File))
+        if (specific->hFile != 0)
+            if (CloseHandle(reinterpret_cast<HANDLE>(specific->hFile)))
                 RET = true;
 #endif
         if (RET == true)
-            if ((--(H_Specific->AI_Reference)) == 0) {
-                delete H_Specific;
-                H_Specific = 0;
+            if ((--(specific->reference)) == 0) {
+                delete specific;
+                specific = 0;
             }
     }
     return RET;
 }
 
-size File::FileImplementation::Size() const {
-    if (H_Specific) {
+SIZE File::FileImplementation::size() const {
+    if (specific) {
 #if defined(API_POSIX)
 #elif defined(API_MSWINDOWS)
 #endif
@@ -94,30 +94,30 @@ size File::FileImplementation::Size() const {
     return 0;
 }
 
-size File::FileImplementation::Read(void* BUF, size RD_SZ) {
-    size RET = 0;
-    if (BUF && H_Specific && RD_SZ != 0) {
+SIZE File::FileImplementation::read(void* BUF, SIZE RD_SZ) {
+    SIZE RET = 0;
+    if (BUF && specific && RD_SZ != 0) {
 #if defined(API_POSIX)
-        RET = read(H_Specific->FD_File, BUF, RD_SZ);
+        RET = read(specific->FD_File, BUF, RD_SZ);
 #elif defined(API_MSWINDOWS)
 #endif
     }
     return RET;
 }
 
-size File::FileImplementation::Write(void* BUF, size WR_SZ) {
-    size RET = 0;
-    if (BUF && H_Specific && WR_SZ != 0) {
+SIZE File::FileImplementation::write(void* BUF, SIZE WR_SZ) {
+    SIZE RET = 0;
+    if (BUF && specific && WR_SZ != 0) {
 #if defined(API_POSIX)
-        RET = write(H_Specific->FD_File, BUF, WR_SZ);
+        RET = write(specific->FD_File, BUF, WR_SZ);
 #elif defined(API_MSWINDOWS)
 #endif
     }
     return RET;
 }
 
-size File::FileImplementation::Seek(size OFFSET, SeekPosition SEEKPOS) {
-    if (H_Specific && SEEKPOS != UNDEFINED_POSITION) {
+SIZE File::FileImplementation::seek(SIZE OFFSET, SeekPosition SEEKPOS) {
+    if (specific && SEEKPOS != UNDEFINED_POSITION) {
 #if defined(API_POSIX)
         off_t WHENCE = 0;
         switch (SEEKPOS) {
@@ -131,75 +131,78 @@ size File::FileImplementation::Seek(size OFFSET, SeekPosition SEEKPOS) {
                 WHENCE = SEEK_END;
                 break;
         }
-        return lseek(H_Specific->FD_File, WHENCE, OFFSET);
+        return lseek(specific->FD_File, WHENCE, OFFSET);
 #elif defined(API_MSWINDOWS)
 #endif
     }
     return 0;
 }
 
-boolean File::Access(const byte* C_STR, AccessMode MODE) {
-    return File::Access(String(C_STR), MODE);
+BOOLEAN File::access(const BYTE* C_STR, AccessMode MODE) {
+    return File::access(String(C_STR), MODE);
 }
 
-boolean File::Access(const String&, AccessMode) {
+BOOLEAN File::access(const String&, AccessMode) {
+	return false;
 }
 
-File::File(Object* OBJ) : StreamBuffer(OBJ), Implementation(0) {
-    Implementation = new FileImplementation();
+File::File(Object* OBJ) : StreamBuffer(OBJ), implementation(0) {
+    implementation = new FileImplementation();
 }
 
 //File::File(const File& REF):StreamBuffer(REF.GetMaster()), Implementation(0){}
 
 File::~File() {
-    Close();
-    if (Implementation)
-        delete Implementation;
+    close();
+    if (implementation)
+        delete implementation;
 }
 
-//size File::Capacity() const{return 0;}
+//SIZE File::Capacity() const{return 0;}
 
-AccessMode File::Mode() const {
-    if (Implementation)
-        if (Implementation->H_Specific)
-            return Implementation->H_Specific->ENUM_Mode;
+AccessMode File::mode() const {
+    if (implementation)
+        if (implementation->specific)
+            return implementation->specific->mode;
     return UNDEFINED_MODE;
 }
 
-String File::Path() const {
-    if (Implementation)
-        if (Implementation->H_Specific)
-            return Implementation->H_Specific->STR_Path;
+String File::path() const {
+    if (implementation)
+        if (implementation->specific)
+            return implementation->specific->path;
     return String();
 }
 
-size File::Size() const {
-    if (Implementation)
-        return Implementation->Size();
+SIZE File::size() const {
+    if (implementation)
+        return implementation->size();
     return 0;
 }
 
-void File::Close() {
-    if (Implementation)
-        Implementation->Close();
+void File::close() {
+    if (implementation)
+        implementation->close();
 }
 
-size File::Read(void* BUF, size RD_SZ) {
-    if (Implementation && BUF)
-        return Implementation->Read(BUF, RD_SZ);
+SIZE File::read(void* BUF, SIZE RD_SZ) {
+    if (implementation && BUF)
+        return implementation->read(BUF, RD_SZ);
     return 0;
 }
 
-size File::Write(void* BUF, size WR_SZ) {
-    if (Implementation && BUF)
-        return Implementation->Write(BUF, WR_SZ);
+SIZE File::write(void* BUF, SIZE WR_SZ) {
+    if (implementation && BUF)
+        return implementation->write(BUF, WR_SZ);
     return 0;
 }
 
-size File::Seek(size OFFSET, SeekPosition POSITION) {
-    if (Implementation && POSITION != UNDEFINED_POSITION)
-        return Implementation->Seek(OFFSET, POSITION);
+SIZE File::seek(SIZE OFFSET, SeekPosition POSITION) {
+    if (implementation && POSITION != UNDEFINED_POSITION)
+        return implementation->seek(OFFSET, POSITION);
     return 0;
 }
+
+END_WS_NAMESPACE
 
 END_SOURCECODE

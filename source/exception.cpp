@@ -2,20 +2,14 @@
  * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
-#include <meta.hpp>
+#include <exception.hpp>
 
 BEGIN_SOURCECODE
 
 USING_WS_NAMESPACE
 
-MetaPool Meta::Pool;
+Exception::Exception(){}
 
-Meta::Meta(Object* P_OBJ) : handle(P_OBJ), master(0), thread(0){
-    Pool.append(this);
-}
-
-Meta::~Meta() {
-    Pool.remove(this);
-}
+Exception::~Exception(){}
 
 END_SOURCECODE

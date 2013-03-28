@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef META_HEADER
@@ -9,26 +9,30 @@
 #include <metapool.hpp>
 #include <string.hpp>
 #include <map.hpp>
+#include <list.hpp>
 
 BEGIN_HEADER
 
 BEGIN_WS_NAMESPACE
 
 class Object;
+class Thread;
 class Signal;
 class Slot;
 
 struct EXTERN Meta {
-    explicit Meta(const String&, Object*);
+    explicit Meta(Object*);
     ~Meta();
 
     static MetaPool Pool;
 
-    Object* Handle;
-    Object* Master;
-    String Name;
-    Map<String, Signal*> SignalMap;
-    Map<String, Slot*> SlotMap;
+    Object* handle;
+    Object* master;
+	Thread* thread;
+	List<Object*> children;
+    String identity;
+    Map<String, Signal*> signalMap;
+    Map<String, Slot*> slotMap;
 
     UNCOPYABLE(Meta)
 };

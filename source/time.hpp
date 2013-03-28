@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef TIME_HEADER
@@ -12,29 +12,29 @@ BEGIN_HEADER
 BEGIN_WS_NAMESPACE
 
 struct EXPORT Time {
-    explicit Time(ws_timeval V = 0);
+    explicit Time(TIMEVAL V = 0);
     Time(const Time&);
     ~Time();
 
-    ws_timeval Hour() const;
-    ws_timeval Minute() const;
-    ws_timeval Second() const;
-    ws_timeval MilliSecond() const;
+    TIMEVAL hours() const;
+    TIMEVAL minutes() const;
+    TIMEVAL seconds() const;
+    TIMEVAL milliseconds() const;
 
-    static Time Now();
+    static Time now();
 
-    Time& operator=(const Time&);
+    Time& operator =(const Time&);
 
-    boolean operator==(const Time&) const;
-    boolean operator!=(const Time&) const;
+    BOOLEAN operator ==(const Time&) const;
+    BOOLEAN operator !=(const Time&) const;
 
-    Time& operator+=(const Time&);
-    Time& operator-=(const Time&);
+    Time& operator +=(const Time&);
+    Time& operator -=(const Time&);
 
-    Time operator+(const Time&) const;
-    Time operator-(const Time&) const;
+    Time operator +(const Time&) const;
+    Time operator -(const Time&) const;
 
-    ws_timeval Value;
+    TIMEVAL value;
 };
 
 END_WS_NAMESPACE

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef EVENTQUEUEIMPLEMENTATION_HEADER
@@ -15,25 +15,25 @@ BEGIN_HEADER
 
 BEGIN_WS_NAMESPACE
 
-class LOCAL EventQueue::EventQueueImplementation : public Allocator< QueueNode<EventQueue::VALUE> > {
+class LOCAL EventQueue::EventQueueImplementation : public Allocator< QueueNode<EventQueue::TYPE> > {
     UNCOPYABLE(EventQueueImplementation)
 public:
     EventQueueImplementation();
     ~EventQueueImplementation();
 
-    size Total() const;
-    boolean Empty() const;
-    void Clear();
-    void Destroy();
-    EventQueueImplementation* Duplicate();
+    SIZE total() const;
+    BOOLEAN empty() const;
+    void clear();
+    void destroy();
+    EventQueueImplementation* duplicate();
 
-    void Append(const EventQueue::VALUE&);
-    void Pop();
+    void append(const EventQueue::TYPE&);
+    void pop();
 
-    AtomicInteger Ref;
-    Mutex MLock;
-    QueueNode<EventQueue::VALUE>* QueB;
-    QueueNode<EventQueue::VALUE>* QueE;
+    AtomicInteger reference;
+    Mutex mutex;
+    QueueNode<EventQueue::TYPE>* head;
+    QueueNode<EventQueue::TYPE>* tail;
 };
 
 END_WS_NAMESPACE

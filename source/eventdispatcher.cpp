@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <eventdispatcher.hpp>
@@ -14,12 +14,14 @@ EventDispatcher::EventDispatcher(Object* OBJ) : Object(OBJ) {
 EventDispatcher::~EventDispatcher() {
 }
 
-boolean EventDispatcher::Dispatch(Event* E, Object* R, Object* S) {
-    return SendEvent(E, R, S);
+BOOLEAN EventDispatcher::dispatch(Event* E, Object* R, Object* S) {
+	if(R)
+		return R->notifyEvent(E, R, S);
+	return false;
 }
 
-boolean EventDispatcher::Dispatch(const EventElement& REF) {
-    return SendEvent(REF.Content, REF.Receiver, REF.Sender);
+BOOLEAN EventDispatcher::dispatch(const EventElement& REF) {
+	return dispatch(REF.event, REF.receiver, REF.sender);
 }
 
 END_SOURCECODE

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef DOMAINSOCKET_HEADER
@@ -23,17 +23,17 @@ public:
     explicit DomainSocket(Object* OBJ = 0);
     virtual ~DomainSocket();
 
-    const String Path() const;
+    const String path() const;
 
-    boolean Listen(const String&);
-    boolean Connect(const String&);
+    BOOLEAN listenAt(const String&);
+    BOOLEAN connectTo(const String&);
 
-    boolean IsConnected() const;
-    boolean IsListening() const;
+    BOOLEAN isConnected() const;
+    BOOLEAN isListening() const;
 
-    void Shutdown();
+    void shutdown();
 protected:
-    void ProcessEvent(Event*);
+    void processEvent(Event*);
 };
 
 END_WS_NAMESPACE

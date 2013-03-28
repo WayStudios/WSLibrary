@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef DEFINE_TYPE_HEADER
@@ -20,34 +20,38 @@ namespace WS {
     typedef float float32;
     typedef double float64;
 
-    typedef bool boolean;
+    typedef bool BOOLEAN;
 
-    typedef int8 byte;
-    typedef uint8 ubyte;
+    typedef int8 BYTE;
+    typedef uint8 UBYTE;
 
-    typedef int16 word;
-    typedef uint16 uword;
+    typedef int16 WORD;
+    typedef uint16 UWORD;
 
-    typedef int32 integer;
-    typedef uint32 uinteger;
+    typedef int32 INTEGER;
+    typedef uint32 UINTEGER;
 
-    typedef float64 variable;
+    typedef float64 VARIABLE;
+
+	typedef uint16 CHAR;
+	typedef uint32 TYPEID;
+	typedef uint64 TIMEVAL;
 
 #if defined(__GNUC__)
-    typedef __PTRDIFF_TYPE__ ptrdiff;
-    typedef __SIZE_TYPE__ size;
+    typedef __PTRDIFF_TYPE__ PTRDIFF;
+    typedef __SIZE_TYPE__ SIZE;
 #elif defined(_MSC_VER)
-    typedef size_t size;
+    typedef size_t SIZE;
 #else
-    typedef uint64 ptrdiff;
-    typedef uint64 size;
+    typedef uint64 PTRDIFF;
+    typedef uint64 SIZE;
 #endif
 
 };
 
-typedef WS::uint16 ws_char;
-typedef WS::uint32 ws_typeid;
-typedef WS::uint64 ws_timeval;
-typedef WS::size ws_size;
+typedef WS::CHAR ws_char;
+typedef WS::TYPEID ws_typeid;
+typedef WS::TIMEVAL ws_timeval;
+typedef WS::SIZE ws_size;
 
 #endif

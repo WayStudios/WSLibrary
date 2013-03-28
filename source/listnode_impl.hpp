@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef LISTNODE_IMPLEMENTATION_HEADER
@@ -13,34 +13,34 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
-ListNode<TYPE>::ListNode(const TYPE& REF, ListNode<TYPE>* P, ListNode<TYPE>* N) : Object(REF), Prev(P), Next(N) {
+template <typename T>
+ListNode<T>::ListNode(const typename ListNode<T>::TYPE& REF, ListNode<T>* P, ListNode<T>* N) : object(REF), prev(P), next(N) {
 }
 
-template <typename TYPE>
-ListNode<TYPE>::ListNode(const ListNode<TYPE>& REF) : Object(REF.Object), Prev(REF.Prev), Next(REF.Next) {
+template <typename T>
+ListNode<T>::ListNode(const ListNode<T>& REF) : object(REF.object), prev(REF.prev), next(REF.next) {
 }
 
-template <typename TYPE>
-ListNode<TYPE>::~ListNode() {
+template <typename T>
+ListNode<T>::~ListNode() {
 }
 
-template <typename TYPE>
-        ListNode<TYPE>& ListNode<TYPE>::operator =(const ListNode<TYPE>& REF) {
-    Object = REF.Object;
-    Prev = REF.Prev;
-    Next = REF.Next;
+template <typename T>
+ListNode<T>& ListNode<T>::operator =(const ListNode<T>& REF) {
+    object = REF.object;
+    prev = REF.prev;
+    next = REF.next;
     return *this;
 }
 
-template <typename TYPE>
-boolean ListNode<TYPE>::operator ==(const ListNode<TYPE>& REF) const {
-    return Object == REF.Object && Prev == REF.Prev && Next == REF.Next;
+template <typename T>
+BOOLEAN ListNode<T>::operator ==(const ListNode<T>& REF) const {
+    return object == REF.object && prev == REF.prev && next == REF.next;
 }
 
-template <typename TYPE>
-boolean ListNode<TYPE>::operator !=(const ListNode<TYPE>& REF) const {
-    return Object != REF.Object || Prev != REF.Prev || Next != REF.Next;
+template <typename T>
+BOOLEAN ListNode<T>::operator !=(const ListNode<T>& REF) const {
+    return object != REF.object || prev != REF.prev || next != REF.next;
 }
 
 END_WS_NAMESPACE

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef ARRAY_HEADER
@@ -13,31 +13,31 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
+template <typename T>
 class EXPORT Array {
     DECLARE_IMPLEMENTATION(Array)
 public:
-    typedef TYPE VALUE;
+    typedef T TYPE;
 
-    explicit Array(const TYPE&, size);
-    explicit Array(TYPE*, size);
-    Array(const Array<TYPE>&);
+    explicit Array(const TYPE&, SIZE);
+    explicit Array(TYPE*, SIZE);
+    Array(const Array<T>&);
     ~Array();
 
-    size Size() const;
+    SIZE size() const;
 
-    TYPE& At(size);
+    TYPE& at(SIZE);
 
-    const TYPE& At(size) const;
+    const TYPE& at(SIZE) const;
 
-    Array<TYPE>& operator=(const Array<TYPE>&);
+    Array<T>& operator=(const Array<T>&);
 
-    boolean operator==(const Array<TYPE>&) const;
-    boolean operator!=(const Array<TYPE>&) const;
+    BOOLEAN operator==(const Array<T>&) const;
+    BOOLEAN operator!=(const Array<T>&) const;
 
-    TYPE& operator[](size);
+    TYPE& operator[](SIZE);
 
-    const TYPE& operator[](size) const;
+    const TYPE& operator[](SIZE) const;
 };
 
 END_WS_NAMESPACE

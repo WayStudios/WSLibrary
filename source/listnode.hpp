@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef LISTNODE_HEADER
@@ -13,20 +13,22 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
+template <typename T>
 struct EXPORT ListNode {
-    explicit ListNode(const TYPE&, ListNode<TYPE>*, ListNode<TYPE>*);
-    ListNode(const ListNode<TYPE>&);
+	typedef T TYPE;
+
+    explicit ListNode(const TYPE&, ListNode<T>*, ListNode<T>*);
+    ListNode(const ListNode<T>&);
     virtual ~ListNode();
 
-    ListNode<TYPE>& operator=(const ListNode<TYPE>&);
+    ListNode<T>& operator =(const ListNode<T>&);
 
-    boolean operator==(const ListNode<TYPE>&) const;
-    boolean operator!=(const ListNode<TYPE>&) const;
+    BOOLEAN operator ==(const ListNode<T>&) const;
+    BOOLEAN operator !=(const ListNode<T>&) const;
 
-    TYPE Object;
-    ListNode<TYPE>* Prev;
-    ListNode<TYPE>* Next;
+    TYPE object;
+    ListNode<T>* prev;
+    ListNode<T>* next;
 };
 
 END_WS_NAMESPACE

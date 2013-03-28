@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #include <signal.hpp>
@@ -8,25 +8,25 @@ BEGIN_SOURCECODE
 
 USING_WS_NAMESPACE
 
-Signal::Signal(const String& STR, Object* OBJ) : Master(OBJ), SignName(STR) {
+Signal::Signal(const String& STR, Object* OBJ) : master(OBJ), signIdentity(STR) {
 }
 
 Signal::~Signal() {
 }
 
-Object* Signal::Host() const {
-    return Master;
+Object* Signal::host() const {
+    return master;
 }
 
-const String& Signal::Name() const {
-    return SignName;
+const String& Signal::identity() const {
+    return signIdentity;
 }
 
-Vector<Slot*>& Signal::Connections() {
-    return SlotVector;
+Vector<Slot*>& Signal::connections() {
+    return slotVector;
 }
 
-void Signal::Emit(const SharedPointer<SignalSlotArgument>&) {
+void Signal::emit(const SharedPointer<SignalSlotArgument>&) {
 }
 
 END_SOURCECODE

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef SHAREDPOINTER_HEADER
@@ -13,30 +13,32 @@ BEGIN_TEMPLATE
 
 BEGIN_WS_NAMESPACE
 
-template <typename TYPE>
+template <typename T>
 class WeakPointer;
 
-template <typename TYPE>
+template <typename T>
 class EXPORT SharedPointer {
-    friend class WeakPointer<TYPE>;
+    friend class WeakPointer<T>;
 public:
+	typedef T TYPE;
+
     explicit SharedPointer(TYPE*);
-    SharedPointer(const SharedPointer<TYPE>&);
+    SharedPointer(const SharedPointer<T>&);
     ~SharedPointer();
 
-    TYPE* Address() const;
+    TYPE* address() const;
 
     operator bool() const;
-    boolean operator!() const;
+    BOOLEAN operator !() const;
 
-    TYPE* operator->() const;
+    TYPE* operator ->() const;
 
-    TYPE& operator*() const;
+    TYPE& operator *() const;
 
-    boolean operator==(const SharedPointer<TYPE>&) const;
-    boolean operator!=(const SharedPointer<TYPE>&) const;
+    BOOLEAN operator ==(const SharedPointer<T>&) const;
+    BOOLEAN operator !=(const SharedPointer<T>&) const;
 private:
-    SmartPointerImplementation<TYPE>* Implementation;
+    SmartPointerImplementation<T>* implementation;
 };
 
 END_WS_NAMESPACE

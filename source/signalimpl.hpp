@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
 *******************************************************************************/
 #ifndef SIGNALIMPLEMENTATION_HEADER

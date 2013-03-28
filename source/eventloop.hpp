@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef EVENTLOOP_HEADER
@@ -21,20 +21,23 @@ public:
     explicit EventLoop(EventQueue*, EventDispatcher*, Object* OBJ = 0);
     virtual ~EventLoop();
 
-    boolean PostEvent(Event*, Object*, Object*);
+    BOOLEAN postEvent(Event*, Object* R, Object* S);
+	BOOLEAN sendEvent(Event*, Object* R, Object* S);
 
-    boolean IsActive() const;
+    BOOLEAN isActive() const;
 
-    void Enter();
-    void Exit();
+    void enter();
+    void exit();
+
+	void process(); //it will process events in the queue then return.
 protected:
-    EventQueue* GetEventQueue() const;
-    void SetEventQueue(EventQueue*);
+    EventQueue* getEventQueue() const;
+    void setEventQueue(EventQueue*);
 
-    EventDispatcher* GetEventDispatcher() const;
-    void SetEventDispatcher(EventDispatcher*);
+    EventDispatcher* getEventDispatcher() const;
+    void setEventDispatcher(EventDispatcher*);
 
-    virtual void Iteration();
+    virtual void iteration();
 };
 
 END_WS_NAMESPACE

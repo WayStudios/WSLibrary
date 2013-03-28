@@ -1,5 +1,5 @@
 /*******************************************************************************
- * WayStudio Library
+ * Way Studios Library
  * Developer:Xu Waycell
  *******************************************************************************/
 #ifndef POINTER_HEADER
@@ -15,31 +15,32 @@ BEGIN_WS_NAMESPACE
 
 template <typename TYPE>
 class EXPORT Pointer {
-    TYPE* Address;
+    TYPE* address;
 public:
     explicit Pointer(TYPE* P = 0);
     Pointer(const Pointer<TYPE>&);
     ~Pointer();
 
-    Pointer<TYPE>& Set(TYPE*);
+    void setAddress(TYPE*);
+	TYPE* getAddress(TYPE*) const;
 
-    boolean operator!() const;
+    BOOLEAN operator!() const;
 
     TYPE* operator->() const;
 
     TYPE& operator*() const;
 
-    Pointer<TYPE>& operator=(const Pointer<TYPE>&);
+    Pointer<TYPE>& operator =(const Pointer<TYPE>&);
 
-    Pointer<TYPE>& operator+=(ptrdiff);
-    Pointer<TYPE>& operator-=(ptrdiff);
+    Pointer<TYPE>& operator +=(PTRDIFF);
+    Pointer<TYPE>& operator -=(PTRDIFF);
 
-    Pointer<TYPE> operator+(ptrdiff) const;
+    Pointer<TYPE> operator +(PTRDIFF) const;
 
-    ptrdiff operator-(const Pointer<TYPE>&) const;
+    PTRDIFF operator -(const Pointer<TYPE>&) const;
 
-    boolean operator==(const Pointer<TYPE>&) const;
-    boolean operator!=(const Pointer<TYPE>&) const;
+    BOOLEAN operator ==(const Pointer<TYPE>&) const;
+    BOOLEAN operator !=(const Pointer<TYPE>&) const;
 };
 
 END_WS_NAMESPACE
